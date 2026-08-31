@@ -26,7 +26,7 @@ what's here, how good it is, how to get to it, and what to expect. Success looks
 | Gap | Action |
 |---|---|
 | Topo images are 200 dpi PDF renders — fine for reference, not for a hero guidebook | Source **high-res originals** from FA photographers (Kaszlikowski/Vertical Vision, Cedar Wright, Söldner, the Malaysian teams). Where impossible, take new photos or re-draw. |
-| Photo **rights** — many topos are watermarked pro photos | Get explicit permission, or replace with community/commissioned photos. Track licence per image. |
+| Photo **rights** — many topos are watermarked pro photos | Ship a clear compilation notice + takedown contact from day one (see [Attribution & takedown](#attribution--takedown)). In parallel, pursue explicit permission and credit; replace with community/commissioned photos where owners prefer. Track credit + licence per image. |
 | **Content licence** unset | Propose **CC BY-SA 4.0** for text + our own topo line-art; credit every contributor and FA team. Get Mike Söldner's blessing as original compiler. |
 | Missing routes / data | Muka has no topo; Beckwith–Traver year conflict; Damai Sentosa pitch grades only from a sketch; "Blood Sweat and Fear/Tears" name; Puncak Nipah sport list is a best-effort read. Flag all as "needs verification" on the site and crowdsource fixes. |
 | GPS / map data | Collect real coordinates for crags, trailheads, checkpoints (CP4–CP9), base camps. The PDF has GPS-track screenshots but no data. |
@@ -81,6 +81,34 @@ already structured this way.
 - `/logbook/` — trip reports, newest first; "add yours"
 - `/contribute/` — how to submit corrections, reports, new routes, photos; the licence
 - `/about/` — provenance, credits to Söldner + every FA team + photographers, disclaimer
+- `/attribution/` — the compilation notice, per-source credits, and the takedown contact
+
+## Attribution & takedown
+
+The site must state plainly, on every page, that it is a **community compilation from many
+sources**, and give a direct route to have material corrected or removed. This is both the
+right thing to do by the people whose work this is, and the practical answer to the photo-
+rights gap while permissions are still being gathered.
+
+**Standing notice** (site footer, on every page — link "Sources & takedown" → `/attribution/`):
+
+> This guidebook is compiled from many sources, including the Mukut climbers' logbook,
+> the Tioman Climbing Route Book compiled by Mike Söldner, expedition reports, and
+> photographs by the first-ascent teams. We credit authors and photographers wherever we
+> can. **If you hold copyright in anything here and wish to be credited differently or have
+> it taken down, contact rizhaow@gmail.com** and we will act promptly.
+
+Implementation notes:
+
+- Footer partial in the base layout → appears on every page, including route pages.
+- Full version lives at `/attribution/`, mirroring [`ATTRIBUTION.md`](ATTRIBUTION.md);
+  keep the two in sync (ideally the page renders that file directly).
+- **Per-image credit**: the `topos[]` field carries `credit` and `licence`; render the
+  credit as a visible caption under every topo/photo, not just in metadata.
+- **Per-page provenance**: each route page cites its source (logbook page, report, or
+  contributor) so a reader can trace any claim.
+- `mailto:rizhaow@gmail.com` on `/attribution/` and `/contribute/` so a takedown request
+  never depends on someone having a GitHub account.
 
 ## Contribution workflow
 
@@ -100,6 +128,7 @@ The logbook is community-maintained; the site must be too.
 
 **Phase 0 — foundations (done / in progress)**
 - [x] Digitize the route book into structured Markdown (`guidebook/`)
+- [x] Write the compilation notice + takedown contact ([`ATTRIBUTION.md`](ATTRIBUTION.md))
 - [ ] Decide licence; contact Mike Söldner and key FA photographers
 - [ ] Register domain
 
@@ -107,7 +136,8 @@ The logbook is community-maintained; the site must be too.
 - [ ] Astro scaffold, content schema, migrate `guidebook/` → collections
 - [ ] Area + route + trip-report pages; route filter index; Pagefind search
 - [ ] Overview map with areas + trailheads + CP markers
-- [ ] `/plan` and `/contribute` pages; GitHub issue templates
+- [ ] `/plan`, `/contribute` and `/attribution` pages; GitHub issue templates
+- [ ] Footer compilation notice + takedown link on every page; per-image credit captions
 - [ ] SEO: titles, descriptions, JSON-LD, sitemap, OG images; submit to Search Console
 - [ ] Deploy to Cloudflare Pages
 
@@ -126,7 +156,9 @@ The logbook is community-maintained; the site must be too.
 
 ## Risks / open questions
 
-- **Photo rights** are the critical path for a good-looking launch — start outreach now.
+- **Photo rights** are the critical path for a *good-looking* launch — start outreach now.
+  The compilation notice + takedown contact is the interim answer, not a substitute for
+  permission on the marquee images.
 - **Safety liability**: these are serious, runout, loose routes. Prominent disclaimer;
   don't soften the hazard language from the trip reports.
 - **Access sensitivity**: confirm with the Mukut community that publishing detailed

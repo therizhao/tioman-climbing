@@ -6,6 +6,10 @@ complete collection of route information that exists for rock climbing on Pulau 
 Malaysia. It is the raw content layer for the online guidebook this project is building
 (see [`../WEBSITE-PLAN.md`](../WEBSITE-PLAN.md)).
 
+> **Sources & takedown.** This guidebook is compiled from many sources — see
+> [`../ATTRIBUTION.md`](../ATTRIBUTION.md). If you hold copyright in anything reproduced
+> here and want it credited differently or removed, contact **rizhaow@gmail.com**.
+
 ## What the source is
 
 The PDF (76 pages, generated from `Tioman Climbing Route Book.docx`, first exported July 2023)
