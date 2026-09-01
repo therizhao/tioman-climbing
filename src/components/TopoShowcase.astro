@@ -272,7 +272,10 @@ const canopy =
   .showcase-track {
     display: flex;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
     scrollbar-width: none;
   }
   .showcase-track::-webkit-scrollbar {

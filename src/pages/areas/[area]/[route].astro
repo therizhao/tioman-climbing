@@ -134,43 +134,36 @@ const excerpt = (body: string) =>
             <h2 style="font-size:var(--step-2)">Logbook &amp; trip reports</h2>
           </div>
 
-          {nativeLogs.length > 0 && (
-            <div class="loglist">
-              {nativeLogs.map((e) => (
-                <a class="logitem" href={`/logbook/${e.id}`}>
-                  <span class="logitem-kind">From the Mukut logbook</span>
-                  <span class="logitem-meta">
-                    <span class="logitem-title">{e.data.title}</span>
-                    <span class="logitem-when">
-                      {e.data.party} · {e.data.date}
-                    </span>
+          <div class="loglist">
+            {nativeLogs.map((e) => (
+              <a class="logitem" href={`/logbook/${e.id}`}>
+                <span class="logitem-kind">From the Mukut logbook</span>
+                <span class="logitem-meta">
+                  <span class="logitem-title">{e.data.title}</span>
+                  <span class="logitem-when">
+                    {e.data.party} · {e.data.date}
                   </span>
-                  <span class="logitem-excerpt">{excerpt(e.body ?? "")}</span>
-                </a>
-              ))}
-            </div>
-          )}
-
-          {external.length > 0 && (
-            <div class="loglist" style="margin-top:2rem">
-              {external.map((l) => (
-                <a class="logitem" href={l.url} target="_blank" rel="noopener">
-                  <span class="logitem-kind">
-                    {l.type === "video" ? "Film · external link" : "Article · external link"}
+                </span>
+                <span class="logitem-excerpt">{excerpt(e.body ?? "")}</span>
+              </a>
+            ))}
+            {external.map((l) => (
+              <a class="logitem" href={l.url} target="_blank" rel="noopener">
+                <span class="logitem-kind">
+                  {l.type === "video" ? "Film · external link" : "Article · external link"}
+                </span>
+                <span class="logitem-meta">
+                  <span class="logitem-title">{l.title}</span>
+                  <span class="logitem-when">
+                    {l.author ? `${l.author} · ` : ""}
+                    {l.source}
+                    {l.year ? ` · ${l.year}` : ""}
                   </span>
-                  <span class="logitem-meta">
-                    <span class="logitem-title">{l.title}</span>
-                    <span class="logitem-when">
-                      {l.author ? `${l.author} · ` : ""}
-                      {l.source}
-                      {l.year ? ` · ${l.year}` : ""}
-                    </span>
-                  </span>
-                  {l.note && <span class="logitem-excerpt">{l.note}</span>}
-                </a>
-              ))}
-            </div>
-          )}
+                </span>
+                {l.note && <span class="logitem-excerpt">{l.note}</span>}
+              </a>
+            ))}
+          </div>
         </div>
       </section>
     )

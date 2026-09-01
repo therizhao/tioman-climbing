@@ -836,9 +836,9 @@ section {
 }
 
 .warn {
-  border-left: 2px solid var(--oxide);
+  border-left: 3px solid var(--oxide);
   background: var(--oxide-soft);
-  padding: 0.9rem 1.1rem;
+  padding: 0.95rem 1.2rem 0.95rem 1.5rem;
   border-radius: 0 2px 2px 0;
 }
 .warn strong {
@@ -855,7 +855,7 @@ section {
   background: var(--accent-soft);
   border-left: 3px solid var(--accent);
   border-radius: 0 3px 3px 0;
-  padding: 1.1rem 1.3rem;
+  padding: 1.15rem 1.3rem 1.15rem 1.6rem;
   margin-top: 1.5rem;
   display: grid;
   gap: 0.4rem;
@@ -1090,7 +1090,7 @@ footer {
   border-left: 3px solid var(--oxide);
   background: var(--oxide-soft);
   border-radius: 0 3px 3px 0;
-  padding: 0.9rem 1.1rem;
+  padding: 0.95rem 1.2rem 0.95rem 1.6rem;
   margin-bottom: 2rem;
   font-size: 0.88rem;
   line-height: 1.7;

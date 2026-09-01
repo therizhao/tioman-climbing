@@ -3,9 +3,9 @@
  * A horizontally-scrollable strip of photos and short clips from the Dragon's
  * Horns — "what it's like out there".
  *
- * Performance: nothing but poster/photo JPEGs load on first paint. A video is
- * only fetched and created when the viewer clicks its play button, and only one
- * plays at a time.
+ * Performance: first paint loads nothing but lazy poster/photo JPEGs. A clip is
+ * only fetched when it actually scrolls into the strip's viewport; it then
+ * autoplays (muted, looping) and pauses again when it scrolls out.
  */
 
 type Item =
@@ -75,20 +75,8 @@ const items: Item[] = [
     {
       items.map((it) =>
         it.kind === "video" ? (
-          <figure class="ms-card">
-            <button
-              class="ms-play"
-              type="button"
-              data-src={it.src}
-              aria-label={`Play clip: ${it.caption}`}
-            >
-              <img class="ms-media" src={it.poster} alt="" loading="lazy" decoding="async" />
-              <span class="ms-play-badge" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M6 4l10 6-10 6V4z" fill="currentColor" />
-                </svg>
-              </span>
-            </button>
+          <figure class="ms-card ms-video" data-src={it.src}>
+            <img class="ms-media" src={it.poster} alt={it.caption} loading="lazy" decoding="async" />
             <figcaption>{it.caption}</figcaption>
           </figure>
         ) : (
@@ -102,7 +90,7 @@ const items: Item[] = [
   </div>
 
   <div class="wrap ms-nav">
-    <span class="ms-hint">Tap a clip to play &middot; scroll or drag</span>
+    <span class="ms-hint">Scroll or drag</span>
     <div class="ms-arrows">
       <button type="button" class="ms-arrow" data-dir="-1" aria-label="Previous">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
@@ -154,21 +142,15 @@ const items: Item[] = [
     line-height: 1.5;
     color: color-mix(in srgb, var(--ground) 82%, transparent);
   }
-  .ms-head cite {
-    display: block;
-    margin-top: 0.5rem;
-    font-style: normal;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    color: color-mix(in srgb, var(--ground) 55%, transparent);
-  }
 
   .ms-track {
     display: flex;
     gap: 1rem;
     overflow-x: auto;
+    overflow-y: hidden;
     scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
     scrollbar-width: none;
     padding-inline: max((100% - var(--wide)) / 2, 1.25rem);
     scroll-padding-inline: max((100% - var(--wide)) / 2, 1.25rem);
@@ -193,6 +175,7 @@ const items: Item[] = [
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
+    position: relative;
   }
   .ms-media {
     width: 100%;
@@ -202,44 +185,21 @@ const items: Item[] = [
     background: color-mix(in srgb, var(--ground) 12%, var(--ink));
     display: block;
   }
-  .ms-play {
-    position: relative;
-    display: block;
-    width: 100%;
-    padding: 0;
-    border: 0;
-    background: none;
-    cursor: pointer;
-    border-radius: 3px;
-    overflow: hidden;
-  }
-  .ms-play-badge {
+  .ms-video::before {
+    content: "";
     position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    color: var(--ground);
-    transition: background 0.18s;
-    background: color-mix(in srgb, var(--ink) 14%, transparent);
-  }
-  .ms-play-badge svg {
-    width: 52px;
-    height: 52px;
-    padding: 15px 13px 15px 17px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--ink) 55%, transparent);
-    backdrop-filter: blur(2px);
-    transition: transform 0.18s, background 0.18s;
-  }
-  .ms-play:hover .ms-play-badge svg,
-  .ms-play:focus-visible .ms-play-badge svg {
-    transform: scale(1.08);
-    background: color-mix(in srgb, var(--oxide) 85%, transparent);
-  }
-  .ms-card video.ms-media {
+    top: 0;
+    left: 0;
+    right: 0;
     aspect-ratio: 3 / 4;
+    background: color-mix(in srgb, var(--ink) 10%, transparent);
+    pointer-events: none;
+    border-radius: 3px;
+    transition: opacity 0.3s;
   }
-
+  .ms-video.is-live::before {
+    opacity: 0;
+  }
   .ms-card figcaption {
     font-size: 0.82rem;
     line-height: 1.5;
@@ -324,11 +284,9 @@ const items: Item[] = [
     let down = false;
     let startX = 0;
     let startScroll = 0;
-    let moved = false;
     track.addEventListener("pointerdown", (e) => {
       if ((e.target as HTMLElement).closest("button")) return;
       down = true;
-      moved = false;
       startX = e.clientX;
       startScroll = track.scrollLeft;
       track.setPointerCapture(e.pointerId);
@@ -336,10 +294,7 @@ const items: Item[] = [
     track.addEventListener("pointermove", (e) => {
       if (!down) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) {
-        moved = true;
-        track.classList.add("is-dragging");
-      }
+      if (Math.abs(dx) > 4) track.classList.add("is-dragging");
       track.scrollLeft = startScroll - dx;
     });
     const endDrag = () => {
@@ -349,53 +304,65 @@ const items: Item[] = [
     track.addEventListener("pointerup", endDrag);
     track.addEventListener("pointercancel", endDrag);
 
-    // Click-to-load: nothing is fetched until the viewer taps a clip. Once a
-    // clip is activated it behaves like autoplay — loops, and plays / pauses as
-    // it scrolls in and out of view. Only one clip is ever held in memory.
-    const btnFor = new WeakMap<HTMLVideoElement, HTMLButtonElement>();
-    let loaded: HTMLVideoElement | null = null;
+    // Autoplay in view — but nothing is fetched until the strip itself is on
+    // screen AND a given clip is within the strip's horizontal viewport. Clips
+    // play / pause with visibility; a clip is only ever downloaded once.
+    const videoCards = cards.filter((c) => c.classList.contains("ms-video"));
+    const media = new WeakMap<HTMLElement, HTMLVideoElement>();
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const viewObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          const v = e.target as HTMLVideoElement;
-          if (e.isIntersecting) v.play().catch(() => {});
-          else v.pause();
-        });
-      },
-      { root: track, threshold: 0.55 },
-    );
-
-    track.querySelectorAll<HTMLButtonElement>(".ms-play").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        if (moved) return;
-        const v = document.createElement("video");
+    const ensureVideo = (card: HTMLElement) => {
+      let v = media.get(card);
+      if (!v) {
+        v = document.createElement("video");
         v.className = "ms-media";
-        v.src = btn.dataset.src!;
-        v.poster = btn.querySelector("img")?.src ?? "";
+        v.src = card.dataset.src!;
+        v.poster = card.querySelector("img")?.src ?? "";
         v.muted = true;
         v.loop = true;
         v.playsInline = true;
-        v.autoplay = true;
-        v.controls = true;
         v.preload = "auto";
-        btnFor.set(v, btn);
+        v.setAttribute("aria-label", card.querySelector("figcaption")?.textContent ?? "clip");
+        v.addEventListener("playing", () => card.classList.add("is-live"), { once: true });
+        card.insertBefore(v, card.firstChild);
+        media.set(card, v);
+      }
+      return v;
+    };
 
-        // release the previously loaded clip
-        if (loaded && loaded !== v) {
-          loaded.pause();
-          viewObserver.unobserve(loaded);
-          loaded.removeAttribute("src");
-          loaded.load();
-          const oldBtn = btnFor.get(loaded);
-          if (oldBtn) loaded.replaceWith(oldBtn);
+    // level 2: which clips are within the strip's horizontal viewport
+    const cardIo = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          const card = e.target as HTMLElement;
+          if (e.isIntersecting && !reduce) {
+            ensureVideo(card).play().catch(() => {});
+          } else {
+            media.get(card)?.pause();
+          }
+        });
+      },
+      { root: track, threshold: 0.6 },
+    );
+
+    // level 1: is the strip on screen at all? only then do we watch the clips
+    let watching = false;
+    const sectionIo = new IntersectionObserver(
+      (entries) => {
+        const onScreen = entries[0].isIntersecting;
+        if (onScreen && !watching) {
+          watching = true;
+          videoCards.forEach((c) => cardIo.observe(c));
+        } else if (!onScreen && watching) {
+          watching = false;
+          videoCards.forEach((c) => {
+            cardIo.unobserve(c);
+            media.get(c)?.pause();
+          });
         }
-        loaded = v;
-
-        btn.replaceWith(v);
-        viewObserver.observe(v);
-        v.play().catch(() => {});
-      });
-    });
+      },
+      { threshold: 0.15 },
+    );
+    sectionIo.observe(document.querySelector(".mediastrip")!);
   }
 </script>

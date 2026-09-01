@@ -17,7 +17,17 @@ const area = getArea(entry.data.area);
   <div class="wrap">
     <nav class="crumb" aria-label="Breadcrumb">
       <a href="/#areas">Guidebook</a><span>/</span>
-      <a href="/logbook">Logbook</a><span>/</span><span>{entry.data.title}</span>
+      {
+        area && (
+          <>
+            <a href={`/areas/${entry.data.area}`}>{area.short}</a>
+            <span>/</span>
+            <a href={`/areas/${entry.data.area}/${entry.data.route}`}>{entry.data.routeName}</a>
+            <span>/</span>
+          </>
+        )
+      }
+      <span>Logbook</span>
     </nav>
 
     <div class="detail-hero" style="border-bottom:0">
