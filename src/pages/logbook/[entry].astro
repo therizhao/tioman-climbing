@@ -7,7 +7,10 @@ import { getArea } from "../../lib/guidebook";
 
 export async function getStaticPaths() {
   const entries = await getCollection("logbook");
-  return entries.map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
+  // External reports link out to the author's own site — they have no local page.
+  return entries
+    .filter((entry) => !entry.data.link)
+    .map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
 }
 
 const { entry } = Astro.props;

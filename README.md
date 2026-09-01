@@ -16,9 +16,8 @@ Dragon's Horns (Gunung Nenek Semukut) and the other granite of the south coast.
 | Path | What |
 |---|---|
 | `src/` | The Astro website |
-| `src/data/areas.ts` | Areas + routes (typed model the site renders from) |
-| `src/data/external-logs.ts` | External trip reports and films |
-| `src/content/logbook/` | Native, transcribed logbook entries (one page each) |
+| `src/content/areas/`, `src/content/routes/` | Areas and routes (Markdown + frontmatter the site renders from) |
+| `src/content/logbook/` | Trip reports — transcribed logbook pages, plus external reports/films (frontmatter `link`) |
 | `guidebook/` | Human-readable transcription of the route book + page scans |
 | `dragonhorns-climb-log.pdf` | The source route book (compiled by Tam Haja; stored in Git LFS) |
 | `media/` | Original photos and videos |

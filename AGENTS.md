@@ -14,7 +14,7 @@ Every area, route and logbook entry is **one Markdown file with YAML frontmatter
 |---|---|---|---|
 | `areas` | `src/content/areas/<slug>.md` | key, name, aka, short, order, desc, meta pairs, images[] | the area lede |
 | `routes` | `src/content/routes/<slug>.md` | area, grade, length, pitches, firstAscent, year, stars, status, kind, approach, descent, gear, warn, extra, pitchList[], logbook[], images[] | the "Character" text |
-| `logbook` | `src/content/logbook/<slug>.md` | title, party, date, route, routeName, area, sourcePage, scan/scans[] | the full transcription |
+| `logbook` | `src/content/logbook/<slug>.md` | title, party, date, route, routeName, area, sourcePage, scan/scans[] — OR for an external report: title, link, linkType (article/video), source, author, date, route, routeName, area | the full transcription (empty / one-line note for external) |
 
 Schemas: `src/content.config.ts`. Helpers (joins, grade band, length bucket): `src/lib/guidebook.ts`.
 Complex frontmatter values are written as JSON-flow YAML (valid YAML) — e.g.
@@ -22,7 +22,8 @@ Complex frontmatter values are written as JSON-flow YAML (valid YAML) — e.g.
 
 - `grade` keeps the route's own system (French / UK trad / YDS + aid). **Never convert.**
 - Flag uncertainty inline (`[?]`, a `warn`, a `> [!NOTE]`), don't resolve it silently.
-- External blog posts / films: `src/data/external-logs.ts` (just links).
+- External blog posts / films: a `src/content/logbook/<slug>.md` file with a `link` in
+  frontmatter — it links out and gets no local page. Add via `/edit-help` ("Just link to it").
 - Page images: `public/figures/page-NN.jpg` (renders of the route book), `public/gallery/`
   (landing-page media), `public/logbook-scans/`.
 - `guidebook/` holds the archival transcription narrative, provenance notes and the full-res

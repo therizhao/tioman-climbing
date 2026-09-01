@@ -4,8 +4,7 @@ import Base from "../../layouts/Base.astro";
 import RoutesTable from "../../components/RoutesTable.astro";
 import PhotoStrip from "../../components/PhotoStrip.astro";
 import EditLink from "../../components/EditLink.astro";
-import { getAreas, getArea, getRoutes } from "../../lib/guidebook";
-import { externalLogs } from "../../data/external-logs";
+import { getAreas, getArea, getRoutes, externalLogsForArea } from "../../lib/guidebook";
 
 export async function getStaticPaths() {
   const areas = await getAreas();
@@ -21,7 +20,7 @@ const viaFerrata = routes.filter((r) => r.data.kind === "via-ferrata");
 const climbs = routes.filter((r) => r.data.kind !== "via-ferrata");
 const split = viaFerrata.length > 0 && climbs.length > 0;
 
-const areaExternal = externalLogs.filter((l) => l.area === area.id && l.route === null);
+const areaExternal = await externalLogsForArea(area.id);
 ---
 
 <Base title={area.data.name} description={area.data.desc} section="/">
@@ -102,18 +101,18 @@ const areaExternal = externalLogs.filter((l) => l.area === area.id && l.route ==
             </div>
             <div class="loglist">
               {areaExternal.map((l) => (
-                <a class="logitem" href={l.url} target="_blank" rel="noopener">
+                <a class="logitem" href={l.href} target="_blank" rel="noopener">
                   <span class="logitem-kind">
-                    {l.type === "video" ? "Film · external link" : "Article · external link"}
+                    {l.kind === "film" ? "Film · external link" : "Article · external link"}
                   </span>
                   <span class="logitem-meta">
                     <span class="logitem-title">{l.title}</span>
                     <span class="logitem-when">
-                      {l.source}
-                      {l.year ? ` · ${l.year}` : ""}
+                      {l.people}
+                      {l.when ? ` · ${l.when}` : ""}
                     </span>
                   </span>
-                  {l.note && <span class="logitem-excerpt">{l.note}</span>}
+                  {l.excerpt && <span class="logitem-excerpt">{l.excerpt}</span>}
                 </a>
               ))}
             </div>

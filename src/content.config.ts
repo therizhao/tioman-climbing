@@ -64,22 +64,29 @@ const routes = defineCollection({
 });
 
 /**
- * Native logbook entries — full transcriptions of handwritten pages, each its
- * own page beside the original scan.
+ * Logbook entries. Two kinds share one folder and schema:
+ *  - transcriptions of handwritten pages — each gets its own page beside the scan;
+ *  - external trip reports — a report, article or film on the author's own site.
+ *    These carry `link` and just link out; they have no local page.
  */
 const logbook = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/logbook" }),
   schema: z.object({
     title: z.string(),
-    party: z.string(),
-    date: z.string(),
-    route: z.string(),
-    routeName: z.string(),
-    area: z.string(),
+    party: z.string().default(""),
+    date: z.string().default(""),
+    route: z.string().default(""),
+    routeName: z.string().default(""),
+    area: z.string().default(""),
     sourcePage: z.number().default(0),
     scan: z.string().default(""),
     scans: z.array(z.object({ src: z.string(), caption: z.string().default("") })).default([]),
     order: z.number().default(5),
+    /** External report: presence of a link marks the entry as hosted elsewhere. */
+    link: z.string().url().optional(),
+    linkType: z.enum(["article", "video"]).default("article"),
+    source: z.string().default(""),
+    author: z.string().default(""),
   }),
 });
 

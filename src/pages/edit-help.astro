@@ -628,17 +628,17 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     ],
   };
 
-  // Fields for the "just link to it" flow — one entry in src/data/external-logs.ts.
+  // Fields for the "just link to it" flow — a normal logbook file that carries a `link`.
   const EXTERNAL_FIELDS: Field[] = [
     { key: "linkType", label: "Kind", type: "select", options: ["article", "video"], default: "article", help: "“video” for a film or clip, “article” for anything written." },
     { key: "title", label: "Title", type: "text", required: true, help: "The piece's own title." },
-    { key: "url", label: "Link", type: "text", required: true, help: "Full https:// address of the report, article or video." },
+    { key: "link", label: "Link", type: "text", required: true, help: "Full https:// address of the report, article or video." },
     { key: "source", label: "Source", type: "text", required: true, help: "Where it lives — “NUS Mountaineering (nus-mir.com)”, “YouTube”." },
     { key: "author", label: "Author", type: "text", help: "Person or party, if credited." },
-    { key: "year", label: "Year", type: "text", help: "Year of the trip or of publication." },
+    { key: "date", label: "Year", type: "text", help: "Year of the trip or of publication." },
     { key: "route", label: "Route", type: "route", help: "The route it's mainly about. Leave on “—” for an area-wide piece." },
+    { key: "routeName", label: "Route name", type: "text", hidden: true },
     { key: "area", label: "Area", type: "area", help: "Fills in from the route; set it yourself for an area-wide piece." },
-    { key: "note", label: "Note", type: "textarea", help: "One line of context, shown under the title in the logbook." },
   ];
 
   const MANAGED: Record<string, Set<string>> = {
@@ -720,6 +720,9 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
 
   const isLinkMode = () => mode === "new" && collection === "logbook" && reportKind === "link";
   const activeFields = (): Field[] => (isLinkMode() ? EXTERNAL_FIELDS : FIELDS[collection]);
+
+  const SITE_BODY =
+    "## The climb\n\nHow the approach went, the conditions, how the pitches felt.\n\n## Beta for the next party\n\nGear that helped, loose or run-out sections, anchor state, timing.\n";
 
   const state: Record<string, string> = {};
 
@@ -864,6 +867,11 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
       b.addEventListener("click", () => {
         if (reportKind === v) return;
         reportKind = v;
+        // Swap the body between the write-up scaffold and an empty note field,
+        // but only while it's still untouched.
+        const bodyEl = $("au-body") as HTMLTextAreaElement;
+        if (bodyEl.value.trim() === "" || bodyEl.value === SITE_BODY)
+          bodyEl.value = v === "link" ? "" : SITE_BODY;
         buildForm();
         applyNewChrome();
         render();
@@ -965,10 +973,12 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
   }
 
   function applyNewChrome() {
-    // Show/hide the free-text body + advanced pane depending on the report type.
     const link = isLinkMode();
-    const bodyField = $("au-body").closest(".au-field") as HTMLElement | null;
-    if (bodyField) bodyField.classList.toggle("is-hidden", link);
+    $("au-body-label").textContent = link
+      ? "Note — one line of context (optional)"
+      : collection === "logbook"
+        ? "Your report"
+        : "Description";
     if (link) $("au-adv").hidden = true;
     if (mode === "new" && collection === "logbook") {
       const rn = state.routeName || "";
@@ -980,30 +990,39 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
           ? `Add a trip report — ${rn}`
           : "Add a trip report";
       $("au-lede").textContent = link
-        ? "Point the logbook at a report, article or film that lives on someone else's site. Fill in the details, then paste one entry into GitHub."
+        ? "Point the logbook at a report, article or film that lives on someone else's site. It becomes an ordinary logbook file — fill in the details, then copy it onto GitHub."
         : "Approach beta, conditions, how the pitches felt, gear that helped, anything loose or run-out, and thanks. Fill it in, preview, then copy it onto GitHub.";
     }
   }
 
-  function buildExternalSnippet() {
-    const q = (v: string) => JSON.stringify(v);
+  const slugify = (s: string) =>
+    s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+
+  function externalFilename() {
+    const base = slugify(state.route || state.area || "tioman");
+    const tail = slugify(state.source || state.author || state.title || "link");
+    return ([base, tail].filter(Boolean).join("-").replace(/-+/g, "-") || "external-report") + ".md";
+  }
+
+  function buildExternalFile() {
     const t = (k: string) => (state[k] ?? "").trim();
-    const lines = ["  {"];
-    lines.push(`    type: ${q(state.linkType || "article")},`);
-    lines.push(`    title: ${q(t("title") || "Untitled")},`);
-    lines.push(`    source: ${q(t("source"))},`);
-    if (t("author")) lines.push(`    author: ${q(t("author"))},`);
-    if (t("year")) lines.push(`    year: ${q(t("year"))},`);
-    lines.push(`    url: ${q(t("url"))},`);
-    lines.push(`    route: ${t("route") ? q(t("route")) : "null"},`);
-    lines.push(`    area: ${t("area") ? q(t("area")) : "null"},`);
-    if (t("note")) lines.push(`    note: ${q(t("note"))},`);
-    lines.push("  },");
-    return lines.join("\n");
+    const lines: string[] = [];
+    lines.push(`title: ${quote(t("title") || "Untitled")}`);
+    lines.push(`link: ${quote(t("link"))}`);
+    lines.push(`linkType: ${quote(state.linkType || "article")}`);
+    lines.push(`source: ${quote(t("source"))}`);
+    if (t("author")) lines.push(`author: ${quote(t("author"))}`);
+    if (t("date")) lines.push(`date: ${quote(t("date"))}`);
+    if (t("route")) lines.push(`route: ${quote(t("route"))}`);
+    if (t("routeName")) lines.push(`routeName: ${quote(t("routeName"))}`);
+    if (t("area")) lines.push(`area: ${quote(t("area"))}`);
+    lines.push("order: 5");
+    const body = ($("au-body") as HTMLTextAreaElement).value.trim();
+    return `---\n${lines.join("\n")}\n---\n${body ? `\n${body}\n` : ""}`;
   }
 
   function buildFile() {
-    if (isLinkMode()) return buildExternalSnippet();
+    if (isLinkMode()) return buildExternalFile();
     const managed = MANAGED[collection];
     const lines: string[] = [];
     const emitted = new Set<string>();
@@ -1048,15 +1067,15 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     const parts: string[] = [];
     if (isLinkMode()) {
       parts.push(`<div class="au-pv-title">${esc(state.title || "Untitled")}</div>`);
-      const sub = [state.author, state.source, state.year].filter(Boolean).map(esc).join(" · ");
+      const sub = [state.author, state.source, state.date].filter(Boolean).map(esc).join(" · ");
       if (sub) parts.push(`<div class="au-pv-sub">${sub}</div>`);
       parts.push(
         `<div class="au-pv-badges"><span class="au-pv-badge">${state.linkType === "video" ? "Film" : "Article"} · external ↗</span></div>`,
       );
       const lr = data.routes.find((x) => x.id === state.route);
       if (lr) parts.push(`<div class="au-pv-sub">on ${esc(lr.name)}</div>`);
-      if (state.note) parts.push(`<div class="au-pv-body"><p>${esc(state.note)}</p></div>`);
-      if (state.url) parts.push(`<div class="au-pv-sub" style="word-break:break-all">${esc(state.url)}</div>`);
+      if (body.trim()) parts.push(`<div class="au-pv-body"><p>${esc(body.trim())}</p></div>`);
+      if (state.link) parts.push(`<div class="au-pv-sub" style="word-break:break-all">${esc(state.link)}</div>`);
       box.innerHTML = parts.join("");
       return;
     }
@@ -1107,36 +1126,24 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     $("au-out").textContent = file;
     ($("au-copy") as HTMLButtonElement).dataset.text = file;
 
-    // GitHub link + surrounding copy
+    // GitHub link + steps
     const gh = $("au-gh") as HTMLAnchorElement;
-    const outLabel = document.querySelector("#au-output .label") as HTMLElement | null;
-    const copyBtn = $("au-copy") as HTMLButtonElement;
-    if (isLinkMode()) {
-      $("au-file").textContent = "src/data/external-logs.ts";
-      if (outLabel) outLabel.textContent = "The entry";
-      copyBtn.textContent = "Copy the entry";
-      gh.href = `${data.repo}/edit/main/src/data/external-logs.ts`;
-      gh.textContent = "Open GitHub to add the link ↗";
-      $("au-steps").innerHTML =
-        "<b>1.</b> Copy the entry above. &nbsp; <b>2.</b> Open <code>external-logs.ts</code> on GitHub. &nbsp; <b>3.</b> Paste it just after <code>externalLogs = [</code>, then click <b>Propose changes</b> to open a pull request.";
-      return;
-    }
-    if (outLabel) outLabel.textContent = "The file";
-    copyBtn.textContent = "Copy file contents";
     if (mode === "edit" && rec) {
       gh.href = `${data.repo}/edit/main/${rec.path}`;
       gh.textContent = "Open GitHub to replace the file ↗";
       $("au-steps").innerHTML =
         "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — it shows the current file. &nbsp; <b>3.</b> Select all, paste, and click <b>Propose changes</b>. GitHub makes your own copy and opens a pull request.";
     } else {
-      $("au-file").textContent = `src/content/${collection}/${newFilename}`;
+      const fname = isLinkMode() ? externalFilename() : newFilename;
+      $("au-file").textContent = `src/content/${collection}/${fname}`;
       const u = new URL(`${data.repo}/new/main/src/content/${collection}`);
-      u.searchParams.set("filename", newFilename);
+      u.searchParams.set("filename", fname);
       if (file.length < 6000) u.searchParams.set("value", file);
       gh.href = u.toString();
       gh.textContent = "Open GitHub to create the file ↗";
-      $("au-steps").innerHTML =
-        "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — a new file opens, often pre-filled. &nbsp; <b>3.</b> Make sure the contents match, then click <b>Propose new file</b> to open a pull request.";
+      $("au-steps").innerHTML = isLinkMode()
+        ? "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — a new logbook file opens, pre-filled. &nbsp; <b>3.</b> Check it, then click <b>Propose new file</b> to open a pull request."
+        : "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — a new file opens, often pre-filled. &nbsp; <b>3.</b> Make sure the contents match, then click <b>Propose new file</b> to open a pull request.";
     }
   }
 
@@ -1189,8 +1196,7 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     $("au-kicker").textContent = "New · trip report";
     document.title = "Add a trip report — Tioman Climbing Guidebook";
     // au-title / au-lede are set by applyNewChrome() once the report type is known.
-    ($("au-body") as HTMLTextAreaElement).value =
-      "## The climb\n\nHow the approach went, the conditions, how the pitches felt.\n\n## Beta for the next party\n\nGear that helped, loose or run-out sections, anchor state, timing.\n";
+    ($("au-body") as HTMLTextAreaElement).value = reportKind === "link" ? "" : SITE_BODY;
     finishInit();
   }
 

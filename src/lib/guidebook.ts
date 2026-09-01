@@ -1,5 +1,4 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { externalLogs } from "../data/external-logs";
 
 export type AreaEntry = CollectionEntry<"areas">;
 export type RouteEntry = CollectionEntry<"routes">;
@@ -106,9 +105,6 @@ export const lengthBucketLabels: Record<LengthBucket, string> = {
 
 /* ---------- logbook + trip-report index ---------- */
 
-const routeSlugs = (r: string | string[] | null): string[] =>
-  r == null ? [] : Array.isArray(r) ? r : [r];
-
 export type LogRow = {
   kind: "logbook" | "article" | "film";
   external: boolean;
@@ -133,39 +129,52 @@ export async function getLogRows(): Promise<LogRow[]> {
   const routes = await getCollection("routes");
   const routeNameOf = new Map(routes.map((r) => [r.id, r.data.name]));
 
-  const native = await getCollection("logbook");
-  const nativeRows: LogRow[] = native.map((e) => ({
-    kind: "logbook",
-    external: false,
-    title: e.data.title,
-    href: `/logbook/${e.id}`,
-    people: e.data.party,
-    when: e.data.date,
-    routeIds: [e.data.route],
-    routeName: e.data.routeName,
-    areaId: e.data.area,
-    areaShort: shortOf.get(e.data.area) ?? "",
-    excerpt: stripMd(e.body ?? "").slice(0, 160),
-  }));
+  const entries = await getCollection("logbook");
+  return [...entries]
+    .sort((a, b) => a.data.order - b.data.order)
+    .map((e): LogRow => {
+      const d = e.data;
+      const routeIds = d.route ? [d.route] : [];
+      const routeName =
+        d.routeName || routeIds.map((id) => routeNameOf.get(id) ?? id).join(", ");
+      const shared = {
+        title: d.title,
+        routeIds,
+        routeName,
+        areaId: d.area || null,
+        areaShort: d.area ? (shortOf.get(d.area) ?? "") : "",
+        excerpt: stripMd(e.body ?? "").slice(0, 160),
+      };
+      return d.link
+        ? {
+            ...shared,
+            kind: d.linkType === "video" ? "film" : "article",
+            external: true,
+            href: d.link,
+            people: [d.author, d.source].filter(Boolean).join(" · "),
+            when: d.date,
+          }
+        : {
+            ...shared,
+            kind: "logbook",
+            external: false,
+            href: `/logbook/${e.id}`,
+            people: d.party,
+            when: d.date,
+          };
+    });
+}
 
-  const extRows: LogRow[] = externalLogs.map((l) => {
-    const ids = routeSlugs(l.route);
-    return {
-      kind: l.type === "video" ? "film" : "article",
-      external: true,
-      title: l.title,
-      href: l.url,
-      people: l.author ?? l.source,
-      when: l.year ?? "",
-      routeIds: ids,
-      routeName: ids.map((id) => routeNameOf.get(id) ?? id).join(", "),
-      areaId: l.area,
-      areaShort: l.area ? (shortOf.get(l.area) ?? "") : "",
-      excerpt: l.note ?? "",
-    };
-  });
+/** External trip reports (hosted elsewhere) that mention a route slug. */
+export async function externalLogsForRoute(routeSlug: string): Promise<LogRow[]> {
+  return (await getLogRows()).filter((r) => r.external && r.routeIds.includes(routeSlug));
+}
 
-  return [...nativeRows, ...extRows];
+/** External trip reports tagged to a whole area, with no single route. */
+export async function externalLogsForArea(areaSlug: string): Promise<LogRow[]> {
+  return (await getLogRows()).filter(
+    (r) => r.external && r.routeIds.length === 0 && r.areaId === areaSlug,
+  );
 }
 
 /** routeId → number of trip reports (transcribed + external) that mention it. */

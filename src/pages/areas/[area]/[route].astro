@@ -3,8 +3,14 @@ import { getCollection, render } from "astro:content";
 import Base from "../../../layouts/Base.astro";
 import PhotoStrip from "../../../components/PhotoStrip.astro";
 import EditLink from "../../../components/EditLink.astro";
-import { allRoutePairs, getArea, getRoute, stars, addLogUrl } from "../../../lib/guidebook";
-import { externalForRoute } from "../../../data/external-logs";
+import {
+  allRoutePairs,
+  getArea,
+  getRoute,
+  stars,
+  addLogUrl,
+  externalLogsForRoute,
+} from "../../../lib/guidebook";
 
 export async function getStaticPaths() {
   const pairs = await allRoutePairs();
@@ -18,9 +24,9 @@ const r = route.data;
 const { Content } = await render(route);
 
 const nativeLogs = (await getCollection("logbook"))
-  .filter((e) => e.data.route === route.id)
+  .filter((e) => !e.data.link && e.data.route === route.id)
   .sort((a, b) => a.data.order - b.data.order);
-const external = externalForRoute(route.id);
+const external = await externalLogsForRoute(route.id);
 
 const excerpt = (body: string) =>
   body.replace(/[#*_>`\-]/g, "").replace(/\s+/g, " ").trim().slice(0, 180);
@@ -162,19 +168,18 @@ const excerpt = (body: string) =>
               </a>
             ))}
             {external.map((l) => (
-              <a class="logitem" href={l.url} target="_blank" rel="noopener">
+              <a class="logitem" href={l.href} target="_blank" rel="noopener">
                 <span class="logitem-kind">
-                  {l.type === "video" ? "Film · external link" : "Article · external link"}
+                  {l.kind === "film" ? "Film · external link" : "Article · external link"}
                 </span>
                 <span class="logitem-meta">
                   <span class="logitem-title">{l.title}</span>
                   <span class="logitem-when">
-                    {l.author ? `${l.author} · ` : ""}
-                    {l.source}
-                    {l.year ? ` · ${l.year}` : ""}
+                    {l.people}
+                    {l.when ? ` · ${l.when}` : ""}
                   </span>
                 </span>
-                {l.note && <span class="logitem-excerpt">{l.note}</span>}
+                {l.excerpt && <span class="logitem-excerpt">{l.excerpt}</span>}
               </a>
             ))}
           </div>
