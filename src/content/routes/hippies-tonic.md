@@ -8,7 +8,7 @@ pitches: 3
 firstAscent: "Timothée Guillon & Nicolas Gay"
 year: 2015
 stars: 2
-approach: "As for All Along the Watchtower"
+approach: "As for <a href=\"/areas/bagus-tower/all-along-the-watchtower\">All Along the Watchtower</a> – the Bagus Place road to its end, then up through jungle to the tower. Path overgrown since 2015."
 descent: "Continue up or abseil"
 gear: "Friends C#3 and C#4, slings."
 images: [{"src":"/figures/page-27.jpg","caption":"Hippies Tonic variation start — hand-drawn topo (route book source page 27)."}]

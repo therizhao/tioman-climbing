@@ -8,7 +8,7 @@ pitches: 7
 firstAscent: "Timothée Guillon, Nicolas Gay, Apull Shaiful Amin, Tam Khairudin Haja"
 year: 2015
 stars: 4
-approach: "CP7, then up — shares the approach with Puncak Anak"
+approach: "From Mukut to <strong>CP7</strong>, then turn left and uphill – the same start as <a href=\"/areas/puncak-anak\">Puncak Anak</a> and the Polish Princess cluster. Continue up to the foot of the tower."
 descent: "Abseil left onto Polish Princess"
 gear: "2 racks of cams, set of nuts, 2 × 50 m ropes, lots of slings. Nothing in place."
 pitchList: [{"n":"P7","grade":"IV","length":"—","note":"Tree/jungle traverse to the top"},{"n":"P6","grade":"6a","length":"20 m","note":"Direct up the line above R5"},{"n":"P5","grade":"6a","length":"40 m","note":"Direct into the dyno crack — harder but better pro"},{"n":"P4","grade":"5c","length":"—","note":"Traverse exactly on the loose slab, head right"},{"n":"P3","grade":"5","length":"—","note":"Pockets, slabby runs, flaring crack — creative placements"},{"n":"P2","grade":"5c","length":"—","note":"Use long slings; better belay stance on the lower left"},{"n":"P1","grade":"6a","length":"—","note":"Nice slab, 50–50 protection. Sketchy move 8 m up","crux":true}]

@@ -9,7 +9,7 @@ firstAscent: "Recorded by “Soyot”"
 year: 2010
 stars: 3
 status: "~25 pitches"
-approach: "Levelled path along the base"
+approach: "A levelled path runs along the base of the crag from Nipah beach – the most casual approach in this guidebook. See <a href=\"/areas/puncak-nipah\">Puncak Nipah</a>."
 descent: "Lower off"
 gear: "Quickdraws and a 50 m rope."
 warn: "<strong>Transcribed from a weathered painted board.</strong> Names and a few grades are best-effort readings. This crag badly needs re-surveying on the ground."

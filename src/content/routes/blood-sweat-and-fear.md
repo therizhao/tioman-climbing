@@ -8,7 +8,7 @@ pitches: 7
 firstAscent: "David Kaszlikowski & Jonas Wallin"
 year: 2019
 stars: 4
-approach: "Established path to the summit area"
+approach: "The summit-access path on Batu Sirau (the “Mystery Wall” / Kota Sirau) is established – follow it to the base of the line. Approached from the Nipah side; a second approach from the river landslide is unexplored. See <a href=\"/areas/batu-sirau\">Batu Sirau</a>."
 descent: "Abseil the line"
 gear: "Sport rack plus a light trad selection."
 warn: "<strong>Name unresolved.</strong> The overview map records this route as “Blood Sweat and Tears”. The route page and contents both say “Fear”."

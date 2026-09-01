@@ -8,7 +8,7 @@ pitches: 10
 firstAscent: "Nick Tomlin & Scotty Nelson"
 year: 2000
 stars: 4
-approach: "From the South Tower base"
+approach: "From Mukut via the Nenek Semukut trail to the South Tower base (CP5 / CP7, 1–2 h). The route begins on the main face; <a href=\"/areas/south-tower/ironin-3\">Ironin 3</a> starts just to its right."
 descent: "Abseil, including a 60 m free rappel below pitch 8"
 gear: "Original rack: knifeblades, 2 sets nuts, 2 sets Aliens/TCUs, Camalots, Lost Arrows, hooks, rivet hangers, 60 m ropes."
 extra: {"title":"Re-equipped","body":"Later parties added titanium and stainless glue-ins at most stances; pitches 9 and 10 belay off trees to the summit."}

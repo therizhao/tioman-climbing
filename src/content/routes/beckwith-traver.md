@@ -6,6 +6,8 @@ grade: "5.10 A3"
 length: "400 m"
 firstAscent: "Steve Beckwith & Matt Traver"
 year: "2009 / 2011"
+descent: "No descent notes survive. Expect a long committing rappel down the line, as on the neighbouring South Tower routes."
+approach: "As for the left side of the South Tower: Mukut → Nenek Semukut trail → <strong>CP5</strong>, then the left trail to the base, about 1–2 h. No approach detail specific to this line survives – only a photo topo. It starts up the far left of the face."
 stars: 3
 status: "Date disputed"
 warn: "<strong>Conflicting record.</strong> The source dates this route 2009 in one route list and 2011 in another. Only a photo topo survives — no pitch description."

@@ -60,8 +60,8 @@ const excerpt = (body: string) =>
       <dl class="rp-meta">
         <div><span class="label">First ascent</span><dd>{r.firstAscent}</dd></div>
         <div><span class="label">Year</span><dd>{r.year}</dd></div>
-        <div><span class="label">Approach</span><dd>{r.approach ?? "—"}</dd></div>
-        <div><span class="label">Descent</span><dd>{r.descent ?? "—"}</dd></div>
+        <div><span class="label">Area</span><dd><a href={`/areas/${area.id}`}>{area.data.short}</a></dd></div>
+        <div><span class="label">Descent</span><dd set:html={r.descent ?? "—"} /></div>
       </dl>
 
       {r.images.length > 0 && (
@@ -97,6 +97,12 @@ const excerpt = (body: string) =>
         </div>
 
         <div class="rp-notes">
+          {r.approach && (
+            <div class="note-block">
+              <h4>Approach</h4>
+              <p set:html={r.approach} />
+            </div>
+          )}
           <div class="note-block">
             <h4>{r.kind === "via-ferrata" ? "What it is" : "Character"}</h4>
             <div><Content /></div>

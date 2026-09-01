@@ -8,7 +8,7 @@ pitches: 4
 firstAscent: "Nico, Tim, Appol, Tom"
 year: 2015
 stars: 3
-approach: "From the jungle below the south side"
+approach: "From Nipah beach, up through the jungle below the south side of the tower to the start. The Nipah slabs and this summit tower share the hillside – see <a href=\"/areas/puncak-nipah\">Puncak Nipah</a>."
 descent: "Down-climb or walk off"
 gear: "Natural protection throughout."
 warn: "<strong>No fixed gear and no abseil line.</strong> The first ascensionists wrote “very dangerous but easy — should be better to bolt route.” The difficulty is runouts and looseness, not hard moves."

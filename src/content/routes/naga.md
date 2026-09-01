@@ -8,7 +8,7 @@ pitches: 8
 firstAscent: "Fizi Ishak, Aril Hasril, Dorge @ Apek Langit Biru, Da Liu (Liu Yong)"
 year: 2017
 stars: 4
-approach: "Hillview Lodge → CP7, then left and up. Start at a tree marked “BC”"
+approach: "Simukut Hillview / Hillview Lodge → the Nenek Semukut trail to <strong>CP7</strong>, then left and steeply up. The line starts at a tree marked “BC”. The full route is also visible from <strong>CP9</strong> on the far side of the peak."
 descent: "Walk the summit trail / abseil the line"
 gear: "1 set of cams, 10 alpine draws, 1 × 70 m or 2 × 50 m ropes, 2 L water each."
 warn: "<strong>Loose rock on pitches 3 and 4.</strong> Flagged by both the first and second ascent parties."

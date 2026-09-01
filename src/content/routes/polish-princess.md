@@ -8,7 +8,7 @@ pitches: 8
 firstAscent: "Eliza Kubarska & David Kaszlikowski"
 year: 2011
 stars: 5
-approach: "Tanjung Inn → CP7, then left — 10 min"
+approach: "Tanjung Inn → the trail to <strong>CP7</strong>, then left – about 10 min from the checkpoint to the base. Short by Dragon’s Horns standards."
 descent: "Abseil the line, 1 × 70 m"
 gear: "Full rack of cams to BD #4 plus medium nuts. A 60 m rope climbs it; 70 m makes the abseils cleaner."
 warn: "<strong>Loose rock.</strong> On one descent a rope dislodged a block that hit a party member — hospital trip. Anchors are still partly one bolt plus old tat. Helmets, careful rope management, vigilance."

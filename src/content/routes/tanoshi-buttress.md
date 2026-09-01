@@ -9,7 +9,7 @@ firstAscent: "Cedar Wright & Lucho Rivera"
 year: 2011
 stars: 4
 kind: "climb"
-approach: "From Mukut, following the path of least resistance up the nicest-looking rock"
+approach: "From Mukut on the Nenek Semukut trail towards the towers, then break off for the North Tower and pick “the path of least resistance up the nicest-looking rock” – the buttress has no formally marked approach. See <a href=\"/areas/north-tower\">North Tower</a>."
 descent: "Rappel the line"
 gear: "Double set of cams, one #3 and one #4 Camalot, set of stoppers, lots of runners, hand drill."
 warn: "<strong>R/X protection.</strong> All belays are natural — only a few bolts were placed on rappel. Falls on this route have serious consequences."

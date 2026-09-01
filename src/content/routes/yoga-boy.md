@@ -8,7 +8,7 @@ pitches: 5
 firstAscent: "Michael Söldner, Tam Khairudin Haja, Stuart"
 year: 2019
 stars: 3
-approach: "As for Fever Dreams"
+approach: "As for <a href=\"/areas/mumbar-cliff/fever-dreams\">Fever Dreams</a>: the Nipah–Tunamaya path, then riverbed, cairns and jungle trail to the foot of the cliff."
 descent: "Abseil the line"
 gear: "Trad rack; the route is unbolted."
 pitchList: [{"n":"R5","grade":"4c","length":"—"},{"n":"R4","grade":"4c","length":"—"},{"n":"R3","grade":"4c","length":"—"},{"n":"R2","grade":"4c","length":"—"},{"n":"R1","grade":"5a","length":"—","note":"The hardest climbing, low down","crux":true}]

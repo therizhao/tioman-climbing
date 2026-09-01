@@ -15,7 +15,8 @@ export type ExternalLog = {
   author?: string;
   year?: string;
   url: string;
-  route: string | null;
+  /** route slug, list of route slugs, or null for area-wide / general pieces */
+  route: string | string[] | null;
   area: string | null;
   note?: string;
 };
@@ -37,9 +38,9 @@ export const externalLogs: ExternalLog[] = [
     source: "NUS Mountaineering (nus-mir.com)",
     year: "2026",
     url: "https://nus-mir.com/index.php/2026/04/14/tioman-trip-report/",
-    route: null,
-    area: null,
-    note: "General Dragon’s Horns trip report.",
+    route: ["naga", "damai-sentosa"],
+    area: "south-tower",
+    note: "Dragon’s Horns trip — Naga and Damai Sentosa.",
   },
 
   // --- Headlamps, Clusterfucks and Other Vertical Adventures ---
@@ -120,5 +121,7 @@ export const externalLogs: ExternalLog[] = [
 ];
 
 export function externalForRoute(routeSlug: string): ExternalLog[] {
-  return externalLogs.filter((l) => l.route === routeSlug);
+  return externalLogs.filter((l) =>
+    Array.isArray(l.route) ? l.route.includes(routeSlug) : l.route === routeSlug,
+  );
 }

@@ -8,7 +8,7 @@ pitches: 8
 firstAscent: "Eliza Kubarska & David Kaszlikowski"
 year: 2010
 stars: 4
-approach: "CP7, then left — shares the Polish Princess start"
+approach: "From Mukut to <strong>CP7</strong>, then left – it shares the <a href=\"/areas/south-tower/polish-princess\">Polish Princess</a> start before branching."
 descent: "Abseil; Czech rap anchors on the line"
 gear: "Rack of cams and nuts, 60 m ropes."
 warn: "<strong>Jungle finish.</strong> The upper jungle section has no anchors installed — climb as high as possible before belaying."

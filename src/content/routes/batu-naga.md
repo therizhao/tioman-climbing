@@ -8,7 +8,7 @@ pitches: 8
 firstAscent: "Cedar Wright & Lucho Rivera"
 year: 2011
 stars: 4
-approach: "CP5, take the left trail to the wall, then left along the base past an old basecamp with a water jug and lantern"
+approach: "From Kampung Mukut, take the Nenek Semukut trail to <strong>CP5</strong> and branch onto the left-hand trail to the wall, then follow the base left past an old base camp (a water jug and a lantern mark it). Roughly 1–2 h from the village. See <a href=\"/areas/south-tower\">South Tower</a> for the checkpoint system."
 descent: "Scramble left then right up a gully to the summit ridge trail"
 gear: "Single set of cams to #3 Camalot, extra thin, 10+ slings, stoppers, 6 quickdraws, 2 ropes."
 warn: "<strong>Be prepared for long runouts</strong> on easier ground, on bullet knobs and flakes."

@@ -8,7 +8,7 @@ pitches: 5
 firstAscent: "Nicolas Gay, Timothée Guillon, Tam Khairudin Haja, Apull Shaiful Amin"
 year: 2015
 stars: 3
-approach: "CP7, base camp at the foot"
+approach: "From Mukut to <strong>CP7</strong> (the same branch as <a href=\"/areas/south-tower/freebird\">Freebird</a> and the Polish Princess cluster), then to the base camp at the foot of the tower on its south side."
 descent: "Scramble and abseil"
 gear: "2 × 50 m ropes, 2 racks of cams, nuts, slings."
 pitchList: [{"n":"R5","grade":"—","length":"30 m","note":"Jungle scramble to finish"},{"n":"R4","grade":"6a","length":"20 m","note":"Loose rock nearby"},{"n":"R3","grade":"6a","length":"30 m","note":"Short gully"},{"n":"R2","grade":"5c","length":"25 m","note":"Short steep wall and a small overhang"},{"n":"R1","grade":"5b/c","length":"25 m","note":"Beautiful slab"}]

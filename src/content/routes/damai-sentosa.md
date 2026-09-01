@@ -8,7 +8,7 @@ pitches: 7
 firstAscent: "Stéphanie Bodet, David Kaszlikowski, Dan Liu Yong, Arnaud Petit, Tam Khairudin Haja"
 year: 2013
 stars: 5
-approach: "Tanjung → Simukut hill trail → CP5, then left — 1–2 h"
+approach: "Tanjung (Simukut) → the hill trail past Simukut Hillview → <strong>CP5</strong>, then left along the base – 1–2 h. The face is south / south-west, so start early: parties aim to be past the crux before the sun comes round after midday."
 descent: "Abseil the line — about 2 h"
 gear: "60 m ropes (50 m should be OK). Max 10 bolts per pitch. Small cams 0.2–2; nothing needed above P3 until the last pitch."
 pitchList: [{"n":"top","grade":"scramble","length":"—","note":"Tough scramble to the summit — no grade"},{"n":"P7","grade":"6b","length":"—","note":"Harder than the 6b+ pitch below — the sketchy one"},{"n":"P6","grade":"6b+","length":"—"},{"n":"P5","grade":"6c+","length":"—","note":"Crux well bolted","crux":true},{"n":"P4","grade":"6c","length":"—","note":"Mental crux — big runouts, easy climbing"},{"n":"P3","grade":"6c+","length":"—","note":"Crux well bolted; the 8a variation branches here","crux":true},{"n":"P2","grade":"6b+","length":"—"},{"n":"P1","grade":"6a+","length":"—","note":"Tree-climb start; the right start is harder"}]
