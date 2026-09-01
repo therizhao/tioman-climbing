@@ -10,7 +10,9 @@ scan: "page-71.jpg"
 order: 1
 ---
 
-Freebird Direct — 4th June 2016 — Izzu, Ridzuan, Raouf
+_Freebird Direct — 4th June 2016 — Izzu, Ridzuan, Raouf_
+
+## Pitch by pitch
 
 **1st pitch (6a):** Nice slab with 50–50 protection. Sketchy move about 8 m from the ground. Easy traverse to the anchor.
 
@@ -24,6 +26,8 @@ Freebird Direct — 4th June 2016 — Izzu, Ridzuan, Raouf
 
 **6th pitch (6b):** going up direct on the line above R5 straight up to summit. Around 20 m.
 
-Overall, a nice route for slab aficionados along with beautiful rock quality and OK runouts. Special thanks to Pak Tam and Uncle Sam for the place and food. Credit to B.V., Vertical Adventures and Equipments and those who made it possible.
+## Overall
+
+A nice route for slab aficionados along with beautiful rock quality and OK runouts. Special thanks to Pak Tam and Uncle Sam for the place and food. Credit to B.V., Vertical Adventures and Equipments and those who made it possible.
 
 — Izzu

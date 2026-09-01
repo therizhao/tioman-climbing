@@ -280,11 +280,13 @@ const items: Item[] = [
     });
     updateArrows();
 
-    // drag-to-scroll
+    // drag-to-scroll (mouse only — touch uses native pan-x so vertical swipes
+    // scroll the page)
     let down = false;
     let startX = 0;
     let startScroll = 0;
     track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse") return;
       if ((e.target as HTMLElement).closest("button")) return;
       down = true;
       startX = e.clientX;
@@ -314,10 +316,11 @@ const items: Item[] = [
     const ensureVideo = (card: HTMLElement) => {
       let v = media.get(card);
       if (!v) {
+        const img = card.querySelector<HTMLImageElement>("img.ms-media");
         v = document.createElement("video");
         v.className = "ms-media";
         v.src = card.dataset.src!;
-        v.poster = card.querySelector("img")?.src ?? "";
+        v.poster = img?.src ?? "";
         v.muted = true;
         v.loop = true;
         v.playsInline = true;
@@ -325,6 +328,7 @@ const items: Item[] = [
         v.setAttribute("aria-label", card.querySelector("figcaption")?.textContent ?? "clip");
         v.addEventListener("playing", () => card.classList.add("is-live"), { once: true });
         card.insertBefore(v, card.firstChild);
+        if (img) img.remove(); // drop the poster <img> so it doesn't stack below the video
         media.set(card, v);
       }
       return v;

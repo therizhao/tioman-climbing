@@ -121,11 +121,13 @@ const single = images.length === 1;
       { passive: true },
     );
 
-    // drag to scroll
+    // Mouse drag-to-scroll only. Touch uses the browser's native pan-x, so a
+    // vertical swipe scrolls the page and a horizontal swipe scrolls the strip.
     let down = false;
     let x = 0;
     let sl = 0;
     track.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse") return;
       down = true;
       x = e.clientX;
       sl = track.scrollLeft;

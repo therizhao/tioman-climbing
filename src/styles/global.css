@@ -366,8 +366,11 @@ section {
   }
 }
 .fact {
-  padding: 1.6rem 1.5rem 1.5rem 0;
+  padding: 1.6rem 1.5rem;
   border-right: 1px solid var(--rule);
+}
+.fact:first-child {
+  padding-left: 0;
 }
 .fact:last-child {
   border-right: 0;
@@ -375,6 +378,9 @@ section {
 @media (max-width: 760px) {
   .fact:nth-child(2n) {
     border-right: 0;
+  }
+  .fact:nth-child(odd) {
+    padding-left: 0;
   }
   .fact:nth-child(-n + 2) {
     border-bottom: 1px solid var(--rule);
@@ -531,8 +537,11 @@ section {
   margin-top: clamp(1.5rem, 3vw, 2.25rem);
 }
 .meta-strip div {
-  padding: 1.1rem 1.5rem 1.1rem 0;
+  padding: 1.1rem 1.5rem;
   border-right: 1px solid var(--rule);
+}
+.meta-strip div:first-child {
+  padding-left: 0;
 }
 .meta-strip div:last-child {
   border-right: 0;
@@ -939,10 +948,10 @@ section {
 }
 .transcript {
   font-family: var(--font-serif);
-  font-size: 1.08rem;
+  font-size: 1.1rem;
   line-height: 1.78;
-  font-weight: 300;
-  color: var(--ink-2);
+  font-weight: 400;
+  color: var(--ink);
   max-width: var(--read);
 }
 .transcript p {
@@ -950,7 +959,27 @@ section {
 }
 .transcript strong {
   color: var(--ink);
-  font-weight: 500;
+  font-weight: 600;
+}
+.transcript h2 {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+  margin: 1.75rem 0 0.6rem;
+}
+.transcript h2:first-child {
+  margin-top: 0;
+}
+.transcript ul,
+.transcript ol {
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+}
+.transcript li {
+  margin-bottom: 0.4rem;
 }
 .transcript ul {
   padding-left: 1.2rem;
