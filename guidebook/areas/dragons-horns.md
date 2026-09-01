@@ -191,8 +191,8 @@ pencil sketch):
 |---|---|---|
 | 1 | 6a+ | Tree-climb start; the right-hand start is harder |
 | 2 | 6b+ | |
-| 3 | 6c | Crux well bolted; the *"8a?"* variation branches here |
-| 4 | 6c+ | Mental crux — *"big runouts but easy climbing"* |
+| 3 | 6c+ | Crux well bolted; the *"8a?"* variation branches here |
+| 4 | 6c | Mental crux — *"big runouts but easy climbing"* |
 | 5 | 6c+ | Crux well bolted |
 | 6 | 6b+ | |
 | 7 | 6b | *"Harder than the 6b+ pitch 6 before"* — the *"sketchy 7th pitch"* |

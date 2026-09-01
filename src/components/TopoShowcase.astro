@@ -9,7 +9,17 @@
  * photos in the route book (guidebook/figures).
  */
 
-type Line = { name: string; d: string; lx: number; ly: number; anchor?: "start" | "middle" | "end" };
+type Line = {
+  name: string;
+  grade: string;
+  height: string;
+  /** route slug for a direct link, if it maps to one route */
+  route?: string;
+  d: string;
+  lx: number;
+  ly: number;
+  anchor?: "start" | "middle" | "end";
+};
 type Slide = {
   slug: string;
   key: string;
@@ -35,10 +45,10 @@ const slides: Slide[] = [
     massif:
       "M150 388 L196 300 L246 196 L300 110 L352 44 L378 30 L406 92 L452 210 L496 300 L536 348 L578 372 L636 386 Z",
     lines: [
-      { name: "Beckwith – Traver", d: "M214 380 L212 316 L238 214 L286 128 L344 58 L376 34", lx: 196, ly: 250, anchor: "end" },
-      { name: "Waking Dream", d: "M336 382 L338 300 L346 208 L360 118 L372 52 L378 34", lx: 300, ly: 210, anchor: "end" },
-      { name: "Polish Princess", d: "M414 378 L410 300 L392 214 L378 138 L378 74 L382 40", lx: 440, ly: 300, anchor: "start" },
-      { name: "Damai Sentosa", d: "M482 372 L486 300 L466 224 L440 160 L410 104 L388 52", lx: 512, ly: 250, anchor: "start" },
+      { name: "Beckwith – Traver", grade: "5.10 A3", height: "400 m", route: "beckwith-traver", d: "M214 380 L212 316 L238 214 L286 128 L344 58 L376 34", lx: 196, ly: 250, anchor: "end" },
+      { name: "Waking Dream", grade: "7c+", height: "305 m", route: "waking-dream", d: "M336 382 L338 300 L346 208 L360 118 L372 52 L378 34", lx: 300, ly: 208, anchor: "end" },
+      { name: "Polish Princess", grade: "7b+", height: "270 m", route: "polish-princess", d: "M414 378 L410 300 L392 214 L378 138 L378 74 L382 40", lx: 438, ly: 300, anchor: "start" },
+      { name: "Damai Sentosa", grade: "6c+", height: "280 m", route: "damai-sentosa", d: "M482 372 L486 300 L466 224 L440 160 L410 104 L388 52", lx: 510, ly: 246, anchor: "start" },
     ],
   },
   {
@@ -52,7 +62,7 @@ const slides: Slide[] = [
     massif:
       "M170 388 L214 306 L280 200 L344 118 L408 64 L440 50 L484 96 L544 210 L596 300 L648 356 L706 384 Z",
     lines: [
-      { name: "Tanoshi Buttress", d: "M560 380 L556 300 L536 224 L512 154 L480 96 L444 56", lx: 592, ly: 240, anchor: "start" },
+      { name: "Tanoshi Buttress", grade: "5.10 R/X", height: "270 m", route: "tanoshi-buttress", d: "M560 380 L556 300 L536 224 L512 154 L480 96 L444 56", lx: 592, ly: 238, anchor: "start" },
     ],
   },
   {
@@ -66,9 +76,9 @@ const slides: Slide[] = [
     massif:
       "M120 388 L176 288 L252 178 L344 106 L436 78 L512 96 L572 168 L624 268 L662 340 L690 378 Z",
     lines: [
-      { name: "Yoga Boy", d: "M232 380 L246 330 L268 288 L282 262", lx: 214, ly: 300, anchor: "end" },
-      { name: "Project Grand Central", d: "M312 382 L318 322 L340 250 L366 198", lx: 300, ly: 210, anchor: "end" },
-      { name: "Fever Dreams", d: "M436 382 L448 318 L484 216 L516 122 L526 96", lx: 556, ly: 150, anchor: "start" },
+      { name: "Yoga Boy", grade: "HVS 5a", height: "220 m", route: "yoga-boy", d: "M232 380 L246 330 L268 288 L282 262", lx: 212, ly: 300, anchor: "end" },
+      { name: "Project Grand Central", grade: "E1 5a", height: "400 m", route: "project-grand-central", d: "M312 382 L318 322 L340 250 L366 198", lx: 300, ly: 206, anchor: "end" },
+      { name: "Fever Dreams", grade: "7c", height: "250 m", route: "fever-dreams", d: "M436 382 L448 318 L484 216 L516 122 L526 96", lx: 556, ly: 148, anchor: "start" },
     ],
   },
   {
@@ -82,8 +92,8 @@ const slides: Slide[] = [
     massif:
       "M262 388 L286 276 L316 150 L342 74 L360 56 L404 118 L470 186 L520 224 L558 292 L588 348 L612 388 Z",
     lines: [
-      { name: "second line", d: "M310 380 L306 300 L316 200 L332 106 L346 62", lx: 292, ly: 210, anchor: "end" },
-      { name: "Blood Sweat and Fear", d: "M366 382 L372 320 L406 262 L446 214 L476 176 L488 158", lx: 512, ly: 200, anchor: "start" },
+      { name: "second line", grade: "—", height: "—", d: "M310 380 L306 300 L316 200 L332 106 L346 62", lx: 290, ly: 208, anchor: "end" },
+      { name: "Blood Sweat and Fear", grade: "7b+", height: "155 m", route: "blood-sweat-and-fear", d: "M366 382 L372 320 L406 262 L446 214 L476 176 L488 158", lx: 512, ly: 198, anchor: "start" },
     ],
   },
   {
@@ -99,9 +109,12 @@ const slides: Slide[] = [
     lines: [
       {
         name: "All Along the Watchtower",
+        grade: "6a+",
+        height: "300 m",
+        route: "all-along-the-watchtower",
         d: "M304 380 L306 342 L340 326 L344 296 L372 282 L382 244 L392 200 L400 160 L420 124 L448 96 L466 80",
         lx: 500,
-        ly: 150,
+        ly: 148,
         anchor: "start",
       },
     ],
@@ -117,7 +130,7 @@ const slides: Slide[] = [
     massif:
       "M70 388 L200 350 L330 296 L432 238 L488 196 L516 178 L546 214 L604 268 L668 328 L724 372 L756 388 Z",
     lines: [
-      { name: "Green Line Route", d: "M544 380 L548 320 L536 258 L520 208 L516 184", lx: 476, ly: 240, anchor: "end" },
+      { name: "Green Line Route", grade: "6a", height: "200 m", route: "green-line-route", d: "M544 380 L548 320 L536 258 L520 208 L516 184", lx: 474, ly: 238, anchor: "end" },
     ],
     extra: "M596 378 v-30 M616 380 v-30 M636 380 v-28 M656 381 v-26 M676 382 v-24 M696 383 v-22",
   },
@@ -132,7 +145,7 @@ const slides: Slide[] = [
     massif:
       "M330 388 L352 296 L384 176 L410 96 L428 74 L448 108 L482 224 L510 320 L534 388 Z",
     lines: [
-      { name: "Wind of Change", d: "M398 380 L396 312 L408 224 L420 138 L426 96 L430 78", lx: 462, ly: 200, anchor: "start" },
+      { name: "Wind of Change", grade: "6a", height: "100 m", route: "wind-of-change", d: "M398 380 L396 312 L408 224 L420 138 L426 96 L430 78", lx: 460, ly: 198, anchor: "start" },
     ],
   },
 ];
@@ -152,16 +165,41 @@ const canopy =
               <path class="sc-massif" d={s.massif} />
               <path class="sc-canopy" d={canopy} />
               {s.extra && <path class="sc-ticks" d={s.extra} />}
-              {s.lines.map((ln, li) => (
-                <g class="sc-route" tabindex="0" aria-label={`Route: ${ln.name}`}>
-                  <title>{ln.name}</title>
-                  <path class="sc-hit" d={ln.d} />
-                  <path class="sc-line" d={ln.d} pathLength="100" style={`--d:${0.15 + li * 0.3}s`} />
-                  <text class="sc-line-label" x={ln.lx} y={ln.ly} text-anchor={ln.anchor ?? "middle"}>
-                    {ln.name}
-                  </text>
-                </g>
-              ))}
+              {s.lines.map((ln, li) => {
+                const detail = ln.grade === "—" ? "" : `${ln.grade} · ${ln.height}`;
+                const Tag = ln.route ? "a" : "g";
+                const href = ln.route ? `/areas/${s.slug}/${ln.route}` : undefined;
+                return (
+                  <Tag
+                    class="sc-route"
+                    href={href}
+                    tabindex="0"
+                    aria-label={detail ? `${ln.name}, ${detail}` : ln.name}
+                  >
+                    <title>{detail ? `${ln.name} — ${detail}` : ln.name}</title>
+                    <path class="sc-hit" d={ln.d} />
+                    <path class="sc-line" d={ln.d} pathLength="100" style={`--d:${0.15 + li * 0.3}s`} />
+                    <text
+                      class="sc-line-label"
+                      x={ln.lx}
+                      y={detail ? ln.ly - 9 : ln.ly}
+                      text-anchor={ln.anchor ?? "middle"}
+                    >
+                      {ln.name}
+                    </text>
+                    {detail && (
+                      <text
+                        class="sc-line-sub"
+                        x={ln.lx}
+                        y={ln.ly + 9}
+                        text-anchor={ln.anchor ?? "middle"}
+                      >
+                        {detail}
+                      </text>
+                    )}
+                  </Tag>
+                );
+              })}
             </svg>
             <a class="slide-open" href={`/areas/${s.slug}`} aria-label={`Open ${s.name}`} />
           </div>
@@ -332,11 +370,9 @@ const canopy =
   .sc-route:focus-visible .sc-line {
     stroke-width: 5;
   }
-  .sc-line-label {
+  .sc-line-label,
+  .sc-line-sub {
     font-family: var(--font-mono);
-    font-size: 15px;
-    font-weight: 600;
-    fill: var(--oxide);
     paint-order: stroke;
     stroke: var(--surface);
     stroke-width: 5px;
@@ -345,9 +381,24 @@ const canopy =
     pointer-events: none;
     transition: opacity 0.15s ease;
   }
+  .sc-line-label {
+    font-size: 15px;
+    font-weight: 600;
+    fill: var(--oxide);
+  }
+  .sc-line-sub {
+    font-size: 12px;
+    font-weight: 500;
+    fill: var(--ink-2);
+  }
   .sc-route:hover .sc-line-label,
-  .sc-route:focus-visible .sc-line-label {
+  .sc-route:focus-visible .sc-line-label,
+  .sc-route:hover .sc-line-sub,
+  .sc-route:focus-visible .sc-line-sub {
     opacity: 1;
+  }
+  .sc-route {
+    cursor: pointer;
   }
   .sc-route:focus-visible {
     outline: none;

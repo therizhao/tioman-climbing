@@ -1,8 +1,9 @@
-name: Deploy to Cloudflare Pages
+name: CI · Deploy to Cloudflare Pages
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -10,7 +11,7 @@ permissions:
   deployments: write
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,9 +24,19 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      # Deploys only when the two repo secrets are present.
+      # If you connect the repo in the Cloudflare dashboard instead,
+      # leave the secrets unset and Cloudflare will build on push —
+      # this job then just acts as a build check.
       - name: Publish to Cloudflare Pages
+        if: >-
+          github.event_name != 'pull_request' &&
+          env.CF_TOKEN != '' && env.CF_ACCOUNT != ''
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name tioman-climbing --branch=main
+          command: pages deploy dist --project-name tioman-climbing --branch main

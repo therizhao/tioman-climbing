@@ -87,9 +87,8 @@ export const externalLogs: ExternalLog[] = [
     source: "UKClimbing",
     author: "Steve McClure",
     url: "https://www.ukclimbing.com/articles/features/steve_mcclure_-_trials+tribulations_on_tioman_island-11268",
-    route: "waking-dream",
+    route: "damai-sentosa",
     area: "south-tower",
-    note: "Feature on an attempt to free the Dragon’s Horns. Route association is our best guess — correct us if it’s off.",
   },
 
   // --- Films ---

@@ -32,11 +32,11 @@ npm run dev        # http://localhost:4321
 npm run build      # → dist/
 ```
 
-## Deploy (Cloudflare Pages)
+## Deploy
 
-Static output in `dist/`. Either:
+Static output in `dist/`, hosted on Cloudflare Pages at
+<https://tioman-climbing.pages.dev>. See [`DEPLOY.md`](DEPLOY.md) — either connect
+the repo in the Cloudflare dashboard (no secrets), or add a `CLOUDFLARE_API_TOKEN`
+secret for the GitHub Action. Manual: `npm run deploy`.
 
-- **Dashboard:** connect this repo, framework preset **Astro**, build `npm run build`, output `dist`.
-- **CI:** the workflow in `.github/workflows/deploy.yml` deploys on push to `main` once the
-  repo has `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets.
-- **Manual:** `npm run deploy` (needs `wrangler login` first).
+The `dragonhorns-climb-log.pdf` source scan is stored in **Git LFS**.
