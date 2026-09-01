@@ -296,6 +296,13 @@ const items: Item[] = [
         const img = card.querySelector<HTMLImageElement>("img.ms-media");
         v = document.createElement("video");
         v.className = "ms-media";
+        // scoped component styles don't reach a JS-created element, so pin the
+        // box here — every clip fills the same 3:4 card as the photos
+        v.style.width = "100%";
+        v.style.aspectRatio = "3 / 4";
+        v.style.objectFit = "cover";
+        v.style.display = "block";
+        v.style.borderRadius = "3px";
         v.src = card.dataset.src!;
         v.poster = img?.src ?? "";
         v.muted = true;

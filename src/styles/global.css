@@ -542,7 +542,7 @@ section {
 
 .meta-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: 1fr 1fr;
   border-bottom: 1px solid var(--rule);
   margin-top: clamp(1.5rem, 3vw, 2.25rem);
 }
@@ -550,11 +550,29 @@ section {
   padding: 1.1rem 1.5rem;
   border-right: 1px solid var(--rule);
 }
-.meta-strip div:first-child {
+/* the first cell of every row lines up with the rest of the page content */
+.meta-strip div:nth-child(2n + 1) {
   padding-left: 0;
 }
-.meta-strip div:last-child {
+.meta-strip div:nth-child(2n) {
   border-right: 0;
+}
+@media (min-width: 720px) {
+  .meta-strip {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .meta-strip div:nth-child(2n + 1) {
+    padding-left: 1.5rem;
+  }
+  .meta-strip div:nth-child(2n) {
+    border-right: 1px solid var(--rule);
+  }
+  .meta-strip div:first-child {
+    padding-left: 0;
+  }
+  .meta-strip div:last-child {
+    border-right: 0;
+  }
 }
 .meta-strip dd {
   margin: 0.4rem 0 0;
