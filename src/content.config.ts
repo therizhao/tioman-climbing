@@ -76,10 +76,10 @@ const logbook = defineCollection({
     route: z.string(),
     routeName: z.string(),
     area: z.string(),
-    sourcePage: z.number(),
-    scan: z.string(),
+    sourcePage: z.number().default(0),
+    scan: z.string().default(""),
     scans: z.array(z.object({ src: z.string(), caption: z.string().default("") })).default([]),
-    order: z.number().default(0),
+    order: z.number().default(5),
   }),
 });
 

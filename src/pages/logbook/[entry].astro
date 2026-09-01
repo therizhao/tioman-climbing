@@ -17,7 +17,14 @@ const area = await getArea(entry.data.area);
 const scans =
   entry.data.scans.length > 0
     ? entry.data.scans
-    : [{ src: `/logbook-scans/${entry.data.scan}`, caption: `Route book, source page ${entry.data.sourcePage}` }];
+    : entry.data.scan
+      ? [
+          {
+            src: `/logbook-scans/${entry.data.scan}`,
+            caption: `Route book, source page ${entry.data.sourcePage}`,
+          },
+        ]
+      : [];
 ---
 
 <Base title={entry.data.title} description={`${entry.data.party} · ${entry.data.date}`} section="/logbook">
@@ -51,20 +58,24 @@ const scans =
       </p>
     </div>
 
-    <div class="logpage">
+    <div class={scans.length ? "logpage" : "logpage logpage-noscan"}>
       <div class="transcript">
         <Content />
       </div>
 
-      <div class="scan-panel-wrap">
-        <PhotoStrip images={scans} label="Original page" />
-      </div>
+      {
+        scans.length > 0 && (
+          <div class="scan-panel-wrap">
+            <PhotoStrip images={scans} label="Original page" />
+          </div>
+        )
+      }
     </div>
 
     <p class="notice" style="margin-top:2.5rem;max-width:var(--read)">
-      Transcribed for this guidebook; the transcription may contain errors — check it against the
-      scan. This is a climber's personal writing, reproduced for the record. To have it credited
-      differently or removed, email <a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a>.
+      A climber's personal trip report, reproduced for the record. Transcriptions may contain
+      errors — check against the scan where there is one. To have anything credited differently
+      or removed, email <a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a>.
       {
         area && (
           <>

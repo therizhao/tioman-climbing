@@ -109,3 +109,15 @@ export const REPO = "https://github.com/therizhao/tioman-climbing";
 export function editHelpUrl(path: string, label: string): string {
   return `/edit-help/?path=${encodeURIComponent(path)}&label=${encodeURIComponent(label)}`;
 }
+
+/** Link to the helper that walks a contributor through adding a new logbook entry. */
+export function addLogUrl(routeSlug: string, routeName: string, areaSlug: string): string {
+  const p = new URLSearchParams({
+    new: "logbook",
+    route: routeSlug,
+    routeName,
+    area: areaSlug,
+    label: routeName,
+  });
+  return `/edit-help/?${p.toString()}`;
+}

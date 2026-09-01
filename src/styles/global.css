@@ -175,6 +175,16 @@ video {
   color: var(--ink);
   border-color: var(--surface);
 }
+.btn.btn-sm {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.82rem;
+}
+.sec-head.log-head {
+  justify-content: space-between;
+}
+.sec-head.log-head p {
+  margin-left: 0;
+}
 
 /* ---------- masthead ---------- */
 .masthead {
@@ -945,6 +955,9 @@ section {
   .logpage {
     grid-template-columns: 1fr;
   }
+}
+.logpage-noscan {
+  display: block;
 }
 .transcript {
   font-family: var(--font-serif);

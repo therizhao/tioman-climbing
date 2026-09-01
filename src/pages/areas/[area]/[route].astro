@@ -3,7 +3,7 @@ import { getCollection, render } from "astro:content";
 import Base from "../../../layouts/Base.astro";
 import PhotoStrip from "../../../components/PhotoStrip.astro";
 import EditLink from "../../../components/EditLink.astro";
-import { allRoutePairs, getArea, getRoute, stars } from "../../../lib/guidebook";
+import { allRoutePairs, getArea, getRoute, stars, addLogUrl } from "../../../lib/guidebook";
 import { externalForRoute } from "../../../data/external-logs";
 
 export async function getStaticPaths() {
@@ -128,13 +128,20 @@ const excerpt = (body: string) =>
     </article>
   </div>
 
-  {
-    (nativeLogs.length > 0 || external.length > 0) && (
-      <section style="padding-bottom:0">
-        <div class="wrap">
-          <div class="sec-head" style="margin-bottom:1.25rem">
-            <h2 style="font-size:var(--step-2)">Logbook &amp; trip reports</h2>
-          </div>
+  <section style="padding-bottom:0">
+    <div class="wrap">
+      <div class="sec-head log-head" style="margin-bottom:1.25rem">
+        <h2 style="font-size:var(--step-2)">Logbook &amp; trip reports</h2>
+        <a class="btn ghost btn-sm" href={addLogUrl(route.id, r.name, area.id)}>
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          Add a trip report
+        </a>
+      </div>
+
+      {
+        nativeLogs.length > 0 || external.length > 0 ? (
           <div class="loglist">
             {nativeLogs.map((e) => (
               <a class="logitem" href={`/logbook/${e.id}`}>
@@ -165,10 +172,17 @@ const excerpt = (body: string) =>
               </a>
             ))}
           </div>
-        </div>
-      </section>
-    )
-  }
+        ) : (
+          <div class="empty">
+            <p>
+              No trip reports for this route yet. Climbed it? <a href={addLogUrl(route.id, r.name, area.id)}>Add yours</a> — beta,
+              conditions, hazards, whatever's useful to the next party.
+            </p>
+          </div>
+        )
+      }
+    </div>
+  </section>
 
   <div style="height:clamp(2rem,5vw,4rem)"></div>
 </Base>

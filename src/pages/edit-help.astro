@@ -4,19 +4,19 @@ import { REPO } from "../lib/guidebook";
 ---
 
 <Base
-  title="Edit this page"
-  description="How to propose an edit to the Tioman climbing guidebook through GitHub."
+  title="Contribute an edit"
+  description="How to edit the Tioman climbing guidebook, or add a trip report, through GitHub."
   section="/"
 >
   <div class="wrap">
     <nav class="crumb" aria-label="Breadcrumb">
-      <a href="/#areas">Guidebook</a><span>/</span><span>Edit</span>
+      <a href="/#areas">Guidebook</a><span>/</span><span>Contribute</span>
     </nav>
 
     <div class="detail-hero" style="border-bottom:0">
-      <p class="label">Contribute an edit</p>
+      <p class="label">Contribute</p>
       <h1 id="eh-title">Edit this page on GitHub</h1>
-      <p class="lede">
+      <p class="lede" id="eh-lede">
         The whole guidebook is open. You can fix a grade, a name, an approach or add detail
         yourself — the change goes to a maintainer to review before it's published.
       </p>
@@ -36,10 +36,10 @@ import { REPO } from "../lib/guidebook";
         </div>
         <div class="panel">
           <span class="label">What happens</span>
-          <h3>Your edit becomes a suggestion</h3>
+          <h3>Your change becomes a suggestion</h3>
           <ol class="eh-steps">
-            <li>GitHub makes <strong>your own copy</strong> of the file (a "fork") — you can't break anything.</li>
-            <li>You edit the text in the browser and click <strong>Propose changes</strong>.</li>
+            <li>GitHub makes <strong>your own copy</strong> — you can't break anything.</li>
+            <li>You edit / write in the browser and click <strong>Propose changes</strong>.</li>
             <li>That opens a <strong>pull request</strong> — a suggested change.</li>
             <li>A maintainer reviews it, and it goes live once merged.</li>
           </ol>
@@ -47,30 +47,29 @@ import { REPO } from "../lib/guidebook";
       </div>
 
       <div class="panel">
-        <span class="label">How the file is laid out</span>
-        <h3>Frontmatter, then prose</h3>
-        <p>
+        <span class="label" id="eh-code-label">How the file is laid out</span>
+        <h3 id="eh-code-h">Frontmatter, then prose</h3>
+        <p id="eh-code-intro">
           Every route and area is one Markdown file. At the top, between two <code>---</code>
           lines, is the <strong>frontmatter</strong> — all the structured fields. Below it is the
           descriptive paragraph.
         </p>
-        <pre class="eh-code"><code>---
+        <pre class="eh-code"><code id="eh-code">---
 name: "Polish Princess"
 grade: "7b+"
 length: "270 m"
 pitches: 8
-firstAscent: "E. Kubarska & D. Kaszlikowski"
+firstAscent: "E. Kubarska &amp; D. Kaszlikowski"
 year: 2011
 stars: 5
-approach: "Tanjung Inn → CP7, then left — 10 min"
-descent: "Abseil the line, 1 × 70 m"
-gear: "Full rack of cams to BD #4…"
+approach: "Tanjung Inn &rarr; CP7, then left &mdash; 10 min"
+descent: "Abseil the line, 1 &times; 70 m"
+gear: "Full rack of cams to BD #4&hellip;"
 ---
 
 The first fully prepared free line to the
-South Tower summit. Uses Sam Sam as its
-approach…</code></pre>
-        <ul class="eh-fields">
+South Tower summit&hellip;</code></pre>
+        <ul class="eh-fields" id="eh-fields">
           <li><code>grade</code> — keep the route's own system (French / UK / YDS). No conversions.</li>
           <li><code>length</code>, <code>pitches</code> — <code>"270 m"</code>, a number, or leave as-is.</li>
           <li><code>stars</code> — 0–5, and cite where the rating comes from in the prose.</li>
@@ -86,8 +85,8 @@ approach…</code></pre>
     </div>
 
     <div class="eh-go">
-      <a class="btn" id="eh-continue" href={`${REPO}/edit/main`}>
-        Continue to the GitHub editor
+      <a class="btn" id="eh-continue" href={`${REPO}`}>
+        Continue to GitHub
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path
             d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
@@ -97,7 +96,7 @@ approach…</code></pre>
             stroke-linejoin="round"></path>
         </svg>
       </a>
-      <a class="btn ghost" href="/contribute">Or send a correction by email</a>
+      <a class="btn ghost" href="/contribute">Or send it by email</a>
     </div>
   </div>
 
@@ -138,6 +137,8 @@ approach…</code></pre>
   }
   .eh-code code {
     color: inherit;
+    background: none;
+    padding: 0;
   }
   code {
     font-family: var(--font-mono);
@@ -157,20 +158,68 @@ approach…</code></pre>
 </style>
 
 <script>
-  const params = new URLSearchParams(location.search);
-  const path = params.get("path");
-  const label = params.get("label");
   const repo = "https://github.com/therizhao/tioman-climbing";
+  const params = new URLSearchParams(location.search);
+  const label = params.get("label");
+  const $ = (id: string) => document.getElementById(id)!;
 
-  if (label) {
-    document.getElementById("eh-title")!.textContent = `Edit "${label}"`;
-    document.title = `Edit ${label} — Tioman Climbing Guidebook`;
-  }
-  if (path) {
-    document.getElementById("eh-file")!.textContent = path;
-    (document.getElementById("eh-continue") as HTMLAnchorElement).href =
-      `${repo}/edit/main/${path}`;
+  if (params.get("new") === "logbook") {
+    // ---- add a trip report ----
+    const route = params.get("route") ?? "route";
+    const routeName = params.get("routeName") ?? "the route";
+    const area = params.get("area") ?? "";
+
+    $("eh-title").textContent = `Add a trip report — ${routeName}`;
+    document.title = `Add a trip report — Tioman Climbing Guidebook`;
+    $("eh-lede").textContent =
+      `Climbed ${routeName}? Add your report — approach beta, conditions, pitch notes, gear that helped, hazards, thanks. It goes to a maintainer to review.`;
+    $("eh-file").remove();
+
+    $("eh-code-label").textContent = "The template";
+    $("eh-code-h").textContent = "A new logbook file";
+    $("eh-code-intro").textContent =
+      "GitHub will open a new file with this already filled in. Change the title, party and date, then write your report below the second --- line.";
+
+    const template = `---
+title: "${routeName} — a line about your trip"
+party: "Your name (and partners)"
+date: "Month YYYY"
+route: "${route}"
+routeName: "${routeName}"
+area: "${area}"
+order: 5
+---
+
+## Your report
+
+Approach, conditions, how the pitches felt, gear that helped, anything
+loose or run-out to watch for, and thanks. Write it however you like.
+`;
+    $("eh-code").textContent = template;
+
+    $("eh-fields").innerHTML = `
+      <li>Keep <code>route</code>, <code>routeName</code> and <code>area</code> as they are — that links your report to the route.</li>
+      <li><code>date</code> is free text — "April 2024", "c. 2015", whatever you know.</li>
+      <li>Have a photo of a logbook page or a topo? Mention it in the pull request and we'll add it.</li>
+      <li>Filename: something like <code>${route}-yourname.md</code>.</li>`;
+
+    const url = new URL(`${repo}/new/main/src/content/logbook`);
+    url.searchParams.set("filename", `${route}-report.md`);
+    url.searchParams.set("value", template);
+    ($("eh-continue") as HTMLAnchorElement).href = url.toString();
+    $("eh-continue").firstChild!.textContent = "Continue to GitHub — new report ";
   } else {
-    document.getElementById("eh-file")!.remove();
+    // ---- edit an existing file ----
+    const path = params.get("path");
+    if (label) {
+      $("eh-title").textContent = `Edit "${label}"`;
+      document.title = `Edit ${label} — Tioman Climbing Guidebook`;
+    }
+    if (path) {
+      $("eh-file").textContent = path;
+      ($("eh-continue") as HTMLAnchorElement).href = `${repo}/edit/main/${path}`;
+    } else {
+      $("eh-file").remove();
+    }
   }
 </script>
