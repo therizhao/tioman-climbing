@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from "astro:content";
+import { externalLogs } from "../data/external-logs";
 
 export type AreaEntry = CollectionEntry<"areas">;
 export type RouteEntry = CollectionEntry<"routes">;
@@ -102,6 +103,85 @@ export const lengthBucketLabels: Record<LengthBucket, string> = {
   "280-360": "280–360 m",
   "over-360": "Over 360 m",
 };
+
+/* ---------- logbook + trip-report index ---------- */
+
+const routeSlugs = (r: string | string[] | null): string[] =>
+  r == null ? [] : Array.isArray(r) ? r : [r];
+
+export type LogRow = {
+  kind: "logbook" | "article" | "film";
+  external: boolean;
+  title: string;
+  href: string;
+  people: string; // party or author
+  when: string; // date or year, as recorded
+  routeIds: string[];
+  routeName: string; // the routes this report covers, joined for display
+  areaId: string | null;
+  areaShort: string;
+  excerpt: string;
+};
+
+const stripMd = (s: string) =>
+  s.replace(/[#*_>`\-]/g, "").replace(/\s+/g, " ").trim();
+
+/** Every trip report — transcribed Mukut pages and external links — as one list. */
+export async function getLogRows(): Promise<LogRow[]> {
+  const areas = await getAreas();
+  const shortOf = new Map(areas.map((a) => [a.id, a.data.short]));
+  const routes = await getCollection("routes");
+  const routeNameOf = new Map(routes.map((r) => [r.id, r.data.name]));
+
+  const native = await getCollection("logbook");
+  const nativeRows: LogRow[] = native.map((e) => ({
+    kind: "logbook",
+    external: false,
+    title: e.data.title,
+    href: `/logbook/${e.id}`,
+    people: e.data.party,
+    when: e.data.date,
+    routeIds: [e.data.route],
+    routeName: e.data.routeName,
+    areaId: e.data.area,
+    areaShort: shortOf.get(e.data.area) ?? "",
+    excerpt: stripMd(e.body ?? "").slice(0, 160),
+  }));
+
+  const extRows: LogRow[] = externalLogs.map((l) => {
+    const ids = routeSlugs(l.route);
+    return {
+      kind: l.type === "video" ? "film" : "article",
+      external: true,
+      title: l.title,
+      href: l.url,
+      people: l.author ?? l.source,
+      when: l.year ?? "",
+      routeIds: ids,
+      routeName: ids.map((id) => routeNameOf.get(id) ?? id).join(", "),
+      areaId: l.area,
+      areaShort: l.area ? (shortOf.get(l.area) ?? "") : "",
+      excerpt: l.note ?? "",
+    };
+  });
+
+  return [...nativeRows, ...extRows];
+}
+
+/** routeId → number of trip reports (transcribed + external) that mention it. */
+export async function getLogCounts(): Promise<Map<string, { native: number; external: number }>> {
+  const rows = await getLogRows();
+  const m = new Map<string, { native: number; external: number }>();
+  for (const row of rows) {
+    for (const id of row.routeIds) {
+      const cur = m.get(id) ?? { native: 0, external: 0 };
+      if (row.external) cur.external++;
+      else cur.native++;
+      m.set(id, cur);
+    }
+  }
+  return m;
+}
 
 /* ---------- GitHub edit links ---------- */
 export const REPO = "https://github.com/therizhao/tioman-climbing";

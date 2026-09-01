@@ -1,19 +1,34 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { getCollection } from "astro:content";
-import { externalLogs } from "../../data/external-logs";
+import { getAreas, getLogRows } from "../../lib/guidebook";
 
-const native = (await getCollection("logbook")).sort((a, b) =>
-  a.data.date.localeCompare(b.data.date),
-);
+const rows = await getLogRows();
+const areas = await getAreas();
 
-const excerpt = (body: string) =>
-  body.replace(/[#*_>`\-]/g, "").replace(/\s+/g, " ").trim().slice(0, 180);
+// native entries first (as recorded), then external, newest-ish by trailing year
+const kindRank = { logbook: 0, article: 1, film: 2 } as const;
+rows.sort((a, b) => {
+  if (kindRank[a.kind] !== kindRank[b.kind]) return kindRank[a.kind] - kindRank[b.kind];
+  return (b.when.match(/\d{4}/)?.[0] ?? "").localeCompare(a.when.match(/\d{4}/)?.[0] ?? "");
+});
+
+const routeOptions = [
+  ...new Map(rows.flatMap((r) => r.routeIds.map((id, i) => [id, r.routeName.split(", ")[i] ?? id]))).entries(),
+].sort((a, b) => a[1].localeCompare(b[1]));
+
+const areaOptions = areas
+  .filter((a) => rows.some((r) => r.areaId === a.id))
+  .map((a) => [a.id, a.data.short] as const);
+
+const total = rows.length;
+const nativeCount = rows.filter((r) => !r.external).length;
+
+const kindLabel = { logbook: "Mukut logbook", article: "Article", film: "Film" };
 ---
 
 <Base
   title="Logbook"
-  description="Trip reports for Tioman climbing — transcribed pages from the Mukut logbook, plus links to reports and films elsewhere."
+  description="Every Tioman climbing trip report — transcribed pages from the Mukut logbook, plus reports and films hosted elsewhere. Filter by route, party or type."
   section="/logbook"
 >
   <div class="wrap">
@@ -28,59 +43,293 @@ const excerpt = (body: string) =>
       <h1>The logbook</h1>
       <p class="lede">
         For twenty years the only record of these climbs was a paper notebook kept at Mukut.
-        Every party wrote in it. Below: the pages transcribed for this guidebook, and links to
-        reports and films that live on their authors' own sites.
+        Every party wrote in it. Here are the {nativeCount} pages transcribed for this guidebook,
+        alongside reports and films that live on their authors' own sites — {total} in all.
+        Filter by route, party or type.
       </p>
     </div>
   </div>
 
   <section>
     <div class="wrap">
-      <div class="sec-head">
-        <h2 style="font-size:var(--step-2)">From the Mukut logbook</h2>
-        <p>Full transcriptions, each with the original scanned page.</p>
-      </div>
-      <div class="loglist">
+      <form class="lf-filters" id="lf-filters" role="search" aria-label="Filter trip reports">
+        <label class="lf-field lf-search">
+          <span class="label">Search</span>
+          <input type="search" id="lf-q" placeholder="Title, party or ascensionist…" autocomplete="off" />
+        </label>
+        <label class="lf-field">
+          <span class="label">Route</span>
+          <select id="lf-route">
+            <option value="">All routes</option>
+            {routeOptions.map(([id, name]) => <option value={id}>{name}</option>)}
+          </select>
+        </label>
+        <label class="lf-field">
+          <span class="label">Area</span>
+          <select id="lf-area">
+            <option value="">All areas</option>
+            {areaOptions.map(([id, short]) => <option value={id}>{short}</option>)}
+          </select>
+        </label>
+        <label class="lf-field">
+          <span class="label">Type</span>
+          <select id="lf-kind">
+            <option value="">Any type</option>
+            <option value="logbook">Mukut logbook</option>
+            <option value="article">Article</option>
+            <option value="film">Film</option>
+          </select>
+        </label>
+        <button type="button" class="btn ghost" id="lf-clear">Clear</button>
+      </form>
+
+      <p class="lf-count"><span id="lf-shown">{total}</span> of {total} reports</p>
+
+      <div class="logtable" id="lf-list">
+        <div class="logtable-head">
+          <span class="label">Report</span>
+          <span class="label">Type</span>
+          <span class="label">Route</span>
+          <span class="label">Party / author</span>
+          <span class="label">When</span>
+        </div>
         {
-          native.map((e) => (
-            <a class="logitem" href={`/logbook/${e.id}`}>
-              <span class="logitem-kind">
-                {e.data.routeName} · source page {e.data.sourcePage}
-              </span>
-              <span class="logitem-meta">
-                <span class="logitem-title">{e.data.title}</span>
-                <span class="logitem-when">
-                  {e.data.party} · {e.data.date}
+          rows.map((r) => {
+            return (
+              <a
+                class="logrow lf-row"
+                href={r.href}
+                target={r.external ? "_blank" : undefined}
+                rel={r.external ? "noopener" : undefined}
+                data-q={`${r.title} ${r.people} ${r.routeName}`.toLowerCase()}
+                data-routes={r.routeIds.join(" ")}
+                data-area={r.areaId ?? ""}
+                data-kind={r.kind}
+              >
+                <span class="lr-report">
+                  <span class="lr-title">{r.title}</span>
+                  {r.excerpt && <span class="lr-excerpt">{r.excerpt}</span>}
                 </span>
-              </span>
-              <span class="logitem-excerpt">{excerpt(e.body ?? "")}</span>
-            </a>
-          ))
+                <span class={`lr-kind lr-kind-${r.kind}`}>
+                  {kindLabel[r.kind]}
+                  {r.external && <span class="lr-ext">↗</span>}
+                </span>
+                <span class="lr-route">{r.routeName || "—"}</span>
+                <span class="lr-people">{r.people}</span>
+                <span class="lr-when">{r.when || "—"}</span>
+              </a>
+            );
+          })
         }
+        <p class="lf-empty" id="lf-empty" hidden>No trip reports match those filters.</p>
       </div>
 
-      <div class="sec-head" style="margin-top:4rem">
-        <h2 style="font-size:var(--step-2)">Elsewhere on the web</h2>
-        <p>Reports and films hosted by other climbers. External links.</p>
-      </div>
-      <div class="loglist">
-        {
-          externalLogs.map((l) => (
-            <a class="logitem" href={l.url} target="_blank" rel="noopener">
-              <span class="logitem-kind">{l.type === "video" ? "Film · external link" : "Article · external link"}</span>
-              <span class="logitem-meta">
-                <span class="logitem-title">{l.title}</span>
-                <span class="logitem-when">
-                  {l.author ? `${l.author} · ` : ""}
-                  {l.source}
-                  {l.year ? ` · ${l.year}` : ""}
-                </span>
-              </span>
-              {l.note && <span class="logitem-excerpt">{l.note}</span>}
-            </a>
-          ))
-        }
-      </div>
+      <p class="lf-foot note">
+        Climbed something here? <a href="/edit-help/">Add a trip report</a> — it takes a GitHub
+        account and a few minutes.
+      </p>
     </div>
   </section>
+
+  <div style="height:clamp(2rem,5vw,4rem)"></div>
 </Base>
+
+<style>
+  .lf-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  @media (max-width: 820px) {
+    .lf-filters {
+      grid-template-columns: 1fr 1fr;
+    }
+    .lf-search {
+      grid-column: 1 / -1;
+    }
+    #lf-clear {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+  .lf-field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .lf-field input,
+  .lf-field select {
+    font: inherit;
+    font-size: 0.92rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .lf-field input:focus,
+  .lf-field select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .lf-count {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--mid);
+    margin-bottom: 0.5rem;
+  }
+
+  .logtable {
+    display: grid;
+  }
+  .logtable-head,
+  .logrow {
+    display: grid;
+    grid-template-columns: minmax(0, 2.4fr) 8.5rem minmax(0, 1fr) minmax(0, 1.3fr) 6rem;
+    gap: 1rem;
+  }
+  .logtable-head {
+    padding: 1rem 0.75rem 1rem 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .logrow {
+    align-items: baseline;
+    padding: 1.1rem 0.75rem 1.1rem 0;
+    border-bottom: 1px solid var(--rule);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.18s;
+  }
+  .logrow:hover {
+    background: var(--surface);
+  }
+  .logrow:hover .lr-title {
+    color: var(--accent);
+  }
+  .lr-title {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    display: block;
+    transition: color 0.18s;
+  }
+  .lr-excerpt {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--mid);
+  }
+  .lr-kind {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .lr-kind-logbook {
+    color: var(--oxide);
+  }
+  .lr-ext {
+    margin-left: 0.25rem;
+  }
+  .lr-route {
+    font-size: 0.86rem;
+    color: var(--ink-2);
+  }
+  .lr-people {
+    font-size: 0.84rem;
+    color: var(--mid);
+  }
+  .lr-when {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8rem;
+    color: var(--mid);
+  }
+  .lf-row[hidden] {
+    display: none;
+  }
+  .lf-empty {
+    padding: 2.5rem 0;
+    text-align: center;
+    color: var(--mid);
+    font-size: 0.92rem;
+  }
+  .lf-foot {
+    margin-top: 1.75rem;
+  }
+
+  @media (max-width: 860px) {
+    .logtable-head {
+      display: none;
+    }
+    .logrow {
+      grid-template-columns: 1fr;
+      row-gap: 0.35rem;
+    }
+    .lr-kind,
+    .lr-route,
+    .lr-people,
+    .lr-when {
+      font-size: 0.8rem;
+    }
+    .lr-route::before {
+      content: "Route: ";
+      color: var(--mid);
+    }
+  }
+</style>
+
+<script>
+  const form = document.getElementById("lf-filters");
+  if (form) {
+    const q = document.getElementById("lf-q") as HTMLInputElement;
+    const routeSel = document.getElementById("lf-route") as HTMLSelectElement;
+    const areaSel = document.getElementById("lf-area") as HTMLSelectElement;
+    const kindSel = document.getElementById("lf-kind") as HTMLSelectElement;
+    const clearBtn = document.getElementById("lf-clear") as HTMLButtonElement;
+    const rows = Array.from(document.querySelectorAll<HTMLElement>(".lf-row"));
+    const shown = document.getElementById("lf-shown")!;
+    const empty = document.getElementById("lf-empty") as HTMLElement;
+
+    const params = new URLSearchParams(location.search);
+    if (params.get("route")) routeSel.value = params.get("route")!;
+    if (params.get("area")) areaSel.value = params.get("area")!;
+
+    const apply = () => {
+      const term = q.value.trim().toLowerCase();
+      const route = routeSel.value;
+      const area = areaSel.value;
+      const kind = kindSel.value;
+      let count = 0;
+      rows.forEach((row) => {
+        const hit =
+          (!term || row.dataset.q!.includes(term)) &&
+          (!route || (row.dataset.routes || "").split(" ").includes(route)) &&
+          (!area || row.dataset.area === area) &&
+          (!kind || row.dataset.kind === kind);
+        row.hidden = !hit;
+        if (hit) count++;
+      });
+      shown.textContent = String(count);
+      empty.hidden = count !== 0;
+      const url = new URL(location.href);
+      route ? url.searchParams.set("route", route) : url.searchParams.delete("route");
+      area ? url.searchParams.set("area", area) : url.searchParams.delete("area");
+      history.replaceState(null, "", url);
+    };
+
+    [q, routeSel, areaSel, kindSel].forEach((el) => el.addEventListener("input", apply));
+    clearBtn.addEventListener("click", () => {
+      q.value = "";
+      routeSel.value = "";
+      areaSel.value = "";
+      kindSel.value = "";
+      apply();
+    });
+    apply();
+  }
+</script>

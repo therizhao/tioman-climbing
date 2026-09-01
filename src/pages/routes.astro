@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import {
   getAreas,
   allRoutePairs,
+  getLogCounts,
   gradeBand,
   lengthBucket,
   lengthBucketLabels,
@@ -13,6 +14,11 @@ import {
 
 const areas = await getAreas();
 const pairs = await allRoutePairs();
+const logCounts = await getLogCounts();
+const countFor = (id: string) => {
+  const c = logCounts.get(id);
+  return c ? c.native + c.external : 0;
+};
 
 const bandOrder: GradeBand[] = [
   "Introductory",
@@ -77,6 +83,14 @@ const total = pairs.length;
           {usedBands.map((b) => <option value={b}>{b}</option>)}
         </select>
       </label>
+      <label class="rf-field">
+        <span class="label">Trip reports</span>
+        <select id="rf-reports">
+          <option value="">Any</option>
+          <option value="has">Has a trip report</option>
+          <option value="none">No report yet</option>
+        </select>
+      </label>
       <button type="button" class="btn ghost" id="rf-clear">Clear</button>
     </form>
 
@@ -88,11 +102,14 @@ const total = pairs.length;
         <span class="label">Grade</span>
         <span class="label">Length</span>
         <span class="label">Pitches</span>
+        <span class="label">Reports</span>
         <span class="label">First ascent</span>
         <span></span>
       </div>
       {
-        pairs.map(({ area, route }) => (
+        pairs.map(({ area, route }) => {
+          const reports = countFor(route.id);
+          return (
           <a
             class="route-row rf-row"
             href={`/areas/${area.id}/${route.id}`}
@@ -101,6 +118,7 @@ const total = pairs.length;
             data-area={area.id}
             data-band={gradeBand(route.data.grade)}
             data-length={lengthBucket(route.data) ?? ""}
+            data-reports={reports}
           >
             <span>
               <span class="rt-name">{route.data.name}</span>
@@ -110,6 +128,9 @@ const total = pairs.length;
             <span class="grade">{route.data.grade}</span>
             <span class="rt-len">{route.data.length}</span>
             <span class="rt-p">{route.data.pitches ?? "—"}</span>
+            <span class="rt-rep" data-reports-label>
+              {reports > 0 ? `${reports} report${reports > 1 ? "s" : ""}` : "—"}
+            </span>
             <span class="rt-fa">{route.data.firstAscent}</span>
             <svg class="go" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path
@@ -121,7 +142,8 @@ const total = pairs.length;
               />
             </svg>
           </a>
-        ))
+          );
+        })
       }
       <p class="rf-empty" id="rf-empty" hidden>No routes match those filters.</p>
     </div>
@@ -133,7 +155,7 @@ const total = pairs.length;
 <style>
   .rf-filters {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
     gap: 1rem;
     align-items: end;
     margin: clamp(1.5rem, 3vw, 2.25rem) 0 1rem;
@@ -195,6 +217,7 @@ const total = pairs.length;
     const areaSel = document.getElementById("rf-area") as HTMLSelectElement;
     const lenSel = document.getElementById("rf-length") as HTMLSelectElement;
     const bandSel = document.getElementById("rf-band") as HTMLSelectElement;
+    const repSel = document.getElementById("rf-reports") as HTMLSelectElement;
     const clearBtn = document.getElementById("rf-clear") as HTMLButtonElement;
     const rows = Array.from(document.querySelectorAll<HTMLElement>(".rf-row"));
     const shown = document.getElementById("rf-shown")!;
@@ -209,13 +232,16 @@ const total = pairs.length;
       const area = areaSel.value;
       const len = lenSel.value;
       const band = bandSel.value;
+      const rep = repSel.value;
       let count = 0;
       rows.forEach((row) => {
+        const reports = Number(row.dataset.reports || "0");
         const hit =
           (!term || row.dataset.name!.includes(term) || row.dataset.fa!.includes(term)) &&
           (!area || row.dataset.area === area) &&
           (!len || row.dataset.length === len) &&
-          (!band || row.dataset.band === band);
+          (!band || row.dataset.band === band) &&
+          (!rep || (rep === "has" ? reports > 0 : reports === 0));
         row.hidden = !hit;
         if (hit) count++;
       });
@@ -227,12 +253,13 @@ const total = pairs.length;
       history.replaceState(null, "", url);
     };
 
-    [q, areaSel, lenSel, bandSel].forEach((el) => el.addEventListener("input", apply));
+    [q, areaSel, lenSel, bandSel, repSel].forEach((el) => el.addEventListener("input", apply));
     clearBtn.addEventListener("click", () => {
       q.value = "";
       areaSel.value = "";
       lenSel.value = "";
       bandSel.value = "";
+      repSel.value = "";
       apply();
     });
     apply();
