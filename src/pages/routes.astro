@@ -1,0 +1,254 @@
+---
+import Base from "../layouts/Base.astro";
+import {
+  areas,
+  allRoutePairs,
+  gradeBand,
+  lengthBucket,
+  lengthBucketLabels,
+  type GradeBand,
+  type LengthBucket,
+} from "../data/areas";
+
+const pairs = allRoutePairs()
+  .filter(({ route }) => route.kind !== "via-ferrata" || true) // keep via ferrata in the finder
+  .sort((a, b) => {
+    if (a.area.order !== b.area.order) return a.area.order - b.area.order;
+    return a.route.name.localeCompare(b.route.name);
+  });
+
+const bandOrder: GradeBand[] = [
+  "Introductory",
+  "Moderate",
+  "Hard",
+  "Very hard",
+  "Elite",
+  "Big-wall aid",
+  "Via ferrata",
+];
+const usedBands = bandOrder.filter((b) => pairs.some(({ route }) => gradeBand(route.grade) === b));
+
+const bucketOrder: LengthBucket[] = ["single-pitch", "under-150", "150-280", "280-360", "over-360"];
+const usedBuckets = bucketOrder.filter((k) => pairs.some(({ route }) => lengthBucket(route) === k));
+
+const stars = (n: number | null) => (n ? "★".repeat(n) : "");
+const total = pairs.length;
+---
+
+<Base
+  title="Route finder"
+  description="Search and filter every recorded route on Tioman by area, length and grade."
+  section="/routes"
+>
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span><span>Route finder</span>
+    </nav>
+
+    <div class="detail-hero" style="border-bottom:0">
+      <p class="label">Route finder</p>
+      <h1>Every recorded route</h1>
+      <p class="lede">
+        {total} routes across {areas.filter((a) => a.routes.length).length} areas. Filter by area,
+        length and rough difficulty, or search by name or first ascensionist.
+      </p>
+    </div>
+
+    <form class="rf-filters" id="rf-filters" role="search" aria-label="Filter routes">
+      <label class="rf-field rf-search">
+        <span class="label">Search</span>
+        <input type="search" id="rf-q" placeholder="Route name or first ascensionist…" autocomplete="off" />
+      </label>
+      <label class="rf-field">
+        <span class="label">Area</span>
+        <select id="rf-area">
+          <option value="">All areas</option>
+          {
+            areas
+              .filter((a) => a.routes.length)
+              .sort((a, b) => a.order - b.order)
+              .map((a) => <option value={a.slug}>{a.short}</option>)
+          }
+        </select>
+      </label>
+      <label class="rf-field">
+        <span class="label">Length</span>
+        <select id="rf-length">
+          <option value="">Any length</option>
+          {usedBuckets.map((k) => <option value={k}>{lengthBucketLabels[k]}</option>)}
+        </select>
+      </label>
+      <label class="rf-field">
+        <span class="label">Grade</span>
+        <select id="rf-band">
+          <option value="">Any grade</option>
+          {usedBands.map((b) => <option value={b}>{b}</option>)}
+        </select>
+      </label>
+      <button type="button" class="btn ghost" id="rf-clear">Clear</button>
+    </form>
+
+    <p class="rf-count"><span id="rf-shown">{total}</span> of {total} routes</p>
+
+    <div class="routes-table" id="rf-list">
+      <div class="routes-head">
+        <span class="label">Route</span>
+        <span class="label">Grade</span>
+        <span class="label">Length</span>
+        <span class="label">Pitches</span>
+        <span class="label">First ascent</span>
+        <span></span>
+      </div>
+      {
+        pairs.map(({ area, route }) => (
+          <a
+            class="route-row rf-row"
+            href={`/areas/${area.slug}/${route.slug}`}
+            data-name={route.name.toLowerCase()}
+            data-fa={route.firstAscent.toLowerCase()}
+            data-area={area.slug}
+            data-band={gradeBand(route.grade)}
+            data-length={lengthBucket(route) ?? ""}
+          >
+            <span>
+              <span class="rt-name">{route.name}</span>
+              <span class="rt-sub note">{area.short}</span>
+              {route.stars ? <span class="rt-sub stars">{stars(route.stars)}</span> : null}
+            </span>
+            <span class="grade">{route.grade}</span>
+            <span class="rt-len">{route.length}</span>
+            <span class="rt-p">{route.pitches ?? "—"}</span>
+            <span class="rt-fa">{route.firstAscent}</span>
+            <svg class="go" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
+        ))
+      }
+      <p class="rf-empty" id="rf-empty" hidden>No routes match those filters.</p>
+    </div>
+  </div>
+
+  <div style="height:clamp(2rem,5vw,4rem)"></div>
+</Base>
+
+<style>
+  .rf-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    gap: 1rem;
+    align-items: end;
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  @media (max-width: 820px) {
+    .rf-filters {
+      grid-template-columns: 1fr 1fr;
+    }
+    .rf-search {
+      grid-column: 1 / -1;
+    }
+    #rf-clear {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+  }
+  .rf-field {
+    display: grid;
+    gap: 0.4rem;
+  }
+  .rf-field input,
+  .rf-field select {
+    font: inherit;
+    font-size: 0.92rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .rf-field input:focus,
+  .rf-field select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .rf-count {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--mid);
+    margin-bottom: 0.5rem;
+  }
+  .rf-row[hidden] {
+    display: none;
+  }
+  .rf-empty {
+    padding: 2.5rem 0;
+    text-align: center;
+    color: var(--mid);
+    font-size: 0.92rem;
+  }
+</style>
+
+<script>
+  const form = document.getElementById("rf-filters") as HTMLFormElement | null;
+  if (form) {
+    const q = document.getElementById("rf-q") as HTMLInputElement;
+    const areaSel = document.getElementById("rf-area") as HTMLSelectElement;
+    const lenSel = document.getElementById("rf-length") as HTMLSelectElement;
+    const bandSel = document.getElementById("rf-band") as HTMLSelectElement;
+    const clearBtn = document.getElementById("rf-clear") as HTMLButtonElement;
+    const rows = Array.from(document.querySelectorAll<HTMLElement>(".rf-row"));
+    const shown = document.getElementById("rf-shown")!;
+    const empty = document.getElementById("rf-empty") as HTMLElement;
+
+    const params = new URLSearchParams(location.search);
+    if (params.get("area")) areaSel.value = params.get("area")!;
+    if (params.get("q")) q.value = params.get("q")!;
+
+    const apply = () => {
+      const term = q.value.trim().toLowerCase();
+      const area = areaSel.value;
+      const len = lenSel.value;
+      const band = bandSel.value;
+      let count = 0;
+
+      rows.forEach((row) => {
+        const hit =
+          (!term ||
+            row.dataset.name!.includes(term) ||
+            row.dataset.fa!.includes(term)) &&
+          (!area || row.dataset.area === area) &&
+          (!len || row.dataset.length === len) &&
+          (!band || row.dataset.band === band);
+        row.hidden = !hit;
+        if (hit) count++;
+      });
+
+      shown.textContent = String(count);
+      empty.hidden = count !== 0;
+
+      const url = new URL(location.href);
+      area ? url.searchParams.set("area", area) : url.searchParams.delete("area");
+      term ? url.searchParams.set("q", term) : url.searchParams.delete("q");
+      history.replaceState(null, "", url);
+    };
+
+    [q, areaSel, lenSel, bandSel].forEach((el) => el.addEventListener("input", apply));
+    clearBtn.addEventListener("click", () => {
+      q.value = "";
+      areaSel.value = "";
+      lenSel.value = "";
+      bandSel.value = "";
+      apply();
+    });
+
+    apply();
+  }
+</script>

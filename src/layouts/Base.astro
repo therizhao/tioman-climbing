@@ -20,7 +20,7 @@ const canonical = new URL(Astro.url.pathname, siteBase).href;
 const ogImage = new URL("/media/horns-from-the-sea.jpg", siteBase).href;
 const nav = [
   { href: "/#areas", label: "Areas", match: "/" },
-  { href: "/logbook", label: "Logbook", match: "/logbook" },
+  { href: "/routes", label: "Routes", match: "/routes" },
   { href: "/plan", label: "Plan a trip", match: "/plan" },
   { href: "/contribute", label: "Contribute", match: "/contribute" },
 ];
@@ -94,6 +94,7 @@ const nav = [
           <div class="foot-links">
             <span class="label" style="margin-bottom:.35rem">Guidebook</span>
             <a href="/#areas">All areas</a>
+            <a href="/routes">Route finder</a>
             <a href="/logbook">Logbook</a>
             <a href="/plan">Plan a trip</a>
             <a href="/contribute">Contribute a correction</a>

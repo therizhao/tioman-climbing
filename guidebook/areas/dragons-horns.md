@@ -172,7 +172,7 @@ glue-ins added by David Acott and others).
 | | |
 |---|---|
 | **Grade** | **6c+** (6b oblig; **8a variation**). Page 38: *"6c+ or 6b+ / A1"* |
-| **Length** | 280 m, ~8 pitches, **SW Pillar of Nenek Semukut** |
+| **Length** | 280 m, **7 pitches** + a tough summit scramble, **SW Pillar of Nenek Semukut** |
 | **First ascent** | **Stéphanie Bodet, David Kaszlikowski, Dan Liu (Liu Yong), Arnaud Petit, Tam Khairudin Haja — April 2013** |
 | **Gear** | **60 m ropes** (50 m should be OK). Max 10 bolts per pitch. Cams: small selection **0.2, 0.3, 0.4, 0.5, 1, 2**. P1 right start: take all; P1 left start (in the tree): none. P2: take all. P3: #2 cam. Higher: nothing until the last pitch (small cam) |
 | **Conditions** | *"On the shade before 1 pm in late April."* |
@@ -184,18 +184,19 @@ glue-ins added by David Acott and others).
 > the base staying 50–60 m lower to go up again and reach the S-W pillar. 1h to 2h depending
 > [on] the quality of the trail."*
 
-**Pitch list — from the hand-drawn topos (source pages 46–47), approximate:**
+**Pitch list** (grades per a repeat ascensionist; the logbook topo on pages 46–47 is a
+pencil sketch):
 
-| P | Grade | Length | Notes |
-|---|---|---|---|
-| 1 | 6b+ (tree-climb start) / 6a+ variation | 30 m | Right start harder; left start via the tree |
-| 2 | 6c | 25 m | |
-| 3 | 6c+ | 45 m | *"8a?"* variation branches here |
-| 4 | 6c+ | 45 m | mental crux — *"big runouts but easy climbing"* |
-| 5 | 6c | ~30 m | crux well bolted |
-| 6 | 6b+ | 50 m | |
-| 7 | 6b | 40–50 m | *"harder than the 6b+ pitch 6 before"* — the *"sketchy 7th pitch"* |
-| 8 | 6b | 40 m | to the summit slabs |
+| P | Grade | Notes |
+|---|---|---|
+| 1 | 6a+ | Tree-climb start; the right-hand start is harder |
+| 2 | 6b+ | |
+| 3 | 6c | Crux well bolted; the *"8a?"* variation branches here |
+| 4 | 6c+ | Mental crux — *"big runouts but easy climbing"* |
+| 5 | 6c+ | Crux well bolted |
+| 6 | 6b+ | |
+| 7 | 6b | *"Harder than the 6b+ pitch 6 before"* — the *"sketchy 7th pitch"* |
+| — | scramble | Tough scramble to the summit — no grade |
 
 **Trip-report highlights:**
 - **Lee Neale & Kate Sabo, 9 July 2015** (source page 48): 2 h approach; on trail by 5 am;

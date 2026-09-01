@@ -87,8 +87,8 @@ const areaExternal = externalLogs.filter((l) => l.area === area.slug);
             <div class="sec-head">
               <h2>Routes</h2>
               <p>
-                Ordered as the source records them. Grades keep their original system — nothing is
-                silently converted.
+                Ordered as the source records them. Grades keep their original system. Compare
+                across areas in the <a href={`/routes?area=${area.slug}`}>route finder</a>.
               </p>
             </div>
             <RoutesTable areaSlug={area.slug} routes={area.routes} />

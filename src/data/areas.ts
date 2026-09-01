@@ -127,25 +127,24 @@ export const areas: Area[] = [
         name: "Damai Sentosa",
         grade: "6c+",
         length: "280 m",
-        pitches: 8,
+        pitches: 7,
         firstAscent: "Stéphanie Bodet, David Kaszlikowski, Dan Liu Yong, Arnaud Petit, Tam Khairudin Haja",
         year: 2013,
         stars: 5,
         summary:
-          "A great steep climb on compact rock, almost all bolted, up the south-west pillar. The most repeated hard route on the tower and the one that has seen the most anchor upgrading.",
+          "A great steep climb on compact rock, almost all bolted, up the south-west pillar. Seven pitches to a tough summit scramble. The most repeated hard route on the tower and the one that has seen the most anchor upgrading.",
         approach: "Tanjung → Simukut hill trail → CP5, then left — 1–2 h",
         descent: "Abseil the line — about 2 h",
         gear: "60 m ropes (50 m should be OK). Max 10 bolts per pitch. Small cams 0.2–2; nothing needed above P3 until the last pitch.",
-        warn: "<strong>Grades approximate.</strong> The pitch breakdown survives only as a pencil sketch in the logbook.",
         pitchList: [
-          { n: "P8", grade: "6b", length: "40 m", note: "To the summit slabs" },
-          { n: "P7", grade: "6b", length: "40 m", note: "Harder than the 6b+ below — the sketchy one" },
-          { n: "P6", grade: "6b+", length: "50 m" },
-          { n: "P5", grade: "6c", length: "30 m", note: "Crux well bolted" },
-          { n: "P4", grade: "6c+", length: "45 m", note: "Mental crux — big runouts, easy climbing", crux: true },
-          { n: "P3", grade: "6c+", length: "45 m", note: "The 8a variation branches here" },
-          { n: "P2", grade: "6c", length: "25 m" },
-          { n: "P1", grade: "6b+", length: "30 m", note: "Tree-climb start; 6a+ variation on the left" },
+          { n: "top", grade: "scramble", length: "—", note: "Tough scramble to the summit — no grade" },
+          { n: "P7", grade: "6b", length: "—", note: "Harder than the 6b+ pitch below — the sketchy one" },
+          { n: "P6", grade: "6b+", length: "—" },
+          { n: "P5", grade: "6c+", length: "—", note: "Crux well bolted", crux: true },
+          { n: "P4", grade: "6c+", length: "—", note: "Mental crux — big runouts, easy climbing", crux: true },
+          { n: "P3", grade: "6c", length: "—", note: "Crux well bolted; the 8a variation branches here" },
+          { n: "P2", grade: "6b+", length: "—" },
+          { n: "P1", grade: "6a+", length: "—", note: "Tree-climb start; right start is harder" },
         ],
         logbook: ["damai-sentosa-soldner", "damai-sentosa-neale-sabo"],
       },
@@ -799,3 +798,65 @@ export function getRoute(areaSlug: string, routeSlug: string): { area: Area; rou
 export function allRoutePairs(): { area: Area; route: Route }[] {
   return areas.flatMap((area) => area.routes.map((route) => ({ area, route })));
 }
+
+/** Rough cross-system difficulty band, for filtering. */
+export type GradeBand = "Introductory" | "Moderate" | "Hard" | "Very hard" | "Elite" | "Big-wall aid" | "Via ferrata";
+
+export function gradeBand(grade: string): GradeBand {
+  const g = grade.toLowerCase();
+  if (g.includes("via ferrata")) return "Via ferrata";
+  if (/\ba[0-3]\b/.test(g) && /5\.\d/.test(g)) return "Big-wall aid";
+
+  // French sport
+  const fr = g.match(/(?:^|\s)([4-9][abc]?\+?)(?:\s|$|\/)/);
+  if (fr && !g.includes("5.")) {
+    const v = fr[1];
+    if (/^[45]/.test(v)) return "Introductory";
+    if (/^6[ab]/.test(v)) return "Moderate";
+    if (/^6c/.test(v) || /^7a/.test(v)) return "Hard";
+    if (/^7[bc]/.test(v)) return "Very hard";
+    return "Elite"; // 8a+
+  }
+
+  // YDS
+  const yds = g.match(/5\.(\d+)([a-d])?/);
+  if (yds) {
+    const n = Number(yds[1]);
+    if (n <= 9) return "Moderate";
+    if (n === 10) return "Moderate";
+    if (n === 11) return "Hard";
+    if (n === 12) return "Very hard";
+    return "Elite";
+  }
+
+  // UK trad
+  if (/\bhvs\b|\be1\b|\be2\b/.test(g)) return "Hard";
+  if (/\bvs\b|\bhs\b|\bs\b/.test(g)) return "Moderate";
+
+  return "Moderate";
+}
+
+/** Leading number of metres in a length string, or null. */
+export function lengthMeters(length: string): number | null {
+  const m = length.match(/(\d+)\s*m/);
+  return m ? Number(m[1]) : null;
+}
+
+export type LengthBucket = "under-150" | "150-280" | "280-360" | "over-360" | "single-pitch";
+export function lengthBucket(route: Route): LengthBucket | null {
+  if (route.pitches === 1) return "single-pitch";
+  const m = lengthMeters(route.length);
+  if (m === null) return null;
+  if (m < 150) return "under-150";
+  if (m < 280) return "150-280";
+  if (m <= 360) return "280-360";
+  return "over-360";
+}
+
+export const lengthBucketLabels: Record<LengthBucket, string> = {
+  "single-pitch": "Single pitch",
+  "under-150": "Under 150 m",
+  "150-280": "150–280 m",
+  "280-360": "280–360 m",
+  "over-360": "Over 360 m",
+};
