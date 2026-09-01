@@ -1,7 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import TopoShowcase from "../components/TopoShowcase.astro";
-import VideoBand from "../components/VideoBand.astro";
+import MediaStrip from "../components/MediaStrip.astro";
 import { areas } from "../data/areas";
 
 const ordered = [...areas].sort((a, b) => a.order - b.order);
@@ -102,12 +102,7 @@ function routeCount(a: (typeof areas)[number]): string {
     </div>
   </section>
 
-  <VideoBand
-    src="/media/summit-cloud.mp4"
-    poster="/media/summit-cloud-poster.jpg"
-    quote="&ldquo;We summited at 5&thinsp;pm and rapped as the sun set.&rdquo;"
-    cite="— Damai Sentosa logbook, July 2015"
-  />
+  <MediaStrip />
 </Base>
 
 <style>

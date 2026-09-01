@@ -1,0 +1,304 @@
+---
+/**
+ * A horizontally-scrollable strip of photos and short clips from the Dragon's
+ * Horns — "what it's like out there". Videos play only while on screen.
+ */
+
+type Item =
+  | { kind: "video"; src: string; poster: string; caption: string }
+  | { kind: "photo"; src: string; caption: string };
+
+const items: Item[] = [
+  {
+    kind: "video",
+    src: "/gallery/summit-cloud.mp4",
+    poster: "/gallery/summit-cloud-poster.jpg",
+    caption: "Topping out on the South Tower as cloud pours over the summit ridge.",
+  },
+  {
+    kind: "video",
+    src: "/gallery/topout-over-mukut.mp4",
+    poster: "/gallery/topout-over-mukut-poster.jpg",
+    caption: "Looking down at Kampung Mukut and the fringing reef from near the top.",
+  },
+  {
+    kind: "photo",
+    src: "/gallery/tower-in-cloud.jpg",
+    caption: "A tower wreathed in cloud, seen from the ridge between the two horns.",
+  },
+  {
+    kind: "photo",
+    src: "/gallery/horns-from-the-sea.jpg",
+    caption: "First sight of the Dragon's Horns — arriving at Mukut by boat.",
+  },
+];
+---
+
+<section class="mediastrip" aria-label="Photos and clips from the Dragon's Horns">
+  <div class="wrap ms-head">
+    <div>
+      <p class="label">Pulau Tioman</p>
+      <h2>What it's like out there</h2>
+    </div>
+    <blockquote>
+      &ldquo;We summited at 5&thinsp;pm and rapped as the sun set.&rdquo;
+      <cite>— Damai Sentosa logbook, July 2015</cite>
+    </blockquote>
+  </div>
+
+  <div class="ms-track" id="ms-track" tabindex="0">
+    {
+      items.map((it) => (
+        <figure class="ms-card">
+          {it.kind === "video" ? (
+            <video
+              class="ms-media"
+              muted
+              loop
+              playsinline
+              preload="none"
+              poster={it.poster}
+              data-src={it.src}
+            />
+          ) : (
+            <img class="ms-media" src={it.src} alt={it.caption} loading="lazy" />
+          )}
+          <figcaption>{it.caption}</figcaption>
+        </figure>
+      ))
+    }
+  </div>
+
+  <div class="wrap ms-nav">
+    <span class="ms-hint">Scroll &rarr; or drag</span>
+    <div class="ms-arrows">
+      <button type="button" class="ms-arrow" data-dir="-1" aria-label="Previous">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+          ><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+          ></path></svg
+        >
+      </button>
+      <button type="button" class="ms-arrow" data-dir="1" aria-label="Next">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+          ><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+          ></path></svg
+        >
+      </button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .mediastrip {
+    background: var(--ink);
+    color: var(--ground);
+    padding-block: clamp(3rem, 7vw, 5.5rem);
+    border-block: 1px solid var(--rule);
+    overflow: hidden;
+  }
+  .ms-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  .ms-head .label {
+    color: color-mix(in srgb, var(--ground) 55%, transparent);
+  }
+  .ms-head h2 {
+    font-size: var(--step-3);
+    font-weight: 300;
+    color: var(--ground);
+    margin-top: 0.4rem;
+  }
+  .ms-head blockquote {
+    margin: 0;
+    max-width: 30ch;
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--ground) 82%, transparent);
+  }
+  .ms-head cite {
+    display: block;
+    margin-top: 0.5rem;
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--ground) 55%, transparent);
+  }
+
+  .ms-track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-inline: max((100% - var(--wide)) / 2, 1.25rem);
+    scroll-padding-inline: max((100% - var(--wide)) / 2, 1.25rem);
+    cursor: grab;
+  }
+  .ms-track::-webkit-scrollbar {
+    display: none;
+  }
+  .ms-track.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
+  }
+  .ms-track:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--ground) 60%, transparent);
+    outline-offset: 4px;
+  }
+
+  .ms-card {
+    flex: 0 0 clamp(240px, 68vw, 320px);
+    scroll-snap-align: start;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .ms-media {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--ground) 12%, var(--ink));
+    display: block;
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+  .ms-card figcaption {
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: color-mix(in srgb, var(--ground) 68%, transparent);
+  }
+
+  .ms-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.75rem;
+  }
+  .ms-hint {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--ground) 50%, transparent);
+  }
+  .ms-arrows {
+    display: flex;
+    gap: 0.6rem;
+  }
+  .ms-arrow {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--ground) 30%, transparent);
+    background: transparent;
+    color: var(--ground);
+    cursor: pointer;
+    transition: border-color 0.18s, background 0.18s;
+  }
+  .ms-arrow:hover {
+    border-color: var(--ground);
+    background: color-mix(in srgb, var(--ground) 10%, transparent);
+  }
+  .ms-arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ms-track {
+      scroll-behavior: auto;
+    }
+  }
+</style>
+
+<script>
+  const track = document.getElementById("ms-track");
+  if (track) {
+    const cards = Array.from(track.querySelectorAll<HTMLElement>(".ms-card"));
+    const arrows = Array.from(document.querySelectorAll<HTMLButtonElement>(".ms-arrow"));
+    const prev = arrows.find((a) => a.dataset.dir === "-1")!;
+    const next = arrows.find((a) => a.dataset.dir === "1")!;
+
+    const step = () => cards[0].getBoundingClientRect().width + 16;
+    const updateArrows = () => {
+      prev.disabled = track.scrollLeft < 8;
+      next.disabled = track.scrollLeft > track.scrollWidth - track.clientWidth - 8;
+    };
+    arrows.forEach((a) =>
+      a.addEventListener("click", () => {
+        track.scrollBy({ left: step() * Number(a.dataset.dir), behavior: "smooth" });
+      }),
+    );
+    track.addEventListener("scroll", updateArrows, { passive: true });
+    track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        track.scrollBy({ left: step(), behavior: "smooth" });
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        track.scrollBy({ left: -step(), behavior: "smooth" });
+      }
+    });
+    updateArrows();
+
+    // drag-to-scroll (pointer)
+    let down = false;
+    let startX = 0;
+    let startScroll = 0;
+    let moved = false;
+    track.addEventListener("pointerdown", (e) => {
+      if ((e.target as HTMLElement).closest("button, a")) return;
+      down = true;
+      moved = false;
+      startX = e.clientX;
+      startScroll = track.scrollLeft;
+      track.setPointerCapture(e.pointerId);
+    });
+    track.addEventListener("pointermove", (e) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 4) {
+        moved = true;
+        track.classList.add("is-dragging");
+      }
+      track.scrollLeft = startScroll - dx;
+    });
+    const endDrag = () => {
+      down = false;
+      track.classList.remove("is-dragging");
+    };
+    track.addEventListener("pointerup", endDrag);
+    track.addEventListener("pointercancel", endDrag);
+    track.addEventListener("click", (e) => {
+      if (moved) e.preventDefault();
+    });
+
+    // lazy-load + play videos only while visible
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const v = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            if (!v.src && v.dataset.src) v.src = v.dataset.src;
+            v.play().catch(() => {});
+          } else {
+            v.pause();
+          }
+        });
+      },
+      { root: track, threshold: 0.5 },
+    );
+    track.querySelectorAll("video").forEach((v) => io.observe(v));
+  }
+</script>
