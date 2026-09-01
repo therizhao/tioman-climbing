@@ -1,64 +1,70 @@
 ---
 /**
- * The journey to the Dragon's Horns, drawn as a stylised map:
- * mainland Mersing → ferry across the South China Sea to Tioman's west coast
- * → boat around the south of the island to Kampung Mukut → jungle to the walls.
- * The three legs draw themselves in on load.
+ * The journey to the Dragon's Horns, drawn as a stylised map.
+ *  Main way : ferry direct from Mersing to Kampung Mukut.
+ *  Alt way  : ferry to Genting, then a boat round the south to Mukut.
+ * Then the jungle from Mukut up to the walls. The legs draw in on load.
  */
 ---
 
 <figure class="journeymap">
   <svg viewBox="0 0 960 420" role="img"
-    aria-label="Map of the journey: from Mersing on the mainland, by ferry across the South China Sea to the west coast of Pulau Tioman, then by boat around the south of the island to Kampung Mukut, then on foot up to the Dragon's Horns.">
-    <!-- sea -->
+    aria-label="Map of the journey. Main route: ferry direct from Mersing on the mainland across the South China Sea to Kampung Mukut on the south coast of Pulau Tioman. Alternative: ferry to Genting on the west coast, then a boat around the south of the island to Mukut. Then on foot up to the Dragon's Horns.">
     <rect class="jm-sea" x="0" y="0" width="960" height="420"></rect>
 
     <!-- mainland -->
     <path class="jm-land" d="M0 0 L168 0 C 168 42 132 70 152 112 C 170 148 128 176 154 216
       C 174 250 130 284 156 322 C 172 356 134 388 156 420 L0 420 Z"></path>
 
-    <!-- Pulau Tioman — elongated N–S, irregular west coast, pointed south end -->
+    <!-- Pulau Tioman -->
     <path class="jm-land" d="M756 34 C 730 40 720 74 714 108 C 708 132 700 140 690 152
       C 678 166 672 190 676 214 C 680 236 672 250 664 270 C 656 292 664 320 686 340
       C 700 352 714 372 726 372 C 740 372 748 352 760 340 C 780 320 800 300 812 268
       C 824 232 826 176 818 132 C 810 88 792 44 756 34 Z"></path>
-    <!-- twin-peak notch near the south end (the Horns) -->
     <path class="jm-ridge" d="M700 316 l8 -20 l6 12 l8 -24 l7 20"></path>
 
-    <!-- legs -->
-    <path class="jm-leg jm-ferry" d="M150 214 C 330 150 520 120 676 148" pathLength="100"></path>
-    <path class="jm-leg jm-boat" d="M678 156 C 662 206 648 262 664 300 C 676 326 694 340 706 342" pathLength="100"></path>
-    <path class="jm-leg jm-jungle" d="M707 340 L710 326 L713 312" pathLength="100"></path>
+    <!-- ALT leg 1: Mersing -> Genting (ferry) -->
+    <path class="jm-leg jm-alt jm-alt-ferry" d="M152 210 C 340 172 520 176 672 206" pathLength="100"></path>
+    <!-- ALT leg 2: Genting -> Mukut (boat round the south) -->
+    <path class="jm-leg jm-alt jm-alt-boat" d="M678 214 C 668 258 654 292 668 320 C 678 336 692 342 700 342" pathLength="100"></path>
+
+    <!-- MAIN leg: Mersing -> Mukut (direct ferry) -->
+    <path class="jm-leg jm-main" d="M150 218 C 320 300 520 350 698 344" pathLength="100"></path>
+
+    <!-- jungle -->
+    <path class="jm-leg jm-jungle" d="M704 340 L708 326 L712 312" pathLength="100"></path>
 
     <!-- waypoints -->
     <g class="jm-wp jm-wp-1">
       <circle cx="150" cy="214" r="5"></circle>
       <text x="150" y="240" text-anchor="middle">MERSING</text>
     </g>
-    <g class="jm-wp jm-wp-2">
-      <circle cx="678" cy="150" r="4.5"></circle>
-      <text x="672" y="130" text-anchor="middle">West-coast villages</text>
+    <g class="jm-wp jm-wp-genting">
+      <circle class="jm-dot-alt" cx="676" cy="208" r="4"></circle>
+      <text x="670" y="192" text-anchor="middle">Genting</text>
     </g>
-    <g class="jm-wp jm-wp-3">
-      <circle cx="706" cy="342" r="5"></circle>
-      <text x="706" y="366" text-anchor="middle">KAMPUNG MUKUT</text>
+    <g class="jm-wp jm-wp-mukut">
+      <circle cx="702" cy="342" r="5.5"></circle>
+      <text x="702" y="366" text-anchor="middle">KAMPUNG MUKUT</text>
     </g>
-    <g class="jm-wp jm-wp-4">
-      <path class="jm-flag" d="M713 312 l0 -16 l12 5 l-12 5"></path>
-      <text x="729" y="300" text-anchor="start">Dragon's Horns</text>
+    <g class="jm-wp jm-wp-horns">
+      <path class="jm-flag" d="M712 312 l0 -16 l12 5 l-12 5"></path>
+      <text x="728" y="300" text-anchor="start">Dragon's Horns</text>
     </g>
 
     <!-- leg labels -->
-    <text class="jm-leglabel jm-ll-1" x="405" y="150" text-anchor="middle">FERRY · ~2 h</text>
-    <text class="jm-leglabel jm-ll-2" x="596" y="262" text-anchor="end">BOAT / SEA&nbsp;TAXI</text>
+    <text class="jm-leglabel jm-ll-main" x="430" y="340" text-anchor="middle">DIRECT FERRY · main way</text>
+    <text class="jm-leglabel jm-ll-alt jm-ll-alt-1" x="410" y="168" text-anchor="middle">or ferry to Genting…</text>
+    <text class="jm-leglabel jm-ll-alt jm-ll-alt-2" x="612" y="286" text-anchor="end">…then boat</text>
 
     <!-- ambient labels -->
-    <text class="jm-sealabel" x="360" y="330">SOUTH CHINA SEA</text>
-    <text class="jm-note" x="405" y="168" text-anchor="middle">≈ 56 km</text>
+    <text class="jm-sealabel" x="330" y="250">SOUTH CHINA SEA</text>
     <text class="jm-islandlabel" x="770" y="76" text-anchor="middle">PULAU TIOMAN</text>
     <text class="jm-mainlabel" x="18" y="30">PENINSULAR MALAYSIA</text>
   </svg>
-  <figcaption>The way in: mainland → Mersing → ferry → boat → Mukut → jungle.</figcaption>
+  <figcaption>
+    Main way: ferry direct to Mukut. Alternative: ferry to Genting, then boat round the south.
+  </figcaption>
 </figure>
 
 <style>
@@ -91,29 +97,46 @@
 
   .jm-leg {
     fill: none;
-    stroke: var(--oxide);
-    stroke-width: 2.6;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 100;
     stroke-dashoffset: 100;
-    animation: jm-draw 1.6s ease forwards;
+    animation: jm-draw 1.7s ease forwards;
   }
-  .jm-ferry {
+  .jm-main {
+    stroke: var(--oxide);
+    stroke-width: 3;
     animation-delay: 0.35s;
   }
-  .jm-boat {
-    animation-delay: 1.7s;
-    animation-duration: 1.4s;
+  .jm-alt {
+    stroke: var(--mid);
+    stroke-width: 1.8;
+    stroke-dasharray: 5 5;
+    animation: jm-draw-alt 1.4s ease forwards;
+  }
+  .jm-alt-ferry {
+    animation-delay: 1.5s;
+  }
+  .jm-alt-boat {
+    animation-delay: 2.3s;
   }
   .jm-jungle {
-    stroke-dasharray: 3 4;
+    stroke: var(--oxide);
     stroke-width: 2.2;
+    stroke-dasharray: 3 4;
     animation: jm-fade 0.5s ease forwards;
-    animation-delay: 3s;
+    animation-delay: 3.1s;
     opacity: 0;
   }
   @keyframes jm-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes jm-draw-alt {
+    from {
+      stroke-dashoffset: 100;
+    }
     to {
       stroke-dashoffset: 0;
     }
@@ -128,6 +151,9 @@
     fill: var(--surface);
     stroke: var(--oxide);
     stroke-width: 2;
+  }
+  .jm-wp circle.jm-dot-alt {
+    stroke: var(--mid);
   }
   .jm-flag {
     fill: var(--oxide);
@@ -148,29 +174,35 @@
   .jm-wp-1 {
     animation-delay: 0.15s;
   }
-  .jm-wp-2 {
-    animation-delay: 1.6s;
+  .jm-wp-mukut {
+    animation-delay: 1.9s;
   }
-  .jm-wp-3 {
-    animation-delay: 3s;
+  .jm-wp-genting {
+    animation-delay: 2.6s;
   }
-  .jm-wp-4 {
-    animation-delay: 3.4s;
+  .jm-wp-horns {
+    animation-delay: 3.5s;
   }
 
   .jm-leglabel {
     font-family: var(--font-mono);
     font-size: 10.5px;
-    letter-spacing: 0.08em;
-    fill: var(--oxide);
+    letter-spacing: 0.06em;
     opacity: 0;
     animation: jm-fade 0.5s ease forwards;
   }
-  .jm-ll-1 {
-    animation-delay: 1.3s;
+  .jm-ll-main {
+    fill: var(--oxide);
+    animation-delay: 1.7s;
   }
-  .jm-ll-2 {
-    animation-delay: 2.8s;
+  .jm-ll-alt {
+    fill: var(--mid);
+  }
+  .jm-ll-alt-1 {
+    animation-delay: 2.7s;
+  }
+  .jm-ll-alt-2 {
+    animation-delay: 3.5s;
   }
 
   .jm-sealabel {
@@ -178,11 +210,6 @@
     font-size: 11px;
     letter-spacing: 0.28em;
     fill: color-mix(in srgb, var(--accent) 40%, var(--surface));
-  }
-  .jm-note {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    fill: var(--mid);
   }
   .jm-islandlabel,
   .jm-mainlabel {
@@ -196,6 +223,7 @@
     padding: 0.7rem 1rem;
     font-family: var(--font-mono);
     font-size: 0.72rem;
+    line-height: 1.5;
     color: var(--mid);
     background: var(--ground);
     border-top: 1px solid var(--rule);
@@ -203,7 +231,6 @@
 
   @media (max-width: 560px) {
     .jm-mainlabel,
-    .jm-note,
     .jm-sealabel {
       display: none;
     }
@@ -222,6 +249,9 @@
       animation: none;
       opacity: 1;
       stroke-dashoffset: 0;
+    }
+    .jm-alt {
+      stroke-dasharray: 5 5;
     }
     .jm-jungle {
       stroke-dasharray: 3 4;

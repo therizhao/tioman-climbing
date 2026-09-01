@@ -47,13 +47,13 @@ Detailed area pages:
 
 ## Getting there
 
-- **To the island:** ferry from **Mersing** or **Tanjung Gemok** (Endau) on the mainland to
-  one of Tioman's west-coast villages. Small domestic flights to Tioman have operated
-  intermittently.
+- **To the island:** ferry from **Mersing** or **Tanjung Gemok** (Endau) on the mainland.
+  Small domestic flights to Tioman have operated intermittently.
 - **To Mukut (for the Dragon's Horns, Nenek Semukut, Puncak Anak):** Mukut is on the south
-  coast with no road connection. Reach it by **sea taxi / charter boat** from Genting or
-  Nipah, or by the coastal trail. Several trip reports mention borrowing **kayaks from
-  Juara** to paddle round to Mukut.
+  coast with no road connection. There is usually a **ferry direct from Mersing to Mukut**
+  (lower frequency than the west-coast sailings) — this is the main way. Otherwise ferry to
+  **Genting** and take a **boat** round the south of the island. Arrange any boat well in
+  advance through your homestay; ferry schedules are only published about a month ahead.
 - **To Mumbar / Bagus / Batu Sirau:** from the **Nipah** side, via the Nipah→Tunamaya
   coastal concrete path and then jungle trails — see the Mumbar page for the full
   description. Boat drop-offs at Tunamaya jetty or the beaches below shorten the walk.
