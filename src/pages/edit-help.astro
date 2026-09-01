@@ -1,11 +1,39 @@
 ---
 import Base from "../layouts/Base.astro";
-import { REPO } from "../lib/guidebook";
+import { REPO, getAreas } from "../lib/guidebook";
+import { getCollection } from "astro:content";
+
+// Raw source of every content file, so the form can round-trip real frontmatter.
+const rawFiles = import.meta.glob("../content/**/*.md", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
+const catalog = Object.entries(rawFiles).map(([abs, raw]) => {
+  const rel = abs.replace(/^.*\/content\//, "src/content/");
+  const m = rel.match(/src\/content\/([^/]+)\/(.+)\.md$/)!;
+  const fm = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  return {
+    path: rel,
+    collection: m[1],
+    id: m[2],
+    fmText: fm ? fm[1] : "",
+    body: fm ? fm[2].replace(/^\n+/, "") : raw,
+  };
+});
+
+const areas = (await getAreas()).map((a) => ({ id: a.id, short: a.data.short }));
+const routes = (await getCollection("routes"))
+  .map((r) => ({ id: r.id, name: r.data.name, area: r.data.area }))
+  .sort((a, b) => a.name.localeCompare(b.name));
+
+const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/</g, "\\u003c");
 ---
 
 <Base
   title="Contribute an edit"
-  description="How to edit the Tioman climbing guidebook, or add a trip report, through GitHub."
+  description="Edit the Tioman climbing guidebook or add a trip report — fill in a form, preview it, copy the result and paste it on GitHub."
   section="/"
 >
   <div class="wrap">
@@ -14,117 +42,298 @@ import { REPO } from "../lib/guidebook";
     </nav>
 
     <div class="detail-hero" style="border-bottom:0">
-      <p class="label">Contribute</p>
-      <h1 id="eh-title">Edit this page on GitHub</h1>
-      <p class="lede" id="eh-lede">
-        The whole guidebook is open. You can fix a grade, a name, an approach or add detail
-        yourself — the change goes to a maintainer to review before it's published.
+      <p class="label" id="au-kicker">Contribute</p>
+      <h1 id="au-title">Edit the guidebook</h1>
+      <p class="lede" id="au-lede">
+        Fill in the fields below, preview how it will read, then copy the result and paste it
+        into GitHub. A maintainer reviews every change before it goes live.
       </p>
     </div>
 
-    <p class="eh-file mono" id="eh-file"></p>
-
-    <div class="two-col" style="margin-top:1.5rem">
-      <div style="display:grid;gap:1.25rem">
-        <div class="panel">
-          <span class="label">Before you start</span>
-          <h3>You need a GitHub account</h3>
-          <p>
-            It's free — <a href="https://github.com/signup">sign up</a> (takes a minute). You
-            don't need to install anything or know Git; everything happens in the browser.
-          </p>
-        </div>
-        <div class="panel">
-          <span class="label">What happens</span>
-          <h3>Your change becomes a suggestion</h3>
-          <ol class="eh-steps">
-            <li>GitHub makes <strong>your own copy</strong> — you can't break anything.</li>
-            <li>You edit / write in the browser and click <strong>Propose changes</strong>.</li>
-            <li>That opens a <strong>pull request</strong> — a suggested change.</li>
-            <li>A maintainer reviews it, and it goes live once merged.</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="panel">
-        <span class="label" id="eh-code-label">How the file is laid out</span>
-        <h3 id="eh-code-h">Frontmatter, then prose</h3>
-        <p id="eh-code-intro">
-          Every route and area is one Markdown file. At the top, between two <code>---</code>
-          lines, is the <strong>frontmatter</strong> — all the structured fields. Below it is the
-          descriptive paragraph.
-        </p>
-        <pre class="eh-code"><code id="eh-code">---
-name: "Polish Princess"
-grade: "7b+"
-length: "270 m"
-pitches: 8
-firstAscent: "E. Kubarska &amp; D. Kaszlikowski"
-year: 2011
-stars: 5
-approach: "Tanjung Inn &rarr; CP7, then left &mdash; 10 min"
-descent: "Abseil the line, 1 &times; 70 m"
-gear: "Full rack of cams to BD #4&hellip;"
----
-
-The first fully prepared free line to the
-South Tower summit&hellip;</code></pre>
-        <ul class="eh-fields" id="eh-fields">
-          <li><code>grade</code> — keep the route's own system (French / UK / YDS). No conversions.</li>
-          <li><code>length</code>, <code>pitches</code> — <code>"270 m"</code>, a number, or leave as-is.</li>
-          <li><code>stars</code> — 0–5, and cite where the rating comes from in the prose.</li>
-          <li><code>warn</code> — a hazard note; short HTML like <code>&lt;strong&gt;…&lt;/strong&gt;</code> is fine.</li>
-          <li>Keep the <code>---</code> lines and the quotes around text values.</li>
-          <li>Not sure? Change only what you know and leave a note in the pull request.</li>
-        </ul>
+    <div class="au-prereq" id="au-prereq">
+      <div>
+        <span class="label">One thing first</span>
         <p>
-          For topo photos, new routes, or anything you're unsure how to format, just email
-          <a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a>.
+          You need a free <a href="https://github.com/signup" target="_blank" rel="noopener"
+            >GitHub account</a
+          >. Nothing to install — you'll paste this file into GitHub in the browser, and that
+          creates a suggested change (a pull request). You can't break anything.
         </p>
       </div>
+      <div class="au-file mono" id="au-file"></div>
     </div>
 
-    <div class="eh-go">
-      <a class="btn" id="eh-continue" href={`${REPO}`}>
-        Continue to GitHub
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path
-            d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
-            stroke="currentColor"
-            stroke-width="1.4"
-            stroke-linecap="round"
-            stroke-linejoin="round"></path>
-        </svg>
-      </a>
-      <a class="btn ghost" href="/contribute">Or send it by email</a>
+    <div class="au-grid">
+      <form class="au-form" id="au-form" autocomplete="off">
+        <div id="au-fields"></div>
+
+        <details class="au-adv" id="au-adv" hidden>
+          <summary>Advanced fields</summary>
+          <p class="note">
+            Structured lists — pitch table, photos, topos — kept as raw YAML. Leave them alone
+            unless you know the format; they're preserved exactly as they are now.
+          </p>
+          <textarea id="au-adv-text" rows="6" spellcheck="false"></textarea>
+        </details>
+
+        <label class="au-field">
+          <span class="label" id="au-body-label">Description</span>
+          <textarea id="au-body" rows="12" spellcheck="false"></textarea>
+          <span class="au-help"
+            >Markdown. <code>## Heading</code>, <code>**bold**</code>, <code>_italic_</code>,
+            <code>[link](https://…)</code>, <code>&gt; quote</code>, <code>- list</code>.</span
+          >
+        </label>
+      </form>
+
+      <aside class="au-side">
+        <div class="au-preview-card">
+          <span class="label">Preview</span>
+          <div id="au-preview" class="au-preview"></div>
+        </div>
+      </aside>
     </div>
+
+    <div class="au-output" id="au-output">
+      <div class="au-output-head">
+        <span class="label">The file</span>
+        <div class="au-out-actions">
+          <button type="button" class="btn btn-sm" id="au-copy">Copy file contents</button>
+          <a class="btn ghost btn-sm" id="au-gh" href={REPO} target="_blank" rel="noopener"
+            >Open GitHub to paste ↗</a
+          >
+        </div>
+      </div>
+      <pre class="au-code"><code id="au-out"></code></pre>
+      <p class="au-steps note" id="au-steps"></p>
+    </div>
+
+    <p class="au-fallback note">
+      Stuck, or have photos to add? Just email
+      <a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a> — or
+      <a href="/contribute">see other ways to contribute</a>.
+    </p>
   </div>
 
   <div style="height:clamp(2rem,5vw,4rem)"></div>
+
+  <script type="application/json" id="au-data" set:html={payload}></script>
 </Base>
 
-<style>
-  .eh-file {
+<style is:global>
+  .au-prereq {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    align-items: start;
     margin-top: clamp(1.25rem, 3vw, 2rem);
-    font-size: 0.8rem;
-    color: var(--mid);
-    padding: 0.55rem 0.8rem;
+    padding: 1.1rem 1.3rem;
     background: var(--surface);
     border: 1px solid var(--rule);
-    border-radius: 2px;
-    display: inline-block;
-    word-break: break-all;
+    border-radius: 3px;
   }
-  .eh-steps,
-  .eh-fields {
-    margin: 0;
-    padding-left: 1.15rem;
-    display: grid;
-    gap: 0.5rem;
+  .au-prereq p {
     font-size: 0.9rem;
     color: var(--ink-2);
+    margin-top: 0.4rem;
+    max-width: 60ch;
   }
-  .eh-code {
+  .au-file {
+    font-size: 0.76rem;
+    color: var(--mid);
+    align-self: center;
+    word-break: break-all;
+  }
+  .au-file:empty {
+    display: none;
+  }
+
+  .au-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    align-items: start;
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  @media (max-width: 900px) {
+    .au-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .au-form {
+    display: grid;
+    gap: 1.1rem;
+  }
+  #au-fields {
+    display: grid;
+    gap: 1.1rem;
+  }
+  .au-field {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .au-field.is-hidden {
+    display: none;
+  }
+  .au-field input,
+  .au-field select,
+  .au-field textarea,
+  #au-adv-text {
+    font: inherit;
+    font-size: 0.92rem;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink);
+    width: 100%;
+  }
+  .au-field textarea,
+  #au-adv-text,
+  #au-body {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    resize: vertical;
+  }
+  .au-field input:focus,
+  .au-field select:focus,
+  .au-field textarea:focus,
+  #au-adv-text:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .au-help {
+    font-size: 0.78rem;
+    color: var(--mid);
+  }
+  .au-help code {
+    font-size: 0.9em;
+  }
+  .au-req {
+    color: var(--oxide);
+  }
+  .au-adv {
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0.7rem 0.9rem;
+    background: var(--ground);
+  }
+  .au-adv summary {
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .au-adv p {
+    margin: 0.6rem 0;
+  }
+
+  .au-side {
+    position: sticky;
+    top: 1.5rem;
+  }
+  .au-preview-card {
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--surface);
+    padding: 1.1rem 1.3rem 1.4rem;
+    display: grid;
+    gap: 0.8rem;
+  }
+  .au-preview {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  .au-pv-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  .au-pv-sub {
+    font-size: 0.82rem;
+    color: var(--mid);
+    margin-top: 0.2rem;
+  }
+  .au-pv-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.6rem 0;
+  }
+  .au-pv-badge {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--ink-2);
+  }
+  .au-pv-stars {
+    color: var(--oxide);
+  }
+  .au-pv-body {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: var(--ink-2);
+    margin-top: 0.5rem;
+  }
+  .au-pv-body h2 {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin: 1.1rem 0 0.4rem;
+  }
+  .au-pv-body h3 {
+    font-size: 1rem;
+    margin: 1rem 0 0.3rem;
+  }
+  .au-pv-body p {
+    margin: 0 0 0.7rem;
+  }
+  .au-pv-body ul {
+    margin: 0 0 0.7rem;
+    padding-left: 1.1rem;
+  }
+  .au-pv-body blockquote {
+    margin: 0 0 0.7rem;
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--rule);
+    color: var(--mid);
+  }
+  .au-pv-body a {
+    color: var(--accent);
+  }
+  .au-pv-empty {
+    color: var(--mid);
+    font-size: 0.9rem;
+  }
+
+  .au-output {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+  .au-output-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .au-out-actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .au-code {
     margin: 0;
     background: var(--ink);
     color: color-mix(in srgb, var(--ground) 88%, transparent);
@@ -134,92 +343,396 @@ South Tower summit&hellip;</code></pre>
     font-size: 0.76rem;
     line-height: 1.6;
     overflow-x: auto;
+    max-height: 42vh;
+    overflow-y: auto;
+    white-space: pre;
   }
-  .eh-code code {
+  .au-code code {
     color: inherit;
     background: none;
     padding: 0;
   }
-  code {
-    font-family: var(--font-mono);
-    font-size: 0.86em;
-    background: var(--surface-2);
-    padding: 0.1em 0.35em;
-    border-radius: 2px;
+  .au-steps {
+    margin-top: 0.8rem;
   }
-  .eh-go {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: clamp(2rem, 4vw, 3rem);
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--rule);
+  .au-steps b {
+    color: var(--ink-2);
+  }
+  .au-fallback {
+    margin-top: 1.75rem;
+  }
+  .au-copied {
+    color: var(--accent);
+    font-size: 0.8rem;
   }
 </style>
 
 <script>
-  const repo = "https://github.com/therizhao/tioman-climbing";
+  type Rec = { path: string; collection: string; id: string; fmText: string; body: string };
+  type Data = {
+    catalog: Rec[];
+    areas: { id: string; short: string }[];
+    routes: { id: string; name: string; area: string }[];
+    repo: string;
+  };
+
+  const data: Data = JSON.parse(document.getElementById("au-data")!.textContent || "{}");
   const params = new URLSearchParams(location.search);
-  const label = params.get("label");
-  const $ = (id: string) => document.getElementById(id)!;
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 
-  if (params.get("new") === "logbook") {
-    // ---- add a trip report ----
-    const route = params.get("route") ?? "route";
-    const routeName = params.get("routeName") ?? "the route";
-    const area = params.get("area") ?? "";
+  type Field = {
+    key: string;
+    label: string;
+    type: "text" | "textarea" | "number" | "area" | "route" | "select" | "stars";
+    help?: string;
+    required?: boolean;
+    hidden?: boolean;
+    options?: string[];
+    default?: string;
+  };
 
-    $("eh-title").textContent = `Add a trip report — ${routeName}`;
-    document.title = `Add a trip report — Tioman Climbing Guidebook`;
-    $("eh-lede").textContent =
-      `Climbed ${routeName}? Add your report — approach beta, conditions, pitch notes, gear that helped, hazards, thanks. It goes to a maintainer to review.`;
-    $("eh-file").remove();
+  const FIELDS: Record<string, Field[]> = {
+    logbook: [
+      { key: "title", label: "Title", type: "text", required: true, help: "One line — “Naga — three days on the Dragon”." },
+      { key: "party", label: "Party / who climbed", type: "text", required: true },
+      { key: "date", label: "Date", type: "text", required: true, help: "Free text — “April 2024”, “c. 2015”." },
+      { key: "route", label: "Route", type: "route", required: true },
+      { key: "routeName", label: "Route name", type: "text", hidden: true },
+      { key: "area", label: "Area", type: "area", hidden: true },
+      { key: "sourcePage", label: "Route-book page", type: "number", help: "Only if transcribed from the printed route book." },
+      { key: "scan", label: "Scan filename", type: "text", help: "e.g. page-67.jpg, if there's a scan of the original page in public/logbook-scans/." },
+      { key: "order", label: "Sort order", type: "number", default: "5", help: "Lower shows first; 5 is fine for a new report." },
+    ],
+    routes: [
+      { key: "name", label: "Route name", type: "text", required: true },
+      { key: "area", label: "Area", type: "area", required: true },
+      { key: "grade", label: "Grade", type: "text", required: true, help: "Keep the route's own system — French / UK / YDS. No conversions." },
+      { key: "length", label: "Length", type: "text", help: "“270 m”." },
+      { key: "pitches", label: "Pitches", type: "number" },
+      { key: "order", label: "Sort order", type: "number", default: "99" },
+      { key: "firstAscent", label: "First ascent", type: "text" },
+      { key: "year", label: "Year", type: "text" },
+      { key: "stars", label: "Stars (0–5)", type: "stars", help: "Cite where the rating comes from in the description." },
+      { key: "status", label: "Status note", type: "text", help: "e.g. “Needs documenting”. Optional." },
+      { key: "kind", label: "Kind", type: "select", options: ["climb", "via-ferrata"], default: "climb" },
+      { key: "approach", label: "Approach", type: "textarea", help: "Short HTML ok — <strong>…</strong>, <a href>…" },
+      { key: "descent", label: "Descent", type: "textarea" },
+      { key: "gear", label: "Gear", type: "textarea" },
+      { key: "warn", label: "Hazard note", type: "textarea", help: "Shown as a warning box. Short HTML ok." },
+    ],
+    areas: [
+      { key: "name", label: "Area name", type: "text", required: true },
+      { key: "key", label: "Map key", type: "text", help: "Letter from the overview map, e.g. “H”." },
+      { key: "aka", label: "Also known as", type: "text" },
+      { key: "short", label: "Short name", type: "text", help: "For breadcrumbs / tables." },
+      { key: "order", label: "Sort order", type: "number", default: "99" },
+      { key: "desc", label: "One-line description", type: "text" },
+      { key: "emptyNote", label: "Note when no routes", type: "textarea" },
+    ],
+  };
 
-    $("eh-code-label").textContent = "The template";
-    $("eh-code-h").textContent = "A new logbook file";
-    $("eh-code-intro").textContent =
-      "GitHub will open a new file with this already filled in. Change the title, party and date, then write your report below the second --- line.";
+  const MANAGED: Record<string, Set<string>> = {
+    logbook: new Set(FIELDS.logbook.map((f) => f.key)),
+    routes: new Set(FIELDS.routes.map((f) => f.key)),
+    areas: new Set(FIELDS.areas.map((f) => f.key)),
+  };
 
-    const template = `---
-title: "${routeName} — a line about your trip"
-party: "Your name (and partners)"
-date: "Month YYYY"
-route: "${route}"
-routeName: "${routeName}"
-area: "${area}"
-order: 5
----
-
-## Your report
-
-Approach, conditions, how the pitches felt, gear that helped, anything
-loose or run-out to watch for, and thanks. Write it however you like.
-`;
-    $("eh-code").textContent = template;
-
-    $("eh-fields").innerHTML = `
-      <li>Keep <code>route</code>, <code>routeName</code> and <code>area</code> as they are — that links your report to the route.</li>
-      <li><code>date</code> is free text — "April 2024", "c. 2015", whatever you know.</li>
-      <li>Have a photo of a logbook page or a topo? Mention it in the pull request and we'll add it.</li>
-      <li>Filename: something like <code>${route}-yourname.md</code>.</li>`;
-
-    const url = new URL(`${repo}/new/main/src/content/logbook`);
-    url.searchParams.set("filename", `${route}-report.md`);
-    url.searchParams.set("value", template);
-    ($("eh-continue") as HTMLAnchorElement).href = url.toString();
-    $("eh-continue").firstChild!.textContent = "Continue to GitHub — new report ";
-  } else {
-    // ---- edit an existing file ----
-    const path = params.get("path");
-    if (label) {
-      $("eh-title").textContent = `Edit "${label}"`;
-      document.title = `Edit ${label} — Tioman Climbing Guidebook`;
+  /* ---------- tiny YAML (line-per-key, as this repo writes it) ---------- */
+  const unquote = (s: string) => {
+    const t = s.trim();
+    if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+      return t.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, "\\");
     }
-    if (path) {
-      $("eh-file").textContent = path;
-      ($("eh-continue") as HTMLAnchorElement).href = `${repo}/edit/main/${path}`;
-    } else {
-      $("eh-file").remove();
+    return t;
+  };
+  const parseFm = (text: string) => {
+    const entries: { key: string; raw: string }[] = [];
+    for (const line of text.split("\n")) {
+      const m = line.match(/^([A-Za-z_][\w-]*):\s?(.*)$/);
+      if (m) entries.push({ key: m[1], raw: m[2] });
+      else if (entries.length) entries[entries.length - 1].raw += "\n" + line;
+    }
+    return entries;
+  };
+  const quote = (v: string) => '"' + v.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+  const emitScalar = (key: string, v: string) => {
+    const t = v.trim();
+    if (t === "") return null;
+    if (["pitches", "sourcePage", "order", "stars"].includes(key)) {
+      return /^-?\d+$/.test(t) ? `${key}: ${t}` : `${key}: ${quote(t)}`;
+    }
+    if (key === "year") return /^\d{3,4}$/.test(t) ? `${key}: ${t}` : `${key}: ${quote(t)}`;
+    return `${key}: ${quote(t)}`;
+  };
+
+  /* ---------- mini markdown for the preview ---------- */
+  const esc = (s: string) =>
+    s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const inline = (s: string) =>
+    esc(s)
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/(^|[^*])\*([^*]+)\*/g, "$1<em>$2</em>")
+      .replace(/_([^_]+)_/g, "<em>$1</em>")
+      .replace(/`([^`]+)`/g, "<code>$1</code>");
+  const mdToHtml = (md: string) => {
+    const out: string[] = [];
+    let list: string[] | null = null;
+    let quoteBuf: string[] | null = null;
+    const flushList = () => {
+      if (list) out.push("<ul>" + list.map((li) => `<li>${inline(li)}</li>`).join("") + "</ul>"), (list = null);
+    };
+    const flushQuote = () => {
+      if (quoteBuf) out.push(`<blockquote>${inline(quoteBuf.join(" "))}</blockquote>`), (quoteBuf = null);
+    };
+    for (const rawLine of md.split("\n")) {
+      const line = rawLine.trimEnd();
+      if (/^###\s+/.test(line)) { flushList(); flushQuote(); out.push(`<h3>${inline(line.replace(/^###\s+/, ""))}</h3>`); }
+      else if (/^##\s+/.test(line)) { flushList(); flushQuote(); out.push(`<h2>${inline(line.replace(/^##\s+/, ""))}</h2>`); }
+      else if (/^[-*]\s+/.test(line)) { flushQuote(); (list ||= []).push(line.replace(/^[-*]\s+/, "")); }
+      else if (/^>\s?/.test(line)) { flushList(); (quoteBuf ||= []).push(line.replace(/^>\s?/, "")); }
+      else if (line.trim() === "") { flushList(); flushQuote(); }
+      else { flushList(); flushQuote(); out.push(`<p>${inline(line)}</p>`); }
+    }
+    flushList(); flushQuote();
+    return out.join("\n");
+  };
+
+  /* ---------- state ---------- */
+  let collection = "logbook";
+  let rec: Rec | null = null;
+  let mode: "edit" | "new" = "edit";
+  let advEntries: { key: string; raw: string }[] = [];
+  let orderedKeys: string[] = [];
+  let newFilename = "";
+
+  const state: Record<string, string> = {};
+
+  function buildForm() {
+    const wrap = $("au-fields");
+    wrap.innerHTML = "";
+    for (const f of FIELDS[collection]) {
+      const l = document.createElement("label");
+      l.className = "au-field" + (f.hidden ? " is-hidden" : "");
+      l.dataset.key = f.key;
+      const span = document.createElement("span");
+      span.className = "label";
+      span.innerHTML = f.label + (f.required ? ' <span class="au-req">*</span>' : "");
+      l.appendChild(span);
+
+      let input: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+      if (f.type === "textarea") {
+        input = document.createElement("textarea");
+        (input as HTMLTextAreaElement).rows = 3;
+      } else if (f.type === "select" || f.type === "area" || f.type === "route" || f.type === "stars") {
+        input = document.createElement("select");
+        let opts: { v: string; t: string }[] = [];
+        if (f.type === "area") opts = data.areas.map((a) => ({ v: a.id, t: a.short }));
+        else if (f.type === "route") opts = data.routes.map((r) => ({ v: r.id, t: r.name }));
+        else if (f.type === "stars") opts = ["", "0", "1", "2", "3", "4", "5"].map((n) => ({ v: n, t: n === "" ? "—" : "★".repeat(+n) || "0" }));
+        else opts = (f.options || []).map((o) => ({ v: o, t: o }));
+        if (f.type !== "stars" && (!f.required || f.type === "area" || f.type === "route"))
+          opts.unshift({ v: "", t: f.type === "route" ? "Choose a route…" : "—" });
+        for (const o of opts) {
+          const oe = document.createElement("option");
+          oe.value = o.v;
+          oe.textContent = o.t;
+          input.appendChild(oe);
+        }
+      } else {
+        input = document.createElement("input");
+        (input as HTMLInputElement).type = f.type === "number" ? "number" : "text";
+      }
+      input.id = "f-" + f.key;
+      input.value = state[f.key] ?? f.default ?? "";
+      input.addEventListener("input", () => {
+        state[f.key] = input.value;
+        if (f.type === "route") syncRoute(input.value);
+        render();
+      });
+      l.appendChild(input);
+
+      if (f.help) {
+        const h = document.createElement("span");
+        h.className = "au-help";
+        h.innerHTML = f.help;
+        l.appendChild(h);
+      }
+      wrap.appendChild(l);
     }
   }
+
+  function syncRoute(routeId: string) {
+    const r = data.routes.find((x) => x.id === routeId);
+    if (!r) return;
+    state.routeName = r.name;
+    state.area = r.area;
+    const rn = $("f-routeName") as HTMLInputElement | null;
+    const ar = $("f-area") as HTMLSelectElement | null;
+    if (rn) rn.value = r.name;
+    if (ar) ar.value = r.area;
+  }
+
+  function buildFile() {
+    const managed = MANAGED[collection];
+    const lines: string[] = [];
+    const emitted = new Set<string>();
+    // preserve original key order for edits; append any new managed keys
+    const keyOrder = orderedKeys.length
+      ? orderedKeys
+      : FIELDS[collection].filter((f) => !f.hidden || state[f.key]).map((f) => f.key);
+    for (const key of keyOrder) {
+      if (emitted.has(key)) continue;
+      emitted.add(key);
+      if (managed.has(key)) {
+        const line = emitScalar(key, state[key] ?? "");
+        if (line) lines.push(line);
+      } else {
+        const adv = advEntries.find((e) => e.key === key);
+        if (adv) lines.push(`${key}: ${adv.raw}`);
+      }
+    }
+    for (const f of FIELDS[collection]) {
+      if (!emitted.has(f.key) && (state[f.key] ?? "").trim() !== "") {
+        const line = emitScalar(f.key, state[f.key]);
+        if (line) lines.push(line), emitted.add(f.key);
+      }
+    }
+    for (const e of advEntries) {
+      if (!emitted.has(e.key)) lines.push(`${e.key}: ${e.raw}`), emitted.add(e.key);
+    }
+    const body = ($("au-body") as HTMLTextAreaElement).value.trim();
+    return `---\n${lines.join("\n")}\n---\n\n${body}\n`;
+  }
+
+  function renderPreview() {
+    const box = $("au-preview");
+    const body = ($("au-body") as HTMLTextAreaElement).value;
+    const parts: string[] = [];
+    if (collection === "logbook") {
+      parts.push(`<div class="au-pv-title">${esc(state.title || "Untitled report")}</div>`);
+      parts.push(`<div class="au-pv-sub">${esc(state.party || "party")} · ${esc(state.date || "date")}</div>`);
+      const r = data.routes.find((x) => x.id === state.route);
+      if (r) parts.push(`<div class="au-pv-sub">on ${esc(r.name)}</div>`);
+    } else if (collection === "routes") {
+      parts.push(`<div class="au-pv-title">${esc(state.name || "Unnamed route")}</div>`);
+      if (state.stars) parts.push(`<div class="au-pv-stars">${"★".repeat(+state.stars)}</div>`);
+      const badges = [state.grade, state.length, state.pitches ? state.pitches + " pitches" : ""]
+        .filter(Boolean)
+        .map((b) => `<span class="au-pv-badge">${esc(b)}</span>`)
+        .join("");
+      if (badges) parts.push(`<div class="au-pv-badges">${badges}</div>`);
+      if (state.approach) parts.push(`<h2>Approach</h2><p>${state.approach}</p>`);
+    } else {
+      parts.push(`<div class="au-pv-title">${esc(state.name || "Unnamed area")}</div>`);
+      if (state.desc) parts.push(`<div class="au-pv-sub">${esc(state.desc)}</div>`);
+    }
+    parts.push(`<div class="au-pv-body">${body.trim() ? mdToHtml(body) : '<span class="au-pv-empty">The description preview shows here as you type.</span>'}</div>`);
+    box.innerHTML = parts.join("");
+  }
+
+  function render() {
+    renderPreview();
+    const file = buildFile();
+    $("au-out").textContent = file;
+    ($("au-copy") as HTMLButtonElement).dataset.text = file;
+
+    // GitHub link
+    const gh = $("au-gh") as HTMLAnchorElement;
+    if (mode === "edit" && rec) {
+      gh.href = `${data.repo}/edit/main/${rec.path}`;
+      gh.textContent = "Open GitHub to replace the file ↗";
+    } else {
+      const u = new URL(`${data.repo}/new/main/src/content/${collection}`);
+      u.searchParams.set("filename", newFilename);
+      if (file.length < 6000) u.searchParams.set("value", file);
+      gh.href = u.toString();
+      gh.textContent = "Open GitHub to create the file ↗";
+    }
+  }
+
+  /* ---------- init ---------- */
+  function initEdit(path: string) {
+    mode = "edit";
+    rec = data.catalog.find((r) => r.path === path) || null;
+    if (!rec) {
+      $("au-title").textContent = "File not found";
+      $("au-lede").textContent = `Couldn't find ${path}. Try the “Open GitHub” link, or email rizhaow@gmail.com.`;
+      $("au-form").hidden = true;
+      return;
+    }
+    collection = rec.collection;
+    const entries = parseFm(rec.fmText);
+    orderedKeys = entries.map((e) => e.key);
+    advEntries = entries.filter((e) => !MANAGED[collection].has(e.key));
+    for (const e of entries) {
+      if (MANAGED[collection].has(e.key)) state[e.key] = unquote(e.raw);
+    }
+    const label = params.get("label") || state.name || state.title || rec.id;
+    $("au-title").textContent = `Edit “${label}”`;
+    $("au-kicker").textContent = `Editing · ${collection.replace(/s$/, "")}`;
+    document.title = `Edit ${label} — Tioman Climbing Guidebook`;
+    $("au-file").textContent = rec.path;
+    ($("au-body") as HTMLTextAreaElement).value = rec.body;
+    if (advEntries.length) {
+      $("au-adv").hidden = false;
+      ($("au-adv-text") as HTMLTextAreaElement).value = advEntries.map((e) => `${e.key}: ${e.raw}`).join("\n");
+    }
+    finishInit();
+  }
+
+  function initNew() {
+    mode = "new";
+    collection = "logbook";
+    const route = params.get("route") || "";
+    const routeName = params.get("routeName") || "";
+    const area = params.get("area") || "";
+    state.route = route;
+    state.routeName = routeName;
+    state.area = area;
+    state.order = "5";
+    state.title = routeName ? `${routeName} — ` : "";
+    newFilename = (route || "trip") + "-report.md";
+    orderedKeys = FIELDS.logbook.map((f) => f.key);
+    $("au-title").textContent = routeName ? `Add a trip report — ${routeName}` : "Add a trip report";
+    $("au-kicker").textContent = "New · trip report";
+    document.title = "Add a trip report — Tioman Climbing Guidebook";
+    $("au-lede").textContent =
+      "Approach beta, conditions, how the pitches felt, gear that helped, anything loose or run-out, and thanks. Fill it in, preview, then copy it onto GitHub.";
+    ($("au-body") as HTMLTextAreaElement).value =
+      "## The climb\n\nHow the approach went, the conditions, how the pitches felt.\n\n## Beta for the next party\n\nGear that helped, loose or run-out sections, anchor state, timing.\n";
+    finishInit();
+  }
+
+  function finishInit() {
+    buildForm();
+    if (mode === "new" && state.route) syncRoute(state.route);
+    $("au-body-label").textContent = collection === "logbook" ? "Your report" : "Description";
+    const steps =
+      mode === "edit"
+        ? "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — it shows the current file. &nbsp; <b>3.</b> Select all, paste, and click <b>Propose changes</b>. GitHub makes your own copy and opens a pull request."
+        : "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — a new file opens, often pre-filled. &nbsp; <b>3.</b> Make sure the contents match, then click <b>Propose new file</b> to open a pull request.";
+    $("au-steps").innerHTML = steps;
+    $("au-adv-text").addEventListener("input", () => {
+      advEntries = parseFm(($("au-adv-text") as HTMLTextAreaElement).value);
+      render();
+    });
+    $("au-body").addEventListener("input", render);
+    render();
+  }
+
+  $("au-copy").addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    try {
+      await navigator.clipboard.writeText(btn.dataset.text || "");
+      const old = btn.textContent;
+      btn.textContent = "Copied ✓";
+      setTimeout(() => (btn.textContent = old), 1800);
+    } catch {
+      btn.textContent = "Press ⌘C to copy";
+    }
+  });
+
+  if (params.get("path")) initEdit(params.get("path")!);
+  else initNew(); // ?new=logbook, or bare /edit-help — a blank trip report, pick the route below
 </script>
