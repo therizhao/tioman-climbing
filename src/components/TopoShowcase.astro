@@ -1,0 +1,497 @@
+---
+/**
+ * An animated walk through the areas. Each slide is a hand-drawn topo of one
+ * formation with its classic line(s) drawing themselves in. Scroll, click the
+ * drawing, use the arrows / dots / arrow keys to move between areas. Hover (or
+ * focus) a line to see the route name.
+ *
+ * Silhouettes and line positions are stylised but follow the proportions of the
+ * photos in the route book (guidebook/figures).
+ */
+
+type Line = { name: string; d: string; lx: number; ly: number; anchor?: "start" | "middle" | "end" };
+type Slide = {
+  slug: string;
+  key: string;
+  name: string;
+  short: string;
+  blurb: string;
+  ridge: string;
+  massif: string;
+  lines: Line[];
+  extra?: string;
+};
+
+// viewBox 0 0 880 400 — ground at y≈380
+const slides: Slide[] = [
+  {
+    slug: "south-tower",
+    key: "H",
+    name: "Dragon's Horns — South Tower",
+    short: "the South Tower",
+    blurb:
+      "The steep left-hand fang above Mukut. Thirty years of first ascents, from a 2000 aid line to modern free routes to the top.",
+    ridge: "M0 392 L140 366 L250 316 L340 250 L430 300 L520 244 L650 312 L780 360 L880 380 Z",
+    massif:
+      "M150 388 L196 300 L246 196 L300 110 L352 44 L378 30 L406 92 L452 210 L496 300 L536 348 L578 372 L636 386 Z",
+    lines: [
+      { name: "Beckwith – Traver", d: "M214 380 L212 316 L238 214 L286 128 L344 58 L376 34", lx: 196, ly: 250, anchor: "end" },
+      { name: "Waking Dream", d: "M336 382 L338 300 L346 208 L360 118 L372 52 L378 34", lx: 300, ly: 210, anchor: "end" },
+      { name: "Polish Princess", d: "M414 378 L410 300 L392 214 L378 138 L378 74 L382 40", lx: 440, ly: 300, anchor: "start" },
+      { name: "Damai Sentosa", d: "M482 372 L486 300 L466 224 L440 160 L410 104 L388 52", lx: 512, ly: 250, anchor: "start" },
+    ],
+  },
+  {
+    slug: "north-tower",
+    key: "H",
+    name: "Dragon's Horns — North Tower",
+    short: "the North Tower",
+    blurb:
+      "The rounder right-hand tower. Unclimbed until 2011, one route to the summit — and a via ferrata for everyone else.",
+    ridge: "M0 392 L150 366 L300 340 L400 292 L490 320 L620 288 L780 344 L880 378 Z",
+    massif:
+      "M170 388 L214 306 L280 200 L344 118 L408 64 L440 50 L484 96 L544 210 L596 300 L648 356 L706 384 Z",
+    lines: [
+      { name: "Tanoshi Buttress", d: "M560 380 L556 300 L536 224 L512 154 L480 96 L444 56", lx: 592, ly: 240, anchor: "start" },
+    ],
+  },
+  {
+    slug: "mumbar-cliff",
+    key: "E",
+    name: "Mumbar Cliff",
+    short: "Mumbar Cliff",
+    blurb:
+      "A broad whaleback dome split by an arête — lower-angle slabs on the left, the steepest wall in the massif on the right.",
+    ridge: "M0 392 L180 368 L360 336 L500 296 L640 320 L800 360 L880 380 Z",
+    massif:
+      "M120 388 L176 288 L252 178 L344 106 L436 78 L512 96 L572 168 L624 268 L662 340 L690 378 Z",
+    lines: [
+      { name: "Yoga Boy", d: "M232 380 L246 330 L268 288 L282 262", lx: 214, ly: 300, anchor: "end" },
+      { name: "Project Grand Central", d: "M312 382 L318 322 L340 250 L366 198", lx: 300, ly: 210, anchor: "end" },
+      { name: "Fever Dreams", d: "M436 382 L448 318 L484 216 L516 122 L526 96", lx: 556, ly: 150, anchor: "start" },
+    ],
+  },
+  {
+    slug: "batu-sirau",
+    key: "G",
+    name: "Batu Sirau",
+    short: "Batu Sirau",
+    blurb:
+      "A compact granite blade behind Nenek Semukut — a drone photo, one route, and nothing below 6c on it.",
+    ridge: "M0 392 L220 366 L380 312 L520 268 L660 312 L820 362 L880 380 Z",
+    massif:
+      "M262 388 L286 276 L316 150 L342 74 L360 56 L404 118 L470 186 L520 224 L558 292 L588 348 L612 388 Z",
+    lines: [
+      { name: "second line", d: "M310 380 L306 300 L316 200 L332 106 L346 62", lx: 292, ly: 210, anchor: "end" },
+      { name: "Blood Sweat and Fear", d: "M366 382 L372 320 L406 262 L446 214 L476 176 L488 158", lx: 512, ly: 200, anchor: "start" },
+    ],
+  },
+  {
+    slug: "bagus-tower",
+    key: "F",
+    name: "Bagus Tower",
+    short: "Bagus Tower",
+    blurb:
+      "An obvious blocky tower above the end of the Bagus Place road. Two trad lines from 2015, and an overgrown approach.",
+    ridge: "M0 392 L200 368 L360 334 L500 300 L660 332 L840 366 L880 380 Z",
+    massif:
+      "M250 388 L262 320 L308 300 L316 238 L360 222 L372 150 L408 132 L444 92 L466 78 L484 138 L520 168 L512 240 L560 268 L556 330 L604 356 L616 388 Z",
+    lines: [
+      {
+        name: "All Along the Watchtower",
+        d: "M304 380 L306 342 L340 326 L344 296 L372 282 L382 244 L392 200 L400 160 L420 124 L448 96 L466 80",
+        lx: 500,
+        ly: 150,
+        anchor: "start",
+      },
+    ],
+  },
+  {
+    slug: "puncak-nipah",
+    key: "A/B",
+    name: "Puncak Nipah",
+    short: "Puncak Nipah",
+    blurb:
+      "A hillside with two lives: a bolted single-pitch crag on a painted board, and a 200 m adventure line up the summit tower.",
+    ridge: "M0 392 L220 380 L420 360 L560 340 L720 362 L880 382 Z",
+    massif:
+      "M70 388 L200 350 L330 296 L432 238 L488 196 L516 178 L546 214 L604 268 L668 328 L724 372 L756 388 Z",
+    lines: [
+      { name: "Green Line Route", d: "M544 380 L548 320 L536 258 L520 208 L516 184", lx: 476, ly: 240, anchor: "end" },
+    ],
+    extra: "M596 378 v-30 M616 380 v-30 M636 380 v-28 M656 381 v-26 M676 382 v-24 M696 383 v-22",
+  },
+  {
+    slug: "puncak-anak",
+    key: "—",
+    name: "Puncak Anak",
+    short: "Puncak Anak",
+    blurb:
+      "The little brother on the Nenek Semukut ridge. One easy, obvious line up the south side — an easy day, by this island's standards.",
+    ridge: "M0 392 L220 372 L380 340 L520 306 L680 340 L840 372 L880 382 Z",
+    massif:
+      "M330 388 L352 296 L384 176 L410 96 L428 74 L448 108 L482 224 L510 320 L534 388 Z",
+    lines: [
+      { name: "Wind of Change", d: "M398 380 L396 312 L408 224 L420 138 L426 96 L430 78", lx: 462, ly: 200, anchor: "start" },
+    ],
+  },
+];
+
+const canopy =
+  "M0 384 C 120 368 200 388 300 378 C 420 366 500 388 600 378 C 720 366 800 388 880 378 L880 400 L0 400 Z";
+---
+
+<section class="showcase" aria-roledescription="carousel" aria-label="The areas, drawn as topos">
+  <div class="showcase-track" id="showcase-track" tabindex="0">
+    {
+      slides.map((s, i) => (
+        <article class="slide" id={`slide-${i}`} aria-label={`${i + 1} of ${slides.length}: ${s.name}`}>
+          <div class="slide-art">
+            <svg viewBox="0 0 880 400" preserveAspectRatio="xMidYMax slice" role="img" aria-label={`Topo of ${s.name}`}>
+              <path class="sc-ridge" d={s.ridge} />
+              <path class="sc-massif" d={s.massif} />
+              <path class="sc-canopy" d={canopy} />
+              {s.extra && <path class="sc-ticks" d={s.extra} />}
+              {s.lines.map((ln, li) => (
+                <g class="sc-route" tabindex="0" aria-label={`Route: ${ln.name}`}>
+                  <title>{ln.name}</title>
+                  <path class="sc-hit" d={ln.d} />
+                  <path class="sc-line" d={ln.d} pathLength="100" style={`--d:${0.15 + li * 0.3}s`} />
+                  <text class="sc-line-label" x={ln.lx} y={ln.ly} text-anchor={ln.anchor ?? "middle"}>
+                    {ln.name}
+                  </text>
+                </g>
+              ))}
+            </svg>
+            <a class="slide-open" href={`/areas/${s.slug}`} aria-label={`Open ${s.name}`} />
+          </div>
+          <div class="slide-meta">
+            <span class="label">
+              Area {s.key} · {i + 1} / {slides.length}
+            </span>
+            <h3>{s.name}</h3>
+            <p class="slide-blurb">{s.blurb}</p>
+            <p class="slide-classics">
+              <span class="label" style="letter-spacing:.1em">Classic lines</span>
+              <br />
+              {s.lines.map((ln) => ln.name).join(" · ")}
+            </p>
+            <a class="btn ghost" href={`/areas/${s.slug}`}>
+              Explore {s.short}
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path
+                  d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="showcase-nav">
+    <button type="button" class="sc-arrow" data-dir="-1" aria-label="Previous area">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+        ><path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+        ></path></svg
+      >
+    </button>
+    <div class="sc-dots">
+      {
+        slides.map((s, i) => (
+          <button
+            type="button"
+            class="sc-dot"
+            data-to={i}
+            aria-label={`Go to ${s.short}`}
+            aria-selected={i === 0 ? "true" : "false"}
+          />
+        ))
+      }
+    </div>
+    <button type="button" class="sc-arrow" data-dir="1" aria-label="Next area">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+        ><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
+        ></path></svg
+      >
+    </button>
+  </div>
+</section>
+
+<style>
+  .showcase {
+    margin-bottom: 2.75rem;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .showcase-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .showcase-track::-webkit-scrollbar {
+    display: none;
+  }
+  .showcase-track:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  @media (max-width: 780px) {
+    .slide {
+      grid-template-columns: 1fr;
+    }
+  }
+  .slide-art {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+    border-right: 1px solid var(--rule);
+  }
+  @media (max-width: 780px) {
+    .slide-art {
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+      aspect-ratio: 2 / 1;
+    }
+  }
+  .slide-art svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .slide-open {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .sc-route {
+    position: relative;
+    z-index: 2;
+  }
+  .sc-ridge {
+    fill: color-mix(in srgb, var(--surface-2) 50%, var(--surface));
+  }
+  .sc-massif {
+    fill: var(--surface-2);
+  }
+  .sc-canopy {
+    fill: color-mix(in srgb, var(--mid) 22%, var(--surface));
+  }
+  .sc-ticks {
+    stroke: var(--oxide);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.7s;
+  }
+  .sc-hit {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 20;
+    cursor: pointer;
+  }
+  .sc-line {
+    fill: none;
+    stroke: var(--oxide);
+    stroke-width: 3.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    filter: drop-shadow(0 1px 1px rgba(74, 58, 38, 0.15));
+    pointer-events: none;
+    transition: stroke-width 0.15s ease;
+  }
+  .slide.is-active .sc-line {
+    animation: sc-draw 1.5s cubic-bezier(0.65, 0.02, 0.28, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+  .slide.is-active .sc-ticks {
+    opacity: 1;
+  }
+  @keyframes sc-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  .sc-route:hover .sc-line,
+  .sc-route:focus-visible .sc-line {
+    stroke-width: 5;
+  }
+  .sc-line-label {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    font-weight: 600;
+    fill: var(--oxide);
+    paint-order: stroke;
+    stroke: var(--surface);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+  .sc-route:hover .sc-line-label,
+  .sc-route:focus-visible .sc-line-label {
+    opacity: 1;
+  }
+  .sc-route:focus-visible {
+    outline: none;
+  }
+
+  .slide-meta {
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    display: grid;
+    gap: 0.9rem;
+    align-content: center;
+  }
+  .slide-meta h3 {
+    font-size: var(--step-2);
+    font-weight: 300;
+  }
+  .slide-blurb {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    max-width: 42ch;
+  }
+  .slide-classics {
+    font-size: 0.9rem;
+    color: var(--ink-2);
+    line-height: 1.7;
+  }
+  .slide-meta .btn {
+    justify-self: start;
+    margin-top: 0.35rem;
+  }
+
+  .showcase-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    border-top: 1px solid var(--rule);
+    background: var(--ground);
+  }
+  .sc-arrow {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.18s;
+  }
+  .sc-arrow:hover {
+    border-color: var(--ink);
+  }
+  .sc-arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+  .sc-dots {
+    display: flex;
+    gap: 0.5rem;
+    margin-inline: auto;
+  }
+  .sc-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 50%;
+    border: 0;
+    background: var(--faint);
+    cursor: pointer;
+    transition: background 0.18s, transform 0.18s;
+  }
+  .sc-dot[aria-selected="true"] {
+    background: var(--oxide);
+    transform: scale(1.35);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sc-line {
+      stroke-dashoffset: 0;
+    }
+    .sc-ticks {
+      opacity: 1;
+      transition: none;
+    }
+    .showcase-track {
+      scroll-behavior: auto;
+    }
+  }
+</style>
+
+<script>
+  const track = document.getElementById("showcase-track");
+  if (track) {
+    const slides = Array.from(track.querySelectorAll<HTMLElement>(".slide"));
+    const dots = Array.from(document.querySelectorAll<HTMLButtonElement>(".sc-dot"));
+    const arrows = Array.from(document.querySelectorAll<HTMLButtonElement>(".sc-arrow"));
+    const prev = arrows.find((a) => a.dataset.dir === "-1")!;
+    const next = arrows.find((a) => a.dataset.dir === "1")!;
+    let current = 0;
+
+    const paint = () => {
+      dots.forEach((d, di) => d.setAttribute("aria-selected", di === current ? "true" : "false"));
+      prev.disabled = current === 0;
+      next.disabled = current === slides.length - 1;
+      slides[current]?.classList.add("is-active");
+    };
+
+    const goTo = (i: number, smooth = true) => {
+      current = Math.max(0, Math.min(slides.length - 1, i));
+      track.scrollTo({ left: slides[current].offsetLeft, behavior: smooth ? "smooth" : "auto" });
+      paint();
+    };
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-active");
+            const idx = slides.indexOf(e.target as HTMLElement);
+            if (idx > -1) {
+              current = idx;
+              paint();
+            }
+          }
+        });
+      },
+      { root: track, threshold: 0.55 },
+    );
+    slides.forEach((s) => io.observe(s));
+
+    arrows.forEach((a) => a.addEventListener("click", () => goTo(current + Number(a.dataset.dir))));
+    dots.forEach((d) => d.addEventListener("click", () => goTo(Number(d.dataset.to))));
+
+    track.addEventListener("keydown", (ev) => {
+      if (ev.key === "ArrowRight") {
+        ev.preventDefault();
+        goTo(current + 1);
+      } else if (ev.key === "ArrowLeft") {
+        ev.preventDefault();
+        goTo(current - 1);
+      }
+    });
+
+    goTo(0, false);
+  }
+</script>

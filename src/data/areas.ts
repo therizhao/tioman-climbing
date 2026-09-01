@@ -41,6 +41,9 @@ export type Route = {
   status?: string;
   /** set for the North Tower via ferrata so it renders in its own group */
   kind?: "climb" | "via-ferrata";
+  /** guidebook topo image for this route */
+  topoImage?: string;
+  topoCaption?: string;
 };
 
 export type Area = {
@@ -54,6 +57,9 @@ export type Area = {
   lede: string;
   meta: [string, string][];
   order: number;
+  /** guidebook topo/overview image shown on the area page */
+  topoImage?: string;
+  topoCaption?: string;
   routes: Route[];
   undeveloped?: boolean;
   emptyNote?: string;
@@ -67,6 +73,9 @@ export const areas: Area[] = [
     aka: "Gunung Nenek Semukut",
     short: "South Tower",
     order: 1,
+    topoImage: "/topos/south-tower-routes.jpg",
+    topoCaption:
+      "South Tower routes A–E, with the Polish Princess pitch topo at right. From the route book (David Kaszlikowski photo).",
     desc: "The main event. Big-wall aid, hard free, and jungle pitches to a summit block called The Wart.",
     lede: "The higher, left-hand fang above Kampung Mukut, and the most climbed piece of rock on the island. Ten routes span thirty years of first ascents — a 2000 aid line, Czech and Polish free climbing, an Iranian big wall, and Malaysian bolted multipitch.",
     meta: [
@@ -78,6 +87,9 @@ export const areas: Area[] = [
     routes: [
       {
         slug: "polish-princess",
+        topoImage: "/route-topos/polish-princess.jpg",
+        topoCaption:
+          "Polish Princess and the neighbouring South Tower lines. David Kaszlikowski photo with the pitch topo at right (route book source page 36).",
         name: "Polish Princess",
         grade: "7b+",
         length: "270 m",
@@ -109,6 +121,9 @@ export const areas: Area[] = [
       },
       {
         slug: "damai-sentosa",
+        topoImage: "/route-topos/damai-sentosa.jpg",
+        topoCaption:
+          "The hand-drawn Damai Sentosa topo, photographed from the Mukut logbook (source page 46).",
         name: "Damai Sentosa",
         grade: "6c+",
         length: "280 m",
@@ -136,6 +151,9 @@ export const areas: Area[] = [
       },
       {
         slug: "naga",
+        topoImage: "/route-topos/naga.jpg",
+        topoCaption:
+          "Naga — photo topo, the purple line with belay stations (route book source page 69).",
         name: "Naga",
         grade: "6b+",
         length: "270 m",
@@ -163,6 +181,9 @@ export const areas: Area[] = [
       },
       {
         slug: "sam-sam",
+        topoImage: "/route-topos/sam-sam.jpg",
+        topoCaption:
+          "The hand-drawn Sam Sam topo from the logbook (source page 57).",
         name: "Sam Sam",
         grade: "7b",
         length: "300 m",
@@ -189,6 +210,9 @@ export const areas: Area[] = [
       },
       {
         slug: "batu-naga",
+        topoImage: "/route-topos/batu-naga.jpg",
+        topoCaption:
+          "Batu Naga (“Stone Dragon”). David Kaszlikowski photo, route book source page 44.",
         name: "Batu Naga",
         grade: "5.12a",
         length: "300 m",
@@ -216,6 +240,9 @@ export const areas: Area[] = [
       },
       {
         slug: "ironin-3",
+        topoImage: "/route-topos/ironin-3.jpg",
+        topoCaption:
+          "The Iranian route — clean photo topo, “mountains for peace, April 2015” (route book source page 55).",
         name: "Ironin 3",
         grade: "5.13b",
         length: "485 m",
@@ -245,6 +272,9 @@ export const areas: Area[] = [
       },
       {
         slug: "waking-dream",
+        topoImage: "/route-topos/waking-dream.jpg",
+        topoCaption:
+          "Waking Dream — the original hand topo (The Alcove, Great Roof, Skywalk) beside a photo of the line (route book source page 50).",
         name: "Waking Dream",
         grade: "7c+",
         length: "305 m",
@@ -264,6 +294,9 @@ export const areas: Area[] = [
       },
       {
         slug: "freebird",
+        topoImage: "/route-topos/freebird.jpg",
+        topoCaption:
+          "Freebird — photo topo with belays R1–R6 (route book source page 73).",
         name: "Freebird",
         grade: "6a",
         length: "230 m",
@@ -303,6 +336,9 @@ export const areas: Area[] = [
       },
       {
         slug: "beckwith-traver",
+        topoImage: "/route-topos/beckwith-traver.jpg",
+        topoCaption:
+          "Beckwith – Traver, the red line up the left side of the South Tower (route book source page 43).",
         name: "Beckwith – Traver",
         grade: "5.10 A3",
         length: "400 m",
@@ -325,6 +361,9 @@ export const areas: Area[] = [
     aka: "Gunung Nenek Semukut",
     short: "North Tower",
     order: 2,
+    topoImage: "/topos/north-tower-tanoshi.jpg",
+    topoCaption:
+      "The North Tower with Tanoshi Buttress (line H). From the route book, source page 75.",
     desc: "The right-hand fang. One hard route to the summit — and a via ferrata for everyone else.",
     lede: "The lower, right-hand tower — a clean skyline buttress seen from Mukut. It stayed unclimbed for eleven years after the South Tower fell, and a single climbing route reaches its summit today. A via ferrata now lets non-climbers reach a viewpoint on the tower.",
     meta: [
@@ -354,6 +393,9 @@ export const areas: Area[] = [
       },
       {
         slug: "tanoshi-buttress",
+        topoImage: "/route-topos/tanoshi-buttress.jpg",
+        topoCaption:
+          "Tanoshi Buttress (line H) on the North Tower (route book source page 75).",
         name: "Tanoshi Buttress",
         grade: "5.10 R/X",
         length: "270 m",
@@ -383,6 +425,9 @@ export const areas: Area[] = [
     aka: "Kota Sirau",
     short: "Mumbar Cliff",
     order: 3,
+    topoImage: "/topos/mumbar-face.jpg",
+    topoCaption:
+      "Mumbar Cliff — the four established/attempted lines. From the route book, source page 6.",
     desc: "Steep white granite split by an arête. Slabs left, the steepest wall in the massif right.",
     lede: "A big face on the flank of Batu Mumbar, inland from the Nipah–Tunamaya coast. An arête divides it: lower-angle black and brown slabs on the left, and on the right a white stripe of steep granite that holds one of the steepest routes anywhere on the island.",
     meta: [
@@ -394,6 +439,9 @@ export const areas: Area[] = [
     routes: [
       {
         slug: "fever-dreams",
+        topoImage: "/route-topos/fever-dreams.jpg",
+        topoCaption:
+          "Fever Dreams — clean photo topo with pitch grades (route book source page 23).",
         name: "Fever Dreams",
         grade: "7c",
         length: "250 m",
@@ -422,6 +470,9 @@ export const areas: Area[] = [
       },
       {
         slug: "yoga-boy",
+        topoImage: "/route-topos/yoga-boy.jpg",
+        topoCaption:
+          "Yoga Boy — photo topo, belays R1–R5 (route book source page 14).",
         name: "Yoga Boy",
         grade: "HVS 5a",
         length: "220 m",
@@ -444,6 +495,9 @@ export const areas: Area[] = [
       },
       {
         slug: "project-grand-central",
+        topoImage: "/route-topos/project-grand-central.jpg",
+        topoCaption:
+          "Project Grand Central — photo topo, R1–R8; the upper pitches (dashed) are unclimbed (route book source page 16).",
         name: "Project Grand Central",
         grade: "E1 5a",
         length: "400 m",
@@ -469,6 +523,9 @@ export const areas: Area[] = [
     aka: "“Mystery Pinnacle”",
     short: "Batu Sirau",
     order: 4,
+    topoImage: "/topos/blood-sweat-and-fear.jpg",
+    topoCaption:
+      "Batu Sirau with Blood Sweat and Fear (red) and a second line (green). Vertical Vision / David Kaszlikowski photo, route book source page 25.",
     desc: "A compact pinnacle behind Nenek Semukut. One route, seven pitches, hardest 7b+.",
     lede: "A steep granite pinnacle on the back side of Gunung Nenek Semukut, photographed from a drone and climbed once. The overview map calls it the Mystery Wall; the route page calls it something else again — the naming here has never been settled.",
     meta: [
@@ -480,6 +537,9 @@ export const areas: Area[] = [
     routes: [
       {
         slug: "blood-sweat-and-fear",
+        topoImage: "/route-topos/blood-sweat-and-fear.jpg",
+        topoCaption:
+          "Blood Sweat and Fear (red) with pitch grades, plus a second line in green. Vertical Vision / David Kaszlikowski photo (route book source page 25).",
         name: "Blood Sweat and Fear",
         grade: "7b+",
         length: "155 m",
@@ -513,6 +573,9 @@ export const areas: Area[] = [
     aka: "above Bagus Place",
     short: "Bagus Tower",
     order: 5,
+    topoImage: "/topos/bagus-watchtower.jpg",
+    topoCaption:
+      "The hand-drawn All Along the Watchtower topo, photographed from the Mukut logbook (source page 26).",
     desc: "Two trad lines from 2015. Approach path overgrown — bring a machete.",
     lede: "An obvious tower above the end of the Bagus Place road. Both its routes and both its topos come from a single French–Malaysian party in October 2015, and survive only as photographs of a logbook page.",
     meta: [
@@ -524,6 +587,9 @@ export const areas: Area[] = [
     routes: [
       {
         slug: "all-along-the-watchtower",
+        topoImage: "/route-topos/all-along-the-watchtower.jpg",
+        topoCaption:
+          "All Along the Watchtower — hand-drawn topo from the logbook (source page 26).",
         name: "All Along the Watchtower",
         grade: "6a+",
         length: "300 m",
@@ -540,6 +606,9 @@ export const areas: Area[] = [
       },
       {
         slug: "hippies-tonic",
+        topoImage: "/route-topos/hippies-tonic.jpg",
+        topoCaption:
+          "Hippies Tonic variation start — hand-drawn topo (route book source page 27).",
         name: "Hippies Tonic",
         grade: "5a/b",
         length: "90 m",
@@ -563,6 +632,9 @@ export const areas: Area[] = [
     aka: "Nipah beach & slabs",
     short: "Puncak Nipah",
     order: 6,
+    topoImage: "/topos/nipah-green-line.jpg",
+    topoCaption:
+      "The Green Line Route topo, hand-drawn (route book source page 5).",
     desc: "A bolted single-pitch crag recorded only on a painted board, plus a 200 m adventure line.",
     lede: "Two very different things share one hillside above Nipah: around twenty-five bolted single pitches, and a 200 m multipitch up the summit tower that its first ascensionists described as “very dangerous but easy”.",
     meta: [
@@ -574,6 +646,9 @@ export const areas: Area[] = [
     routes: [
       {
         slug: "green-line-route",
+        topoImage: "/route-topos/green-line-route.jpg",
+        topoCaption:
+          "The Green Line Route — hand-drawn topo (route book source page 5).",
         name: "Green Line Route",
         grade: "6a",
         length: "200 m",
@@ -594,6 +669,9 @@ export const areas: Area[] = [
       },
       {
         slug: "nipah-sport-crag",
+        topoImage: "/route-topos/nipah-sport-crag.jpg",
+        topoCaption:
+          "The painted “Route Map Nipah” board — the only record of the single-pitch crag (route book source page 4).",
         name: "The sport crag",
         grade: "5b–6b",
         length: "20–26 m",
@@ -619,6 +697,9 @@ export const areas: Area[] = [
     aka: "“Baby Dragon”",
     short: "Puncak Anak",
     order: 7,
+    topoImage: "/topos/puncak-anak.jpg",
+    topoCaption:
+      "Wind of Change on Puncak Anak, hand-drawn topo (route book source page 74).",
     desc: "A small tower off the CP7 trail. One easy, obvious line up the south side.",
     lede: "The little brother on the Nenek Semukut ridge, sharing the CP7 approach with Freebird and Polish Princess. One recorded route, and an easy day out by the standards of this island.",
     meta: [
@@ -630,6 +711,9 @@ export const areas: Area[] = [
     routes: [
       {
         slug: "wind-of-change",
+        topoImage: "/route-topos/wind-of-change.jpg",
+        topoCaption:
+          "Wind of Change on Puncak Anak — hand-drawn topo (route book source page 74).",
         name: "Wind of Change",
         grade: "6a",
         length: "100 m",
@@ -659,6 +743,9 @@ export const areas: Area[] = [
     aka: "no access path",
     short: "Unclimbed Buttress",
     order: 8,
+    topoImage: "/topos/overview-map.jpg",
+    topoCaption:
+      "The master map — feature D is the Unclimbed Buttress (route book source page 3).",
     desc: "Marked on the master map as potential for new trad and sport. Nobody has been up it.",
     lede: "Feature D on the master map, between the Nipah slabs and Mumbar. The map’s own caption reads: potential for new trad and sport routes, needs new access path. That is the entire record.",
     meta: [
@@ -680,6 +767,9 @@ export const areas: Area[] = [
     aka: "east coast",
     short: "Juara Beach",
     order: 9,
+    topoImage: "/topos/juara-sketch.jpg",
+    topoCaption:
+      "The entire record of Juara: a field sketch of ~20 lines (route book source page 76).",
     desc: "Sea cliffs and boulders sketched in a notebook. No names, no grades, no one back since.",
     lede: "The quiet side of the island, and the only area in this guidebook that isn’t on the south coast. The record amounts to one rough field sketch showing about twenty lines — with no names, no grades and no description.",
     meta: [

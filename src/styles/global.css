@@ -423,10 +423,35 @@ section {
   color: var(--ink-2);
   font-size: 1.02rem;
 }
+.area-topo {
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+}
+.area-topo img {
+  width: 100%;
+  max-height: 66vh;
+  object-fit: contain;
+  background: var(--surface-2);
+}
+.area-topo figcaption {
+  padding: 0.75rem 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--mid);
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+}
+
 .meta-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   border-bottom: 1px solid var(--rule);
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
 }
 .meta-strip div {
   padding: 1.1rem 1.5rem 1.1rem 0;
@@ -599,6 +624,27 @@ section {
   margin: 0.4rem 0 0;
   font-size: 0.92rem;
 }
+.rp-topo {
+  margin: 0;
+  border-bottom: 1px solid var(--rule);
+  background: var(--surface-2);
+}
+.rp-topo img {
+  width: 100%;
+  max-height: 72vh;
+  object-fit: contain;
+  background: var(--surface-2);
+}
+.rp-topo figcaption {
+  padding: 0.7rem clamp(1.5rem, 3vw, 2.5rem);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--mid);
+  background: var(--surface);
+  border-top: 1px solid var(--rule);
+}
+
 .rp-body {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);

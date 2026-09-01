@@ -15,6 +15,9 @@ const {
 } = Astro.props;
 
 const fullTitle = title === "Tioman Climbing Guidebook" ? title : `${title} — Tioman Climbing Guidebook`;
+const siteBase = Astro.site ?? new URL(Astro.url.origin);
+const canonical = new URL(Astro.url.pathname, siteBase).href;
+const ogImage = new URL("/media/horns-from-the-sea.jpg", siteBase).href;
 const nav = [
   { href: "/#areas", label: "Areas", match: "/" },
   { href: "/logbook", label: "Logbook", match: "/logbook" },
@@ -31,11 +34,11 @@ const nav = [
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#faf6ed" />
-    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="canonical" href={canonical} />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL("/media/horns-from-the-sea.jpg", Astro.site)} />
+    <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

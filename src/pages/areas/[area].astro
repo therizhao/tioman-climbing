@@ -33,6 +33,17 @@ const areaExternal = externalLogs.filter((l) => l.area === area.slug);
     </div>
   </div>
 
+  {
+    area.topoImage && (
+      <div class="wrap">
+        <figure class="area-topo">
+          <img src={area.topoImage} alt={`Topo of ${area.name}`} loading="lazy" />
+          <figcaption>{area.topoCaption}</figcaption>
+        </figure>
+      </div>
+    )
+  }
+
   <div class="wrap">
     <div class="meta-strip">
       {

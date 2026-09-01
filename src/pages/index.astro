@@ -1,6 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
-import TowerMap from "../components/TowerMap.astro";
+import TopoShowcase from "../components/TopoShowcase.astro";
 import VideoBand from "../components/VideoBand.astro";
 import { areas } from "../data/areas";
 
@@ -64,12 +64,12 @@ function routeCount(a: (typeof areas)[number]): string {
       <div class="sec-head">
         <h2>The areas</h2>
         <p>
-          Select a tower on the drawing, or pick any area from the list. Most of the island's
-          rock is still unclimbed — those entries are here on purpose.
+          Walk through the formations below — scroll, click, or use the arrows. Then pick any
+          area from the list. Much of the island's rock is still unclimbed.
         </p>
       </div>
 
-      <TowerMap />
+      <TopoShowcase />
 
       <div class="areas">
         {

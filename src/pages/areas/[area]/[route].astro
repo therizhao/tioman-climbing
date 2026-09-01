@@ -59,6 +59,15 @@ const excerpt = (body: string) =>
         <div><span class="label">Descent</span><dd>{route.descent ?? "—"}</dd></div>
       </dl>
 
+      {
+        route.topoImage && (
+          <figure class="rp-topo">
+            <img src={route.topoImage} alt={`Topo of ${route.name}`} loading="lazy" />
+            <figcaption>{route.topoCaption}</figcaption>
+          </figure>
+        )
+      }
+
       <div class="rp-body">
         <div class="ladder-wrap">
           <span class="label">Pitches</span>
