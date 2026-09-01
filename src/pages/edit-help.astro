@@ -1,0 +1,176 @@
+---
+import Base from "../layouts/Base.astro";
+import { REPO } from "../lib/guidebook";
+---
+
+<Base
+  title="Edit this page"
+  description="How to propose an edit to the Tioman climbing guidebook through GitHub."
+  section="/"
+>
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span><span>Edit</span>
+    </nav>
+
+    <div class="detail-hero" style="border-bottom:0">
+      <p class="label">Contribute an edit</p>
+      <h1 id="eh-title">Edit this page on GitHub</h1>
+      <p class="lede">
+        The whole guidebook is open. You can fix a grade, a name, an approach or add detail
+        yourself — the change goes to a maintainer to review before it's published.
+      </p>
+    </div>
+
+    <p class="eh-file mono" id="eh-file"></p>
+
+    <div class="two-col" style="margin-top:1.5rem">
+      <div style="display:grid;gap:1.25rem">
+        <div class="panel">
+          <span class="label">Before you start</span>
+          <h3>You need a GitHub account</h3>
+          <p>
+            It's free — <a href="https://github.com/signup">sign up</a> (takes a minute). You
+            don't need to install anything or know Git; everything happens in the browser.
+          </p>
+        </div>
+        <div class="panel">
+          <span class="label">What happens</span>
+          <h3>Your edit becomes a suggestion</h3>
+          <ol class="eh-steps">
+            <li>GitHub makes <strong>your own copy</strong> of the file (a "fork") — you can't break anything.</li>
+            <li>You edit the text in the browser and click <strong>Propose changes</strong>.</li>
+            <li>That opens a <strong>pull request</strong> — a suggested change.</li>
+            <li>A maintainer reviews it, and it goes live once merged.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="panel">
+        <span class="label">How the file is laid out</span>
+        <h3>Frontmatter, then prose</h3>
+        <p>
+          Every route and area is one Markdown file. At the top, between two <code>---</code>
+          lines, is the <strong>frontmatter</strong> — all the structured fields. Below it is the
+          descriptive paragraph.
+        </p>
+        <pre class="eh-code"><code>---
+name: "Polish Princess"
+grade: "7b+"
+length: "270 m"
+pitches: 8
+firstAscent: "E. Kubarska & D. Kaszlikowski"
+year: 2011
+stars: 5
+approach: "Tanjung Inn → CP7, then left — 10 min"
+descent: "Abseil the line, 1 × 70 m"
+gear: "Full rack of cams to BD #4…"
+---
+
+The first fully prepared free line to the
+South Tower summit. Uses Sam Sam as its
+approach…</code></pre>
+        <ul class="eh-fields">
+          <li><code>grade</code> — keep the route's own system (French / UK / YDS). No conversions.</li>
+          <li><code>length</code>, <code>pitches</code> — <code>"270 m"</code>, a number, or leave as-is.</li>
+          <li><code>stars</code> — 0–5, and cite where the rating comes from in the prose.</li>
+          <li><code>warn</code> — a hazard note; short HTML like <code>&lt;strong&gt;…&lt;/strong&gt;</code> is fine.</li>
+          <li>Keep the <code>---</code> lines and the quotes around text values.</li>
+          <li>Not sure? Change only what you know and leave a note in the pull request.</li>
+        </ul>
+        <p>
+          For topo photos, new routes, or anything you're unsure how to format, just email
+          <a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a>.
+        </p>
+      </div>
+    </div>
+
+    <div class="eh-go">
+      <a class="btn" id="eh-continue" href={`${REPO}/edit/main`}>
+        Continue to the GitHub editor
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path
+            d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </a>
+      <a class="btn ghost" href="/contribute">Or send a correction by email</a>
+    </div>
+  </div>
+
+  <div style="height:clamp(2rem,5vw,4rem)"></div>
+</Base>
+
+<style>
+  .eh-file {
+    margin-top: clamp(1.25rem, 3vw, 2rem);
+    font-size: 0.8rem;
+    color: var(--mid);
+    padding: 0.55rem 0.8rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    display: inline-block;
+    word-break: break-all;
+  }
+  .eh-steps,
+  .eh-fields {
+    margin: 0;
+    padding-left: 1.15rem;
+    display: grid;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--ink-2);
+  }
+  .eh-code {
+    margin: 0;
+    background: var(--ink);
+    color: color-mix(in srgb, var(--ground) 88%, transparent);
+    border-radius: 3px;
+    padding: 1rem 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+  .eh-code code {
+    color: inherit;
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    background: var(--surface-2);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+  }
+  .eh-go {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+</style>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const path = params.get("path");
+  const label = params.get("label");
+  const repo = "https://github.com/therizhao/tioman-climbing";
+
+  if (label) {
+    document.getElementById("eh-title")!.textContent = `Edit "${label}"`;
+    document.title = `Edit ${label} — Tioman Climbing Guidebook`;
+  }
+  if (path) {
+    document.getElementById("eh-file")!.textContent = path;
+    (document.getElementById("eh-continue") as HTMLAnchorElement).href =
+      `${repo}/edit/main/${path}`;
+  } else {
+    document.getElementById("eh-file")!.remove();
+  }
+</script>

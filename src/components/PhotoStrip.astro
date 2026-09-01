@@ -1,0 +1,145 @@
+---
+interface Props {
+  images: { src: string; caption?: string }[];
+  /** short label shown above, e.g. "Topos" */
+  label?: string;
+}
+const { images, label } = Astro.props;
+if (images.length === 0) return Astro.redirect("/404"); // never — guarded by callers
+const single = images.length === 1;
+---
+
+<figure class={`photostrip${single ? " is-single" : ""}`}>
+  {label && <figcaption class="ps-label">{label}</figcaption>}
+  <div class="ps-track" tabindex={single ? undefined : "0"}>
+    {
+      images.map((img, i) => (
+        <div class="ps-item">
+          <img src={img.src} alt={img.caption || "Topo"} loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+          {img.caption && <figcaption class="ps-cap">{img.caption}</figcaption>}
+        </div>
+      ))
+    }
+  </div>
+  {
+    !single && (
+      <div class="ps-nav">
+        <span class="ps-count">
+          <span data-ps-current>1</span> / {images.length}
+        </span>
+        <span class="ps-hint">Scroll or drag &rarr;</span>
+      </div>
+    )
+  }
+</figure>
+
+<style>
+  .photostrip {
+    margin: 0;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+  .ps-label {
+    padding: 0.55rem 1rem 0;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .ps-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    scrollbar-width: none;
+  }
+  .ps-track::-webkit-scrollbar {
+    display: none;
+  }
+  .is-single .ps-track {
+    display: block;
+    overflow: visible;
+  }
+  .ps-track:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -3px;
+  }
+  .ps-item {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+  }
+  .ps-item img {
+    width: 100%;
+    max-height: 72vh;
+    object-fit: contain;
+    background: var(--surface-2);
+    display: block;
+  }
+  .ps-cap {
+    padding: 0.7rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--mid);
+    background: var(--surface);
+    border-top: 1px solid var(--rule);
+  }
+  .ps-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    background: var(--ground);
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--mid);
+  }
+  .ps-count [data-ps-current] {
+    color: var(--ink-2);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>(".photostrip:not(.is-single)").forEach((strip) => {
+    const track = strip.querySelector<HTMLElement>(".ps-track")!;
+    const current = strip.querySelector<HTMLElement>("[data-ps-current]");
+    const items = Array.from(track.querySelectorAll<HTMLElement>(".ps-item"));
+
+    track.addEventListener(
+      "scroll",
+      () => {
+        const idx = Math.round(track.scrollLeft / track.clientWidth);
+        if (current) current.textContent = String(Math.min(items.length, idx + 1));
+      },
+      { passive: true },
+    );
+
+    // drag to scroll
+    let down = false;
+    let x = 0;
+    let sl = 0;
+    track.addEventListener("pointerdown", (e) => {
+      down = true;
+      x = e.clientX;
+      sl = track.scrollLeft;
+      track.setPointerCapture(e.pointerId);
+    });
+    track.addEventListener("pointermove", (e) => {
+      if (down) track.scrollLeft = sl - (e.clientX - x);
+    });
+    const up = () => (down = false);
+    track.addEventListener("pointerup", up);
+    track.addEventListener("pointercancel", up);
+    track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") track.scrollBy({ left: track.clientWidth, behavior: "smooth" });
+      if (e.key === "ArrowLeft") track.scrollBy({ left: -track.clientWidth, behavior: "smooth" });
+    });
+  });
+</script>

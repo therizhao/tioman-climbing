@@ -1,21 +1,18 @@
 ---
 import Base from "../layouts/Base.astro";
 import {
-  areas,
+  getAreas,
   allRoutePairs,
   gradeBand,
   lengthBucket,
   lengthBucketLabels,
+  stars,
   type GradeBand,
   type LengthBucket,
-} from "../data/areas";
+} from "../lib/guidebook";
 
-const pairs = allRoutePairs()
-  .filter(({ route }) => route.kind !== "via-ferrata" || true) // keep via ferrata in the finder
-  .sort((a, b) => {
-    if (a.area.order !== b.area.order) return a.area.order - b.area.order;
-    return a.route.name.localeCompare(b.route.name);
-  });
+const areas = await getAreas();
+const pairs = await allRoutePairs();
 
 const bandOrder: GradeBand[] = [
   "Introductory",
@@ -26,12 +23,12 @@ const bandOrder: GradeBand[] = [
   "Big-wall aid",
   "Via ferrata",
 ];
-const usedBands = bandOrder.filter((b) => pairs.some(({ route }) => gradeBand(route.grade) === b));
+const usedBands = bandOrder.filter((b) => pairs.some(({ route }) => gradeBand(route.data.grade) === b));
 
 const bucketOrder: LengthBucket[] = ["single-pitch", "under-150", "150-280", "280-360", "over-360"];
-const usedBuckets = bucketOrder.filter((k) => pairs.some(({ route }) => lengthBucket(route) === k));
+const usedBuckets = bucketOrder.filter((k) => pairs.some(({ route }) => lengthBucket(route.data) === k));
 
-const stars = (n: number | null) => (n ? "★".repeat(n) : "");
+const areasWithRoutes = areas.filter((a) => pairs.some((p) => p.area.id === a.id));
 const total = pairs.length;
 ---
 
@@ -49,8 +46,8 @@ const total = pairs.length;
       <p class="label">Route finder</p>
       <h1>Every recorded route</h1>
       <p class="lede">
-        {total} routes across {areas.filter((a) => a.routes.length).length} areas. Filter by area,
-        length and rough difficulty, or search by name or first ascensionist.
+        {total} routes across {areasWithRoutes.length} areas. Filter by area, length and rough
+        difficulty, or search by name or first ascensionist.
       </p>
     </div>
 
@@ -63,12 +60,7 @@ const total = pairs.length;
         <span class="label">Area</span>
         <select id="rf-area">
           <option value="">All areas</option>
-          {
-            areas
-              .filter((a) => a.routes.length)
-              .sort((a, b) => a.order - b.order)
-              .map((a) => <option value={a.slug}>{a.short}</option>)
-          }
+          {areasWithRoutes.map((a) => <option value={a.id}>{a.data.short}</option>)}
         </select>
       </label>
       <label class="rf-field">
@@ -103,22 +95,22 @@ const total = pairs.length;
         pairs.map(({ area, route }) => (
           <a
             class="route-row rf-row"
-            href={`/areas/${area.slug}/${route.slug}`}
-            data-name={route.name.toLowerCase()}
-            data-fa={route.firstAscent.toLowerCase()}
-            data-area={area.slug}
-            data-band={gradeBand(route.grade)}
-            data-length={lengthBucket(route) ?? ""}
+            href={`/areas/${area.id}/${route.id}`}
+            data-name={route.data.name.toLowerCase()}
+            data-fa={route.data.firstAscent.toLowerCase()}
+            data-area={area.id}
+            data-band={gradeBand(route.data.grade)}
+            data-length={lengthBucket(route.data) ?? ""}
           >
             <span>
-              <span class="rt-name">{route.name}</span>
-              <span class="rt-sub note">{area.short}</span>
-              {route.stars ? <span class="rt-sub stars">{stars(route.stars)}</span> : null}
+              <span class="rt-name">{route.data.name}</span>
+              <span class="rt-sub note">{area.data.short}</span>
+              {route.data.stars ? <span class="rt-sub stars">{stars(route.data.stars)}</span> : null}
             </span>
-            <span class="grade">{route.grade}</span>
-            <span class="rt-len">{route.length}</span>
-            <span class="rt-p">{route.pitches ?? "—"}</span>
-            <span class="rt-fa">{route.firstAscent}</span>
+            <span class="grade">{route.data.grade}</span>
+            <span class="rt-len">{route.data.length}</span>
+            <span class="rt-p">{route.data.pitches ?? "—"}</span>
+            <span class="rt-fa">{route.data.firstAscent}</span>
             <svg class="go" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path
                 d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
@@ -218,22 +210,17 @@ const total = pairs.length;
       const len = lenSel.value;
       const band = bandSel.value;
       let count = 0;
-
       rows.forEach((row) => {
         const hit =
-          (!term ||
-            row.dataset.name!.includes(term) ||
-            row.dataset.fa!.includes(term)) &&
+          (!term || row.dataset.name!.includes(term) || row.dataset.fa!.includes(term)) &&
           (!area || row.dataset.area === area) &&
           (!len || row.dataset.length === len) &&
           (!band || row.dataset.band === band);
         row.hidden = !hit;
         if (hit) count++;
       });
-
       shown.textContent = String(count);
       empty.hidden = count !== 0;
-
       const url = new URL(location.href);
       area ? url.searchParams.set("area", area) : url.searchParams.delete("area");
       term ? url.searchParams.set("q", term) : url.searchParams.delete("q");
@@ -248,7 +235,6 @@ const total = pairs.length;
       bandSel.value = "";
       apply();
     });
-
     apply();
   }
 </script>

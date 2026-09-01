@@ -1,12 +1,12 @@
 ---
-import type { Route } from "../data/areas";
+import type { RouteEntry } from "../lib/guidebook";
+import { stars } from "../lib/guidebook";
 
 interface Props {
   areaSlug: string;
-  routes: Route[];
+  routes: RouteEntry[];
 }
 const { areaSlug, routes } = Astro.props;
-const stars = (n: number | null) => (n ? "★".repeat(n) : "");
 ---
 
 <div class="routes-table">
@@ -19,8 +19,8 @@ const stars = (n: number | null) => (n ? "★".repeat(n) : "");
     <span></span>
   </div>
   {
-    routes.map((r) => (
-      <a class="route-row" href={`/areas/${areaSlug}/${r.slug}`}>
+    routes.map(({ id, data: r }) => (
+      <a class="route-row" href={`/areas/${areaSlug}/${id}`}>
         <span>
           <span class="rt-name">{r.name}</span>
           {r.stars ? (

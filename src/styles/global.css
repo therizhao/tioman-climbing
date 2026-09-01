@@ -501,28 +501,27 @@ section {
   color: var(--ink-2);
   font-size: 1.02rem;
 }
-.area-topo {
-  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  overflow: hidden;
-  background: var(--surface-2);
+.detail-hero .lede p {
+  margin-bottom: 0.75rem;
+}
+.detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.detail-head h1 {
+  margin-top: 0.4rem;
+}
+.detail-head .editlink {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+}
+/* PhotoStrip sits below the area hero */
+.detail-hero + .wrap > .photostrip,
+.detail-hero ~ .wrap .photostrip {
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
   box-shadow: var(--shadow);
-}
-.area-topo img {
-  width: 100%;
-  max-height: 66vh;
-  object-fit: contain;
-  background: var(--surface-2);
-}
-.area-topo figcaption {
-  padding: 0.75rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.5;
-  color: var(--mid);
-  background: var(--surface);
-  border-top: 1px solid var(--rule);
 }
 
 .meta-strip {
@@ -703,24 +702,22 @@ section {
   font-size: 0.92rem;
 }
 .rp-topo {
-  margin: 0;
   border-bottom: 1px solid var(--rule);
-  background: var(--surface-2);
 }
-.rp-topo img {
-  width: 100%;
-  max-height: 72vh;
-  object-fit: contain;
-  background: var(--surface-2);
+.rp-topo .photostrip {
+  border: 0;
+  border-radius: 0;
 }
-.rp-topo figcaption {
-  padding: 0.7rem clamp(1.5rem, 3vw, 2.5rem);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  line-height: 1.5;
-  color: var(--mid);
-  background: var(--surface);
-  border-top: 1px solid var(--rule);
+.rp-head-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.9rem;
+}
+@media (max-width: 700px) {
+  .rp-head-right {
+    align-items: flex-start;
+  }
 }
 
 .rp-body {
@@ -961,25 +958,8 @@ section {
 .transcript li {
   margin-bottom: 0.5rem;
 }
-.scan-panel {
-  position: sticky;
-  top: 5rem;
-  border: 1px solid var(--rule);
-  border-radius: 3px;
-  overflow: hidden;
-  background: var(--surface-2);
+.logpage .photostrip {
   box-shadow: var(--shadow);
-}
-.scan-panel img {
-  width: 100%;
-}
-.scan-panel figcaption {
-  padding: 0.75rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--mid);
-  background: var(--surface);
-  border-top: 1px solid var(--rule);
 }
 
 /* ---------- video band ---------- */

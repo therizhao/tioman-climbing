@@ -2,15 +2,18 @@
 import Base from "../layouts/Base.astro";
 import TopoShowcase from "../components/TopoShowcase.astro";
 import MediaStrip from "../components/MediaStrip.astro";
-import { areas } from "../data/areas";
+import { getAreas, allRoutePairs } from "../lib/guidebook";
 
-const ordered = [...areas].sort((a, b) => a.order - b.order);
+const ordered = await getAreas();
+const pairs = await allRoutePairs();
+const countByArea = new Map<string, number>();
+for (const { area } of pairs) countByArea.set(area.id, (countByArea.get(area.id) ?? 0) + 1);
 
-function routeCount(a: (typeof areas)[number]): string {
-  if (a.undeveloped) return "Undeveloped";
-  if (a.slug === "puncak-nipah") return "2 entries";
-  if (a.slug === "north-tower") return "1 climb + via ferrata";
-  const n = a.routes.length;
+function routeCount(a: (typeof ordered)[number]): string {
+  if (a.data.undeveloped) return "Undeveloped";
+  if (a.id === "puncak-nipah") return "2 entries";
+  if (a.id === "north-tower") return "1 climb + via ferrata";
+  const n = countByArea.get(a.id) ?? 0;
   return `${n} ${n === 1 ? "route" : "routes"}`;
 }
 ---
@@ -76,15 +79,15 @@ function routeCount(a: (typeof areas)[number]): string {
       <div class="areas">
         {
           ordered.map((a) => (
-            <a class="area-row" href={`/areas/${a.slug}`}>
-              <span class="area-key">{a.key}</span>
+            <a class="area-row" href={`/areas/${a.id}`}>
+              <span class="area-key">{a.data.key}</span>
               <span>
-                <span class="area-name">{a.name}</span>
-                <span class="area-aka">{a.aka}</span>
+                <span class="area-name">{a.data.name}</span>
+                <span class="area-aka">{a.data.aka}</span>
               </span>
-              <span class="area-desc">{a.desc}</span>
+              <span class="area-desc">{a.data.desc}</span>
               <span class="area-count">
-                {a.undeveloped ? <span class="chip">Undeveloped</span> : routeCount(a)}
+                {a.data.undeveloped ? <span class="chip">Undeveloped</span> : routeCount(a)}
               </span>
               <svg class="go" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path
