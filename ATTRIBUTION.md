@@ -4,7 +4,7 @@
 
 The Tioman Climbing Guidebook is assembled from **many sources**, including:
 
-- the **"Tioman Climbing Route Book"** compiled by **Mike Söldner**;
+- the **"Tioman Climbing Route Book"** ([PDF](https://github.com/therizhao/tioman-climbing/blob/main/dragonhorns-climb-log.pdf)) compiled by **Tam Haja**;
 - the **climbers' logbook** kept at Kampung Mukut, written by many different parties over
   the years;
 - **expedition and first-ascent reports** and published route notes (e.g. Cedar Wright &

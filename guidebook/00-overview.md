@@ -58,8 +58,11 @@ Detailed area pages:
   coastal concrete path and then jungle trails — see the Mumbar page for the full
   description. Boat drop-offs at Tunamaya jetty or the beaches below shorten the walk.
 - Accommodation and logistics at Mukut have historically run through **"Uncle Sam"** and
-  **Tam Khairudin Haja** (also a first-ascentionist on several routes) and the **Simukut
-  Hillview** lodge. Nearly every trip report thanks them.
+  **Tam Haja** (Tam Khairudin Haja — compiler of the route book and a first-ascentionist on
+  several routes) and the **Simukut Hillview** lodge. Nearly every trip report thanks them.
+- **Emergency / local contact: Tam Haja — +60 12-919 0785, khairudinhaja@gmail.com.** These
+  walls are remote and above a road-less village; leave a plan and expected return time, and
+  see the site's emergency & rescue page.
 
 ## Access checkpoints ("CP")
 

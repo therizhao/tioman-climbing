@@ -40,6 +40,7 @@ function routeCount(a: (typeof areas)[number]): string {
                 stroke-linejoin="round"></path>
             </svg>
           </a>
+          <a class="btn hero-ghost" href="/plan">Plan a trip</a>
         </div>
       </div>
     </div>
@@ -172,6 +173,19 @@ function routeCount(a: (typeof areas)[number]): string {
   }
   .hero-actions {
     margin-top: 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .hero-ghost {
+    background: transparent;
+    color: var(--ink);
+    border-color: color-mix(in srgb, var(--ink) 35%, transparent);
+    backdrop-filter: blur(4px);
+  }
+  .hero-ghost:hover {
+    border-color: var(--ink);
+    background: color-mix(in srgb, var(--surface) 40%, transparent);
   }
   .hero-credit {
     position: absolute;

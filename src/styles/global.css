@@ -227,9 +227,87 @@ video {
   color: var(--ink);
   border-bottom-color: var(--accent);
 }
+
+.nav-toggle {
+  display: none;
+  margin-left: auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--surface);
+  cursor: pointer;
+  padding: 0;
+  place-items: center;
+}
+.nav-toggle-bars,
+.nav-toggle-bars::before,
+.nav-toggle-bars::after {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  background: var(--ink);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.nav-toggle-bars {
+  position: relative;
+}
+.nav-toggle-bars::before,
+.nav-toggle-bars::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+.nav-toggle-bars::before {
+  top: -6px;
+}
+.nav-toggle-bars::after {
+  top: 6px;
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars {
+  background: transparent;
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars::before {
+  transform: translateY(6px) rotate(45deg);
+}
+.nav-toggle[aria-expanded="true"] .nav-toggle-bars::after {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 @media (max-width: 640px) {
-  .nav a:nth-child(n + 3) {
+  .wordmark span {
     display: none;
+  }
+  .nav-toggle {
+    display: grid;
+  }
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--rule);
+    box-shadow: var(--shadow);
+    padding: 0.5rem 1.25rem 1rem;
+    display: none;
+  }
+  .nav.is-open {
+    display: flex;
+  }
+  .nav a {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--rule);
+    font-size: 1rem;
+  }
+  .nav a:last-child {
+    border-bottom: 0;
+  }
+  .nav a[aria-current="page"] {
+    color: var(--accent);
   }
 }
 
@@ -744,6 +822,19 @@ section {
   font-size: 0.92rem;
   color: var(--ink-2);
 }
+.rp-emergency {
+  font-size: 0.8rem;
+  color: var(--mid);
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+}
+.rp-emergency strong {
+  color: var(--ink-2);
+}
+.rp-emergency a {
+  white-space: nowrap;
+}
+
 .warn {
   border-left: 2px solid var(--oxide);
   background: var(--oxide-soft);
@@ -994,6 +1085,23 @@ footer {
   background: var(--surface);
   padding-block: clamp(2.5rem, 5vw, 4rem);
   margin-top: clamp(3rem, 6vw, 5rem);
+}
+.foot-emergency {
+  border-left: 3px solid var(--oxide);
+  background: var(--oxide-soft);
+  border-radius: 0 3px 3px 0;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 2rem;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+.foot-emergency strong {
+  color: var(--oxide);
+}
+.foot-emergency a {
+  color: var(--oxide);
+  white-space: nowrap;
 }
 .foot-grid {
   display: grid;

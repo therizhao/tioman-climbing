@@ -22,8 +22,10 @@ const nav = [
   { href: "/#areas", label: "Areas", match: "/" },
   { href: "/routes", label: "Routes", match: "/routes" },
   { href: "/plan", label: "Plan a trip", match: "/plan" },
-  { href: "/contribute", label: "Contribute", match: "/contribute" },
+  { href: "/emergency", label: "Emergency", match: "/emergency" },
 ];
+const pdfUrl =
+  "https://github.com/therizhao/tioman-climbing/blob/main/dragonhorns-climb-log.pdf";
 ---
 
 <!doctype html>
@@ -53,7 +55,16 @@ const nav = [
     <header class="masthead">
       <div class="wrap masthead-in">
         <a class="wordmark" href="/">Tioman Climbing <span>Guidebook</span></a>
-        <nav class="nav" aria-label="Primary">
+        <button
+          class="nav-toggle"
+          id="nav-toggle"
+          aria-expanded="false"
+          aria-controls="primary-nav"
+          aria-label="Menu"
+        >
+          <span class="nav-toggle-bars" aria-hidden="true"></span>
+        </button>
+        <nav class="nav" id="primary-nav" aria-label="Primary">
           {
             nav.map((n) => (
               <a href={n.href} aria-current={section === n.match ? "page" : undefined}>
@@ -64,6 +75,25 @@ const nav = [
         </nav>
       </div>
     </header>
+    <script>
+      const t = document.getElementById("nav-toggle");
+      const n = document.getElementById("primary-nav");
+      if (t && n) {
+        const setOpen = (open: boolean) => {
+          t.setAttribute("aria-expanded", String(open));
+          n.classList.toggle("is-open", open);
+        };
+        t.addEventListener("click", () =>
+          setOpen(t.getAttribute("aria-expanded") !== "true"),
+        );
+        n.addEventListener("click", (e) => {
+          if ((e.target as HTMLElement).tagName === "A") setOpen(false);
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") setOpen(false);
+        });
+      }
+    </script>
 
     <main id="main">
       <slot />
@@ -71,15 +101,22 @@ const nav = [
 
     <footer>
       <div class="wrap">
+        <p class="foot-emergency">
+          <strong>Emergency on the hill?</strong>
+          Local contact <strong>Tam Haja</strong> —
+          <a href="tel:+60129190785">+60&nbsp;12-919&nbsp;0785</a> ·
+          <a href="mailto:khairudinhaja@gmail.com">khairudinhaja@gmail.com</a>.
+          <a href="/emergency">Full emergency &amp; rescue info →</a>
+        </p>
         <div class="foot-grid">
           <div>
             <span class="label">About this guidebook</span>
             <p class="notice" style="margin-top:.75rem">
               <strong>Compiled from many sources</strong> — the climbers' logbook kept at Kampung
-              Mukut, the Tioman Climbing Route Book compiled by Mike Söldner, expedition reports,
-              and photographs by the first-ascent teams. We credit authors and photographers
-              wherever we can. If you hold copyright in anything here and wish to be credited
-              differently or have it taken down, contact <a href="mailto:rizhaow@gmail.com"
+              Mukut, the <a href={pdfUrl}>Tioman Climbing Route Book</a> compiled by Tam Haja,
+              expedition reports, and photographs by the first-ascent teams. We credit authors and
+              photographers wherever we can. If you hold copyright in anything here and wish to be
+              credited differently or have it taken down, contact <a href="mailto:rizhaow@gmail.com"
                 >rizhaow@gmail.com</a
               >.
             </p>
@@ -97,8 +134,10 @@ const nav = [
             <a href="/routes">Route finder</a>
             <a href="/logbook">Logbook</a>
             <a href="/plan">Plan a trip</a>
+            <a href="/emergency">Emergency &amp; rescue</a>
             <a href="/contribute">Contribute a correction</a>
             <a href="/about">About &amp; attribution</a>
+            <a href={pdfUrl}>Route book PDF (GitHub)</a>
             <a href="https://github.com/therizhao/tioman-climbing">Source on GitHub</a>
           </div>
         </div>

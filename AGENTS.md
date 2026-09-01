@@ -6,7 +6,7 @@ An online guidebook for rock climbing on Pulau Tioman, Malaysia (primarily the D
 
 ## Source material
 
-- `dragonhorns-climb-log.pdf` — the "Tioman Climbing Route Book" (compiled by Mike Söldner); primary reference for routes, grades, and topos.
+- `dragonhorns-climb-log.pdf` — the "Tioman Climbing Route Book" (compiled by Tam Haja; Git LFS); primary reference for routes, grades, and topos.
 - `guidebook/` — the digitized, structured transcription of that PDF. Start at `guidebook/README.md`. Page-image renders in `guidebook/figures/`; logbook scans + full transcriptions in `guidebook/logbook/`.
 - `WEBSITE-PLAN.md` — the original plan for the public website.
 

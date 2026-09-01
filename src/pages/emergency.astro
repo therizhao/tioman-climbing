@@ -1,0 +1,153 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Emergency & rescue"
+  description="Emergency contact and rescue information for climbing on Pulau Tioman — local contact Tam Haja."
+  section="/emergency"
+>
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span><span>Emergency</span>
+    </nav>
+
+    <div class="detail-hero" style="border-bottom:0">
+      <p class="label">Emergency &amp; rescue</p>
+      <h1>If something goes wrong</h1>
+      <p class="lede">
+        These routes are remote, in jungle, above a village with no road. Self-rescue is the
+        realistic first option; outside help takes hours and often a boat. Read this before you go.
+      </p>
+    </div>
+
+    <div class="emg-primary">
+      <span class="label">Local contact</span>
+      <h2>Tam Haja</h2>
+      <p>
+        Based in Kampung Mukut. Compiler of the route book, on many of the first-ascent teams,
+        and the person who coordinates access, guiding and help on the ground.
+      </p>
+      <div class="emg-lines">
+        <a class="emg-line" href="tel:+60129190785">
+          <span class="label">Phone / WhatsApp</span>
+          <strong>+60 12-919 0785</strong>
+        </a>
+        <a class="emg-line" href="mailto:khairudinhaja@gmail.com">
+          <span class="label">Email</span>
+          <strong>khairudinhaja@gmail.com</strong>
+        </a>
+      </div>
+      <p class="emg-note">
+        Save this number before you leave signal. Tell Tam (or your accommodation) your route and
+        expected return time whenever you go up.
+      </p>
+    </div>
+
+    <div class="two-col" style="margin-top:2.5rem">
+      <div class="panel">
+        <span class="label">Official services</span>
+        <h3>Malaysia emergency numbers</h3>
+        <ul>
+          <li><strong>999</strong> — police, ambulance, fire (all-Malaysia)</li>
+          <li><strong>112</strong> — emergency from a mobile (works with no SIM / no credit)</li>
+          <li><strong>Bomba (Fire &amp; Rescue Dept.)</strong> runs mountain search &amp; rescue</li>
+          <li>Nearest hospital is on the mainland (Mersing) — evacuation is by boat then road</li>
+        </ul>
+        <p>
+          Phone coverage on the south coast is patchy to non-existent on the walls. Do not rely on
+          a call getting through from the route.
+        </p>
+      </div>
+      <div class="panel">
+        <span class="label">Before you climb</span>
+        <h3>Reduce the need for a rescue</h3>
+        <ul>
+          <li>Leave a plan — route, party, return time — with Tam or your lodge</li>
+          <li>Carry a first-aid kit, headtorch, spare layers, water, a knife and enough cord to
+            build an anchor or improvise a lower</li>
+          <li>Consider a satellite messenger (inReach / ZOLEO) — the only reliable comms up high</li>
+          <li>Know the abseil descent for your route <em>before</em> you commit to it; many parties
+            are benighted on the descent, not the climb</li>
+          <li>Helmets. Loose rock has put climbers in hospital here</li>
+          <li>Watch the weather — afternoon storms, and the November–February monsoon can strand
+            you on the island</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1.5rem">
+      <span class="label">If there's an incident</span>
+      <h3>What to do</h3>
+      <ul>
+        <li>Make the scene safe, give first aid, keep the casualty warm and hydrated</li>
+        <li>If you can move safely under your own power, self-evacuate to Mukut — it is almost
+          always faster than waiting for help</li>
+        <li>Send the strongest party member down to Mukut to raise the alarm with <strong
+          >Tam Haja (+60 12-919 0785)</strong
+        > and, if needed, call <strong>999 / 112</strong></li>
+        <li>Give a clear location (route name, pitch, checkpoint) and the nature of the injury</li>
+        <li>A boat evacuation to Mersing and onward road transfer to hospital should be expected —
+          this takes hours, so start early</li>
+      </ul>
+      <p class="emg-note">
+        This is general guidance, not a substitute for wilderness first-aid training or your own
+        judgement on the day.
+      </p>
+    </div>
+  </div>
+
+  <div style="height:clamp(2rem,5vw,4rem)"></div>
+</Base>
+
+<style>
+  .emg-primary {
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    border: 1px solid var(--oxide);
+    border-left-width: 4px;
+    border-radius: 0 4px 4px 0;
+    background: var(--oxide-soft);
+    padding: clamp(1.4rem, 3vw, 2rem);
+    display: grid;
+    gap: 0.75rem;
+  }
+  .emg-primary h2 {
+    font-size: var(--step-2);
+    font-weight: 400;
+    color: var(--oxide);
+  }
+  .emg-primary p {
+    color: var(--ink-2);
+    font-size: 0.95rem;
+    max-width: 52ch;
+  }
+  .emg-lines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.5rem 0;
+  }
+  .emg-line {
+    flex: 1 1 220px;
+    display: grid;
+    gap: 0.3rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .emg-line strong {
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .emg-line:hover {
+    border-color: var(--oxide);
+  }
+  .emg-note {
+    font-size: 0.84rem !important;
+    color: var(--mid) !important;
+  }
+</style>

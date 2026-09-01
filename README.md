@@ -7,7 +7,7 @@ Dragon's Horns (Gunung Nenek Semukut) and the other granite of the south coast.
 - **Contribute:** open a PR, or email **rizhaow@gmail.com** (see [`/contribute`](https://tioman-climbing.pages.dev/contribute))
 
 > Compiled from many sources — the Mukut climbers' logbook, the Tioman Climbing Route Book
-> compiled by Mike Söldner, expedition reports, and photos by the first-ascent teams. Parts
+> compiled by Tam Haja, expedition reports, and photos by the first-ascent teams. Parts
 > were transcribed with the help of AI, so **errors are possible** — corrections welcome.
 > See [`ATTRIBUTION.md`](ATTRIBUTION.md).
 
@@ -20,7 +20,7 @@ Dragon's Horns (Gunung Nenek Semukut) and the other granite of the south coast.
 | `src/data/external-logs.ts` | External trip reports and films |
 | `src/content/logbook/` | Native, transcribed logbook entries (one page each) |
 | `guidebook/` | Human-readable transcription of the route book + page scans |
-| `dragonhorns-climb-log.pdf` | The source route book (compiled by Mike Söldner) |
+| `dragonhorns-climb-log.pdf` | The source route book (compiled by Tam Haja; stored in Git LFS) |
 | `media/` | Original photos and videos |
 | `WEBSITE-PLAN.md` | Design and roadmap notes |
 

@@ -16,9 +16,9 @@ The PDF (76 pages, generated from `Tioman Climbing Route Book.docx`, first expor
 is itself a compilation. It mixes three kinds of material:
 
 1. **Typed topo pages** — clean route photos with digital route lines, pitch grades and
-   first-ascent captions. Mostly assembled by **Mike Söldner** (named as compiler on the
-   cover — scribbled out in the scan but preserved in the file metadata and on the Yoga Boy
-   topo — and as first-ascentionist of the 2019 Mumbar routes).
+   first-ascent captions. Compiled by **Tam Haja** (Tam Khairudin Haja), the Mukut local who
+   coordinates access and is on many of the first-ascent teams. (The cover of the scan also
+   carries a scribbled-out "collated by Mike Söldner" line from an earlier draft.)
 2. **Photographed pages from the physical climbers' logbook** kept at Mukut. Hand-drawn
    topos and handwritten trip reports from many different parties, roughly 2010–2019
    (Kaszlikowski/Kubarska, Guillon/Gay, the Iranian "Mountains for Peace" team, Malaysian
