@@ -15,7 +15,9 @@ const single = images.length === 1;
     {
       images.map((img, i) => (
         <div class="ps-item">
-          <img src={img.src} alt={img.caption || "Topo"} loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+          <a class="ps-link" href={img.src} target="_blank" rel="noopener" aria-label="Open full-resolution image in a new tab">
+            <img src={img.src} alt={img.caption || "Topo"} loading={i === 0 ? "eager" : "lazy"} decoding="async" />
+          </a>
           {img.caption && <figcaption class="ps-cap">{img.caption}</figcaption>}
         </div>
       ))
@@ -27,7 +29,18 @@ const single = images.length === 1;
         <span class="ps-count">
           <span data-ps-current>1</span> / {images.length}
         </span>
-        <span class="ps-hint">Scroll or drag &rarr;</span>
+        <div class="ps-arrows">
+          <button type="button" class="ps-arrow" data-ps-dir="-1" aria-label="Previous image">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button type="button" class="ps-arrow" data-ps-dir="1" aria-label="Next image">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        </div>
       </div>
     )
   }
@@ -78,12 +91,17 @@ const single = images.length === 1;
     display: flex;
     flex-direction: column;
   }
+  .ps-link {
+    display: block;
+    -webkit-touch-callout: default; /* keep the long-press "Save / Open image" menu on iOS */
+  }
   .ps-item img {
     width: 100%;
     max-height: 72vh;
     object-fit: contain;
     background: var(--surface-2);
     display: block;
+    -webkit-touch-callout: default;
   }
   .ps-cap {
     padding: 0.7rem 1rem;
@@ -98,7 +116,7 @@ const single = images.length === 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 0.6rem 0.5rem 1rem;
     background: var(--ground);
     border-top: 1px solid var(--rule);
     font-family: var(--font-mono);
@@ -107,6 +125,34 @@ const single = images.length === 1;
   }
   .ps-count [data-ps-current] {
     color: var(--ink-2);
+  }
+  .ps-arrows {
+    display: flex;
+    gap: 0.4rem;
+  }
+  .ps-arrow {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: border-color 0.16s, background 0.16s, color 0.16s;
+  }
+  .ps-arrow:hover {
+    border-color: var(--ink-2);
+    color: var(--ink);
+  }
+  .ps-arrow:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .ps-arrow:disabled {
+    opacity: 0.32;
+    cursor: default;
   }
 </style>
 
@@ -117,14 +163,30 @@ const single = images.length === 1;
     const track = strip.querySelector<HTMLElement>(".ps-track")!;
     const current = strip.querySelector<HTMLElement>("[data-ps-current]");
     const items = Array.from(track.querySelectorAll<HTMLElement>(".ps-item"));
+    const arrows = Array.from(strip.querySelectorAll<HTMLButtonElement>(".ps-arrow"));
+
+    const updateArrows = () => {
+      const atStart = track.scrollLeft < 8;
+      const atEnd = track.scrollLeft > track.scrollWidth - track.clientWidth - 8;
+      arrows.forEach((a) => {
+        a.disabled = a.dataset.psDir === "-1" ? atStart : atEnd;
+      });
+    };
 
     track.addEventListener(
       "scroll",
       () => {
         const idx = Math.round(track.scrollLeft / track.clientWidth);
         if (current) current.textContent = String(Math.min(items.length, idx + 1));
+        updateArrows();
       },
       { passive: true },
+    );
+
+    arrows.forEach((a) =>
+      a.addEventListener("click", () => {
+        track.scrollBy({ left: track.clientWidth * Number(a.dataset.psDir), behavior: "smooth" });
+      }),
     );
 
     track.addEventListener("keydown", (e) => {
@@ -133,5 +195,6 @@ const single = images.length === 1;
     });
 
     enableHDrag(track);
+    updateArrows();
   });
 </script>
