@@ -1,0 +1,28 @@
+name: CI · Build check
+
+# Deploys are handled by Cloudflare Pages' Git integration (builds on every
+# push to main, preview deploys on PRs). This workflow only verifies the
+# build so a broken commit is caught before Cloudflare picks it up.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
