@@ -32,6 +32,6 @@ Start from the small crack, go straight, first bolt is 5 m high, then climb stra
 
 1 set of cams, 1×70 m rope or 2×50 m ropes, some runners, bring some water.
 
-Don't forget give good comments for our hand works. Special thanks Abe's help & members of CMC. Work: MAS Climbers & Chinese Mountain Club (华岳会).
+Don't forget give good comments for our hardwork. Special thanks Abe's help & members of CMC. Work: MAS Climbers & Chinese Mountain Club (华岳会).
 
 — Da Liu, April 08 2017
