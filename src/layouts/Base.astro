@@ -1,0 +1,109 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  /** page path for nav highlighting, e.g. "/plan" */
+  section?: string;
+}
+
+const {
+  title,
+  description = "A free, community-maintained rock climbing guidebook for Pulau Tioman, Malaysia — the Dragon's Horns and beyond.",
+  section,
+} = Astro.props;
+
+const fullTitle = title === "Tioman Climbing Guidebook" ? title : `${title} — Tioman Climbing Guidebook`;
+const nav = [
+  { href: "/#areas", label: "Areas", match: "/" },
+  { href: "/logbook", label: "Logbook", match: "/logbook" },
+  { href: "/plan", label: "Plan a trip", match: "/plan" },
+  { href: "/contribute", label: "Contribute", match: "/contribute" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#faf6ed" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL("/media/horns-from-the-sea.jpg", Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="masthead">
+      <div class="wrap masthead-in">
+        <a class="wordmark" href="/">Tioman Climbing <span>Guidebook</span></a>
+        <nav class="nav" aria-label="Primary">
+          {
+            nav.map((n) => (
+              <a href={n.href} aria-current={section === n.match ? "page" : undefined}>
+                {n.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div class="foot-grid">
+          <div>
+            <span class="label">About this guidebook</span>
+            <p class="notice" style="margin-top:.75rem">
+              <strong>Compiled from many sources</strong> — the climbers' logbook kept at Kampung
+              Mukut, the Tioman Climbing Route Book compiled by Mike Söldner, expedition reports,
+              and photographs by the first-ascent teams. We credit authors and photographers
+              wherever we can. If you hold copyright in anything here and wish to be credited
+              differently or have it taken down, contact <a href="mailto:rizhaow@gmail.com"
+                >rizhaow@gmail.com</a
+              >.
+            </p>
+            <p class="notice">
+              <strong>Generated with the help of AI.</strong> Parts of this guidebook were drafted by
+              AI tools reading scanned handwriting. Mistakes — wrong grades, misread names, pitches
+              inferred from ambiguous topos — are possible. If you spot one, please correct it: open
+              a <a href="https://github.com/therizhao/tioman-climbing">pull request</a> or email
+              <a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a>.
+            </p>
+          </div>
+          <div class="foot-links">
+            <span class="label" style="margin-bottom:.35rem">Guidebook</span>
+            <a href="/#areas">All areas</a>
+            <a href="/logbook">Logbook</a>
+            <a href="/plan">Plan a trip</a>
+            <a href="/contribute">Contribute a correction</a>
+            <a href="/about">About &amp; attribution</a>
+            <a href="https://github.com/therizhao/tioman-climbing">Source on GitHub</a>
+          </div>
+        </div>
+        <div class="colophon">
+          <span>Pulau Tioman, Pahang · Malaysia</span>
+          <span>Free and community-maintained</span>
+          <span>Climbing is dangerous — these routes are runout, loose and remote</span>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

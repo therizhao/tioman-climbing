@@ -1,0 +1,20 @@
+---
+interface Props {
+  src: string;
+  poster: string;
+  quote: string;
+  cite: string;
+}
+const { src, poster, quote, cite } = Astro.props;
+---
+
+<div class="band">
+  <video autoplay muted loop playsinline poster={poster} preload="none">
+    <source src={src} type="video/mp4" />
+  </video>
+  <img class="band-poster" src={poster} alt="" aria-hidden="true" style="z-index:0" />
+  <div class="wrap band-inner">
+    <blockquote>{quote}</blockquote>
+    <cite>{cite}</cite>
+  </div>
+</div>

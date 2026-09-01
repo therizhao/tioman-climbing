@@ -1,0 +1,166 @@
+---
+import Base from "../../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { allRoutePairs, getRoute } from "../../../data/areas";
+import { externalForRoute } from "../../../data/external-logs";
+
+export async function getStaticPaths() {
+  return allRoutePairs().map(({ area, route }) => ({
+    params: { area: area.slug, route: route.slug },
+  }));
+}
+
+const { area: areaSlug, route: routeSlug } = Astro.params;
+const { area, route } = getRoute(areaSlug!, routeSlug!)!;
+
+const stars = route.stars ? "★".repeat(route.stars) : "";
+
+const nativeLogs = (await getCollection("logbook"))
+  .filter((e) => e.data.route === route.slug)
+  .sort((a, b) => a.data.order - b.data.order);
+const external = externalForRoute(route.slug);
+
+const excerpt = (body: string) =>
+  body.replace(/[#*_>`\-]/g, "").replace(/\s+/g, " ").trim().slice(0, 180);
+---
+
+<Base title={route.name} description={route.summary} section="/">
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span>
+      <a href={`/areas/${area.slug}`}>{area.short}</a><span>/</span><span>{route.name}</span>
+    </nav>
+
+    <article class="routepage">
+      <div class="rp-head">
+        <div>
+          <p class="label">{area.name}</p>
+          <h1>{route.name}</h1>
+          {stars && <p class="stars">{stars}</p>}
+          {route.status && (
+            <p>
+              <span class="chip warn">{route.status}</span>
+            </p>
+          )}
+        </div>
+        <div class="rp-grade">
+          <span class="g">{route.grade}</span>
+          <span class="m">
+            {route.length}
+            {route.pitches ? ` · ${route.pitches} pitches` : ""}
+          </span>
+        </div>
+      </div>
+
+      <dl class="rp-meta">
+        <div><span class="label">First ascent</span><dd>{route.firstAscent}</dd></div>
+        <div><span class="label">Year</span><dd>{route.year}</dd></div>
+        <div><span class="label">Approach</span><dd>{route.approach ?? "—"}</dd></div>
+        <div><span class="label">Descent</span><dd>{route.descent ?? "—"}</dd></div>
+      </dl>
+
+      <div class="rp-body">
+        <div class="ladder-wrap">
+          <span class="label">Pitches</span>
+          {
+            route.pitchList ? (
+              <ol class="ladder">
+                {route.pitchList.map((p) => (
+                  <li class={`pitch${p.crux ? " crux" : ""}`}>
+                    <span class="pitch-n">{p.n}</span>
+                    <span class="grade">{p.grade}</span>
+                    <span class="pitch-len">{p.length}</span>
+                    <span class="pitch-note">{p.note ?? ""}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <div class="empty" style="margin-top:1.25rem">
+                <p>
+                  No pitch-by-pitch record survives for this route. If you have climbed it, the
+                  logbook wants your topo.
+                </p>
+              </div>
+            )
+          }
+        </div>
+
+        <div class="rp-notes">
+          <div class="note-block">
+            <h4>{route.kind === "via-ferrata" ? "What it is" : "Character"}</h4>
+            <p>{route.summary}</p>
+          </div>
+          {route.gear && (
+            <div class="note-block">
+              <h4>Gear</h4>
+              <p>{route.gear}</p>
+            </div>
+          )}
+          {route.warn && (
+            <div class="warn">
+              <p set:html={route.warn} />
+            </div>
+          )}
+          {route.extra && (
+            <div class="note-block">
+              <h4>{route.extra.title}</h4>
+              <p set:html={route.extra.body} />
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
+  </div>
+
+  {
+    (nativeLogs.length > 0 || external.length > 0) && (
+      <section style="padding-bottom:0">
+        <div class="wrap">
+          <div class="sec-head" style="margin-bottom:1.25rem">
+            <h2 style="font-size:var(--step-2)">Logbook &amp; trip reports</h2>
+          </div>
+
+          {nativeLogs.length > 0 && (
+            <div class="loglist">
+              {nativeLogs.map((e) => (
+                <a class="logitem" href={`/logbook/${e.id}`}>
+                  <span class="logitem-kind">From the Mukut logbook</span>
+                  <span class="logitem-meta">
+                    <span class="logitem-title">{e.data.title}</span>
+                    <span class="logitem-when">
+                      {e.data.party} · {e.data.date}
+                    </span>
+                  </span>
+                  <span class="logitem-excerpt">{excerpt(e.body ?? "")}</span>
+                </a>
+              ))}
+            </div>
+          )}
+
+          {external.length > 0 && (
+            <div class="loglist" style="margin-top:2rem">
+              {external.map((l) => (
+                <a class="logitem" href={l.url} target="_blank" rel="noopener">
+                  <span class="logitem-kind">
+                    {l.type === "video" ? "Film · external link" : "Article · external link"}
+                  </span>
+                  <span class="logitem-meta">
+                    <span class="logitem-title">{l.title}</span>
+                    <span class="logitem-when">
+                      {l.author ? `${l.author} · ` : ""}
+                      {l.source}
+                      {l.year ? ` · ${l.year}` : ""}
+                    </span>
+                  </span>
+                  {l.note && <span class="logitem-excerpt">{l.note}</span>}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <div style="height:clamp(2rem,5vw,4rem)"></div>
+</Base>

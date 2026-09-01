@@ -1,0 +1,116 @@
+---
+import Base from "../../layouts/Base.astro";
+import RoutesTable from "../../components/RoutesTable.astro";
+import { areas, getArea } from "../../data/areas";
+import { externalLogs } from "../../data/external-logs";
+
+export function getStaticPaths() {
+  return areas.map((a) => ({ params: { area: a.slug } }));
+}
+
+const { area: areaSlug } = Astro.params;
+const area = getArea(areaSlug!)!;
+
+const viaFerrata = area.routes.filter((r) => r.kind === "via-ferrata");
+const climbs = area.routes.filter((r) => r.kind !== "via-ferrata");
+const split = viaFerrata.length > 0 && climbs.length > 0;
+
+const areaExternal = externalLogs.filter((l) => l.area === area.slug);
+---
+
+<Base title={area.name} description={area.desc} section="/">
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span><span>{area.short}</span>
+    </nav>
+  </div>
+
+  <div class="detail-hero">
+    <div class="wrap">
+      <p class="label">Area {area.key} · {area.aka}</p>
+      <h1>{area.name}</h1>
+      <p class="lede">{area.lede}</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="meta-strip">
+      {
+        area.meta.map(([k, v]) => (
+          <div>
+            <span class="label">{k}</span>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <section style="padding-top:clamp(2rem,4vw,3rem)">
+    <div class="wrap">
+      {
+        area.routes.length === 0 ? (
+          <>
+            <div class="sec-head">
+              <h2>Routes</h2>
+            </div>
+            <div class="empty">
+              <p>{area.emptyNote}</p>
+            </div>
+          </>
+        ) : split ? (
+          <>
+            <div class="sec-head">
+              <h2>Not a climber?</h2>
+              <p>A fixed cable route to a viewpoint — no rope skills needed.</p>
+            </div>
+            <RoutesTable areaSlug={area.slug} routes={viaFerrata} />
+            <div class="sec-head" style="margin-top:3.5rem">
+              <h2>Climbing routes</h2>
+              <p>One route reaches the North Tower summit.</p>
+            </div>
+            <RoutesTable areaSlug={area.slug} routes={climbs} />
+          </>
+        ) : (
+          <>
+            <div class="sec-head">
+              <h2>Routes</h2>
+              <p>
+                Ordered as the source records them. Grades keep their original system — nothing is
+                silently converted.
+              </p>
+            </div>
+            <RoutesTable areaSlug={area.slug} routes={area.routes} />
+          </>
+        )
+      }
+
+      {
+        areaExternal.filter((l) => l.route === null).length > 0 && (
+          <>
+            <div class="sec-head" style="margin-top:3.5rem">
+              <h2 style="font-size:var(--step-2)">Trip reports for this area</h2>
+            </div>
+            <div class="loglist">
+              {areaExternal
+                .filter((l) => l.route === null)
+                .map((l) => (
+                  <a class="logitem" href={l.url} target="_blank" rel="noopener">
+                    <span class="logitem-kind">{l.type === "video" ? "Film · external" : "Article · external"}</span>
+                    <span class="logitem-meta">
+                      <span class="logitem-title">{l.title}</span>
+                      <span class="logitem-when">
+                        {l.source}
+                        {l.year ? ` · ${l.year}` : ""}
+                      </span>
+                    </span>
+                    {l.note && <span class="logitem-excerpt">{l.note}</span>}
+                  </a>
+                ))}
+            </div>
+          </>
+        )
+      }
+    </div>
+  </section>
+</Base>

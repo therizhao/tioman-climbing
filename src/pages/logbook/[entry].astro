@@ -1,0 +1,66 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection, render } from "astro:content";
+import { getArea } from "../../data/areas";
+
+export async function getStaticPaths() {
+  const entries = await getCollection("logbook");
+  return entries.map((entry) => ({ params: { entry: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const area = getArea(entry.data.area);
+---
+
+<Base title={entry.data.title} description={`${entry.data.party} · ${entry.data.date}`} section="/logbook">
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span>
+      <a href="/logbook">Logbook</a><span>/</span><span>{entry.data.title}</span>
+    </nav>
+
+    <div class="detail-hero" style="border-bottom:0">
+      <p class="label">From the Mukut logbook</p>
+      <h1>{entry.data.title}</h1>
+      <p class="lede" style="font-family:var(--font-mono);font-size:.86rem">
+        {entry.data.party} &nbsp;·&nbsp; {entry.data.date} &nbsp;·&nbsp;
+        <a href={`/areas/${entry.data.area}/${entry.data.route}`}>{entry.data.routeName}</a>
+      </p>
+    </div>
+
+    <div class="logpage">
+      <div class="transcript">
+        <Content />
+      </div>
+
+      <figure class="scan-panel">
+        <img
+          src={`/logbook-scans/${entry.data.scan}`}
+          alt={`Original logbook page: ${entry.data.title}`}
+          loading="lazy"
+        />
+        <figcaption>
+          Original page — {entry.data.title}. Route book, source page {entry.data.sourcePage}.
+        </figcaption>
+      </figure>
+    </div>
+
+    <p class="notice" style="margin-top:2.5rem;max-width:var(--read)">
+      Transcribed for this guidebook; the transcription may contain errors — check it against the
+      scan. This is a climber's personal writing, reproduced for the record. To have it credited
+      differently or removed, email <a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a>.
+      {
+        area && (
+          <>
+            {" "}
+            See also the <a href={`/areas/${entry.data.area}/${entry.data.route}`}>{entry.data.routeName}</a>{" "}
+            route page.
+          </>
+        )
+      }
+    </p>
+  </div>
+
+  <div style="height:clamp(2rem,5vw,4rem)"></div>
+</Base>

@@ -1,0 +1,21 @@
+{
+  "name": "tioman-climbing-guidebook",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An online guidebook for rock climbing on Pulau Tioman, Malaysia.",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name tioman-climbing"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.0",
+    "astro": "^5.14.1"
+  },
+  "devDependencies": {
+    "wrangler": "^4.42.0"
+  }
+}

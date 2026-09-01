@@ -1,0 +1,13 @@
+# Cloudflare Pages — static Astro build.
+#
+# Deploy from a machine with `wrangler` authenticated:
+#   npm run build && npx wrangler pages deploy dist --project-name tioman-climbing
+#
+# Or connect this repo in the Cloudflare dashboard with:
+#   Build command:   npm run build
+#   Output dir:      dist
+#   Framework preset: Astro
+
+name = "tioman-climbing"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-09-01"

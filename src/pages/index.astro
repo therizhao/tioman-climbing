@@ -1,0 +1,186 @@
+---
+import Base from "../layouts/Base.astro";
+import TowerMap from "../components/TowerMap.astro";
+import VideoBand from "../components/VideoBand.astro";
+import { areas } from "../data/areas";
+
+const ordered = [...areas].sort((a, b) => a.order - b.order);
+
+function routeCount(a: (typeof areas)[number]): string {
+  if (a.undeveloped) return "Undeveloped";
+  if (a.slug === "puncak-nipah") return "2 entries";
+  if (a.slug === "north-tower") return "1 climb + via ferrata";
+  const n = a.routes.length;
+  return `${n} ${n === 1 ? "route" : "routes"}`;
+}
+---
+
+<Base title="Tioman Climbing Guidebook" section="/">
+  <section class="hero" style="padding:0">
+    <div
+      class="hero-photo"
+      style="background-image:url(/media/horns-from-the-sea.jpg)"
+    >
+      <div class="wrap hero-inner">
+        <span class="hero-eyebrow">Pulau Tioman · Pahang, Malaysia</span>
+        <h1>Granite towers in the <em>South China Sea</em></h1>
+        <p class="hero-lede">
+          The Dragon's Horns rise straight out of the jungle above Kampung Mukut. World-class
+          rock, climbed since 2000 — and never collected in one place until now.
+        </p>
+        <div class="hero-actions">
+          <a class="btn on-photo" href="#areas">
+            View the areas
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path
+                d="M7 3v8M3.5 7.5 7 11l3.5-3.5"
+                stroke="currentColor"
+                stroke-width="1.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <span class="hero-credit">Kampung Mukut, from the sea · photo © the guidebook</span>
+  </section>
+
+  <div class="wrap">
+    <div class="facts">
+      <div class="fact"><span class="fact-n">9</span><p>areas along the south coast</p></div>
+      <div class="fact"><span class="fact-n">25+</span><p>established multipitch routes</p></div>
+      <div class="fact">
+        <span class="fact-n">485<span style="font-size:.6em"> m</span></span><p>
+          longest line — Ironin 3
+        </p>
+      </div>
+      <div class="fact"><span class="fact-n">2000</span><p>first ascent of the South Tower</p></div>
+    </div>
+  </div>
+
+  <section id="areas">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>The areas</h2>
+        <p>
+          Select a tower on the drawing, or pick any area from the list. Most of the island's
+          rock is still unclimbed — those entries are here on purpose.
+        </p>
+      </div>
+
+      <TowerMap />
+
+      <div class="areas">
+        {
+          ordered.map((a) => (
+            <a class="area-row" href={`/areas/${a.slug}`}>
+              <span class="area-key">{a.key}</span>
+              <span>
+                <span class="area-name">{a.name}</span>
+                <span class="area-aka">{a.aka}</span>
+              </span>
+              <span class="area-desc">{a.desc}</span>
+              <span class="area-count">
+                {a.undeveloped ? <span class="chip">Undeveloped</span> : routeCount(a)}
+              </span>
+              <svg class="go" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path
+                  d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <VideoBand
+    src="/media/summit-cloud.mp4"
+    poster="/media/summit-cloud-poster.jpg"
+    quote="&ldquo;We summited at 5&thinsp;pm and rapped as the sun set.&rdquo;"
+    cite="— Damai Sentosa logbook, July 2015"
+  />
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+  }
+  .hero-photo {
+    position: relative;
+    min-height: min(78vh, 680px);
+    display: flex;
+    align-items: flex-end;
+    background-size: cover;
+    background-position: center 38%;
+  }
+  .hero-photo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(28, 22, 15, 0.18) 0%,
+        rgba(28, 22, 15, 0.02) 30%,
+        rgba(250, 246, 237, 0.5) 74%,
+        var(--ground) 100%
+      ),
+      linear-gradient(90deg, rgba(250, 246, 237, 0.55) 0%, rgba(250, 246, 237, 0) 52%);
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    padding-block: clamp(2.5rem, 6vw, 5rem);
+  }
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    padding: 0.35rem 0.6rem;
+    border-radius: 2px;
+    display: inline-block;
+    backdrop-filter: blur(4px);
+  }
+  .hero h1 {
+    font-size: var(--step-4);
+    font-weight: 300;
+    margin-block: 1rem;
+    max-width: 15ch;
+    text-shadow: 0 1px 20px rgba(250, 246, 237, 0.6);
+  }
+  .hero h1 :global(em) {
+    font-style: italic;
+    font-weight: 400;
+  }
+  .hero-lede {
+    max-width: 44ch;
+    color: var(--ink-2);
+    font-size: var(--step-1);
+    font-family: var(--font-serif);
+    line-height: 1.45;
+  }
+  .hero-actions {
+    margin-top: 1.75rem;
+  }
+  .hero-credit {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.6rem;
+    z-index: 3;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    color: var(--mid);
+    text-transform: uppercase;
+  }
+</style>

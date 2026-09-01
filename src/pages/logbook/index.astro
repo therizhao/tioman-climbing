@@ -1,0 +1,86 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { externalLogs } from "../../data/external-logs";
+
+const native = (await getCollection("logbook")).sort((a, b) =>
+  a.data.date.localeCompare(b.data.date),
+);
+
+const excerpt = (body: string) =>
+  body.replace(/[#*_>`\-]/g, "").replace(/\s+/g, " ").trim().slice(0, 180);
+---
+
+<Base
+  title="Logbook"
+  description="Trip reports for Tioman climbing — transcribed pages from the Mukut logbook, plus links to reports and films elsewhere."
+  section="/logbook"
+>
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span><span>Logbook</span>
+    </nav>
+  </div>
+
+  <div class="detail-hero">
+    <div class="wrap">
+      <p class="label">Trip reports</p>
+      <h1>The logbook</h1>
+      <p class="lede">
+        For twenty years the only record of these climbs was a paper notebook kept at Mukut.
+        Every party wrote in it. Below: the pages transcribed for this guidebook, and links to
+        reports and films that live on their authors' own sites.
+      </p>
+    </div>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 style="font-size:var(--step-2)">From the Mukut logbook</h2>
+        <p>Full transcriptions, each with the original scanned page.</p>
+      </div>
+      <div class="loglist">
+        {
+          native.map((e) => (
+            <a class="logitem" href={`/logbook/${e.id}`}>
+              <span class="logitem-kind">
+                {e.data.routeName} · source page {e.data.sourcePage}
+              </span>
+              <span class="logitem-meta">
+                <span class="logitem-title">{e.data.title}</span>
+                <span class="logitem-when">
+                  {e.data.party} · {e.data.date}
+                </span>
+              </span>
+              <span class="logitem-excerpt">{excerpt(e.body ?? "")}</span>
+            </a>
+          ))
+        }
+      </div>
+
+      <div class="sec-head" style="margin-top:4rem">
+        <h2 style="font-size:var(--step-2)">Elsewhere on the web</h2>
+        <p>Reports and films hosted by other climbers. External links.</p>
+      </div>
+      <div class="loglist">
+        {
+          externalLogs.map((l) => (
+            <a class="logitem" href={l.url} target="_blank" rel="noopener">
+              <span class="logitem-kind">{l.type === "video" ? "Film · external link" : "Article · external link"}</span>
+              <span class="logitem-meta">
+                <span class="logitem-title">{l.title}</span>
+                <span class="logitem-when">
+                  {l.author ? `${l.author} · ` : ""}
+                  {l.source}
+                  {l.year ? ` · ${l.year}` : ""}
+                </span>
+              </span>
+              {l.note && <span class="logitem-excerpt">{l.note}</span>}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>

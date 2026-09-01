@@ -1,0 +1,81 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Contribute"
+  description="How to send corrections and additions to the Tioman climbing guidebook — a pull request, or an email to Ri Zhao."
+  section="/contribute"
+>
+  <div class="wrap">
+    <nav class="crumb" aria-label="Breadcrumb">
+      <a href="/#areas">Guidebook</a><span>/</span><span>Contribute</span>
+    </nav>
+
+    <section>
+      <div class="sec-head">
+        <h2>Corrections &amp; contributions</h2>
+        <p>
+          Much of this is transcribed from weathered handwriting, and assembled with the help of
+          AI. Errors are likely. Please help fix them.
+        </p>
+      </div>
+
+      <div class="two-col">
+        <div style="display:grid;gap:1.25rem">
+          <div class="panel">
+            <span class="label">Two ways in</span>
+            <h3>Send a change</h3>
+            <p>
+              <strong>1. Open a pull request.</strong> The whole guidebook — text, route data, this
+              site — lives in one public repository. Edit the source and propose the change directly.
+            </p>
+            <p>
+              <a href="https://github.com/therizhao/tioman-climbing"
+                >github.com/therizhao/tioman-climbing</a
+              >
+            </p>
+            <p>
+              <strong>2. Or just email Ri Zhao.</strong> Describe what's wrong and what it should
+              say — a corrected grade, a missing route, a name, a photo you'd like credited or
+              removed.
+            </p>
+            <p><a href="mailto:rizhaow@gmail.com">rizhaow@gmail.com</a></p>
+          </div>
+          <div class="panel">
+            <span class="label">Generated with AI — check our work</span>
+            <h3>Hallucinations happen</h3>
+            <p>
+              This guidebook was compiled and drafted with the help of AI tools working from scans
+              of a handwritten logbook. That means <strong
+                >plausible-looking mistakes can slip in</strong
+              > — a grade that was never given, a name spelled wrong, a pitch invented from an
+              ambiguous sketch.
+            </p>
+            <p>
+              If something looks off, it may well be. Please flag it by either route above — every
+              correction from someone who has actually been there makes this more trustworthy.
+            </p>
+          </div>
+        </div>
+        <div class="panel">
+          <span class="label">Known gaps</span>
+          <h3>Help us close these</h3>
+          <ul>
+            <li><strong>Muka</strong> (7a+, 360&nbsp;m) has a heading in the record but no topo anywhere</li>
+            <li><strong>Beckwith–Traver</strong> is dated both 2009 and 2011 in the same document</li>
+            <li>
+              "Blood Sweat and <em>Fear</em>" or "<em>Tears</em>"? The map and the route page disagree
+            </li>
+            <li>
+              <strong>Damai Sentosa</strong> pitch grades come from a pencil sketch — approximate
+            </li>
+            <li>The <strong>Puncak Nipah</strong> sport list is read off a weathered painted board</li>
+            <li>The <strong>North Tower via ferrata</strong> — length, grade and access details</li>
+            <li>Several first ascensionists are recorded only by first name</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
