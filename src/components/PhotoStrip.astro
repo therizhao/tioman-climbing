@@ -54,8 +54,12 @@ const single = images.length === 1;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     overscroll-behavior-x: contain;
-    touch-action: pan-x;
+    touch-action: pan-y;
     scrollbar-width: none;
+  }
+  .ps-track.is-dragging {
+    scroll-snap-type: none;
+    cursor: grabbing;
   }
   .ps-track::-webkit-scrollbar {
     display: none;
@@ -107,6 +111,8 @@ const single = images.length === 1;
 </style>
 
 <script>
+  import { enableHDrag } from "../lib/hdrag";
+
   document.querySelectorAll<HTMLElement>(".photostrip:not(.is-single)").forEach((strip) => {
     const track = strip.querySelector<HTMLElement>(".ps-track")!;
     const current = strip.querySelector<HTMLElement>("[data-ps-current]");
@@ -121,27 +127,11 @@ const single = images.length === 1;
       { passive: true },
     );
 
-    // Mouse drag-to-scroll only. Touch uses the browser's native pan-x, so a
-    // vertical swipe scrolls the page and a horizontal swipe scrolls the strip.
-    let down = false;
-    let x = 0;
-    let sl = 0;
-    track.addEventListener("pointerdown", (e) => {
-      if (e.pointerType !== "mouse") return;
-      down = true;
-      x = e.clientX;
-      sl = track.scrollLeft;
-      track.setPointerCapture(e.pointerId);
-    });
-    track.addEventListener("pointermove", (e) => {
-      if (down) track.scrollLeft = sl - (e.clientX - x);
-    });
-    const up = () => (down = false);
-    track.addEventListener("pointerup", up);
-    track.addEventListener("pointercancel", up);
     track.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") track.scrollBy({ left: track.clientWidth, behavior: "smooth" });
       if (e.key === "ArrowLeft") track.scrollBy({ left: -track.clientWidth, behavior: "smooth" });
     });
+
+    enableHDrag(track);
   });
 </script>

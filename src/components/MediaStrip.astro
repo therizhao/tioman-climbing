@@ -150,7 +150,7 @@ const items: Item[] = [
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     overscroll-behavior-x: contain;
-    touch-action: pan-x;
+    touch-action: pan-y;
     scrollbar-width: none;
     padding-inline: max((100% - var(--wide)) / 2, 1.25rem);
     scroll-padding-inline: max((100% - var(--wide)) / 2, 1.25rem);
@@ -251,6 +251,8 @@ const items: Item[] = [
 </style>
 
 <script>
+  import { enableHDrag } from "../lib/hdrag";
+
   const track = document.getElementById("ms-track");
   if (track) {
     const cards = Array.from(track.querySelectorAll<HTMLElement>(".ms-card"));
@@ -279,32 +281,7 @@ const items: Item[] = [
       }
     });
     updateArrows();
-
-    // drag-to-scroll (mouse only — touch uses native pan-x so vertical swipes
-    // scroll the page)
-    let down = false;
-    let startX = 0;
-    let startScroll = 0;
-    track.addEventListener("pointerdown", (e) => {
-      if (e.pointerType !== "mouse") return;
-      if ((e.target as HTMLElement).closest("button")) return;
-      down = true;
-      startX = e.clientX;
-      startScroll = track.scrollLeft;
-      track.setPointerCapture(e.pointerId);
-    });
-    track.addEventListener("pointermove", (e) => {
-      if (!down) return;
-      const dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) track.classList.add("is-dragging");
-      track.scrollLeft = startScroll - dx;
-    });
-    const endDrag = () => {
-      down = false;
-      track.classList.remove("is-dragging");
-    };
-    track.addEventListener("pointerup", endDrag);
-    track.addEventListener("pointercancel", endDrag);
+    enableHDrag(track);
 
     // Autoplay in view — but nothing is fetched until the strip itself is on
     // screen AND a given clip is within the strip's horizontal viewport. Clips

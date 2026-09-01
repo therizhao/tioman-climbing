@@ -275,8 +275,11 @@ const canopy =
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     overscroll-behavior-x: contain;
-    touch-action: pan-x;
+    touch-action: pan-y;
     scrollbar-width: none;
+  }
+  .showcase-track.is-dragging {
+    scroll-snap-type: none;
   }
   .showcase-track::-webkit-scrollbar {
     display: none;
@@ -494,6 +497,8 @@ const canopy =
 </style>
 
 <script>
+  import { enableHDrag } from "../lib/hdrag";
+
   const track = document.getElementById("showcase-track");
   if (track) {
     const slides = Array.from(track.querySelectorAll<HTMLElement>(".slide"));
@@ -546,6 +551,7 @@ const canopy =
       }
     });
 
+    enableHDrag(track);
     goTo(0, false);
   }
 </script>
