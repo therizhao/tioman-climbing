@@ -1,7 +1,11 @@
 ---
 /**
  * A horizontally-scrollable strip of photos and short clips from the Dragon's
- * Horns — "what it's like out there". Videos play only while on screen.
+ * Horns — "what it's like out there".
+ *
+ * Performance: nothing but poster/photo JPEGs load on first paint. A video is
+ * only fetched and created when the viewer clicks its play button, and only one
+ * plays at a time.
  */
 
 type Item =
@@ -11,15 +15,39 @@ type Item =
 const items: Item[] = [
   {
     kind: "video",
-    src: "/gallery/summit-cloud.mp4",
-    poster: "/gallery/summit-cloud-poster.jpg",
-    caption: "Topping out on the South Tower as cloud pours over the summit ridge.",
+    src: "/gallery/ledge-exposure.mp4",
+    poster: "/gallery/ledge-exposure-poster.jpg",
+    caption: "Belayed on a ledge, boots over the void, the coast far below.",
+  },
+  {
+    kind: "video",
+    src: "/gallery/topping-out.mp4",
+    poster: "/gallery/topping-out-poster.jpg",
+    caption: "Following the last slab to the belay, the south of the island behind.",
+  },
+  {
+    kind: "video",
+    src: "/gallery/jungle-rappel.mp4",
+    poster: "/gallery/jungle-rappel-poster.jpg",
+    caption: "Abseiling back into the jungle at the foot of the wall.",
   },
   {
     kind: "video",
     src: "/gallery/topout-over-mukut.mp4",
     poster: "/gallery/topout-over-mukut-poster.jpg",
     caption: "Looking down at Kampung Mukut and the fringing reef from near the top.",
+  },
+  {
+    kind: "video",
+    src: "/gallery/belay-view.mp4",
+    poster: "/gallery/belay-view-poster.jpg",
+    caption: "From the belayer's stance — a pitch of rope out, jungle and sea below.",
+  },
+  {
+    kind: "video",
+    src: "/gallery/summit-cloud.mp4",
+    poster: "/gallery/summit-cloud-poster.jpg",
+    caption: "Topping out on the South Tower as cloud pours over the summit ridge.",
   },
   {
     kind: "photo",
@@ -40,37 +68,41 @@ const items: Item[] = [
       <p class="label">Pulau Tioman</p>
       <h2>What it's like out there</h2>
     </div>
-    <blockquote>
-      &ldquo;We summited at 5&thinsp;pm and rapped as the sun set.&rdquo;
-      <cite>— Damai Sentosa logbook, July 2015</cite>
-    </blockquote>
+    <blockquote>&ldquo;The Dragon will not let you pass easily.&rdquo;</blockquote>
   </div>
 
   <div class="ms-track" id="ms-track" tabindex="0">
     {
-      items.map((it) => (
-        <figure class="ms-card">
-          {it.kind === "video" ? (
-            <video
-              class="ms-media"
-              muted
-              loop
-              playsinline
-              preload="none"
-              poster={it.poster}
+      items.map((it) =>
+        it.kind === "video" ? (
+          <figure class="ms-card">
+            <button
+              class="ms-play"
+              type="button"
               data-src={it.src}
-            />
-          ) : (
-            <img class="ms-media" src={it.src} alt={it.caption} loading="lazy" />
-          )}
-          <figcaption>{it.caption}</figcaption>
-        </figure>
-      ))
+              aria-label={`Play clip: ${it.caption}`}
+            >
+              <img class="ms-media" src={it.poster} alt="" loading="lazy" decoding="async" />
+              <span class="ms-play-badge" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M6 4l10 6-10 6V4z" fill="currentColor" />
+                </svg>
+              </span>
+            </button>
+            <figcaption>{it.caption}</figcaption>
+          </figure>
+        ) : (
+          <figure class="ms-card">
+            <img class="ms-media" src={it.src} alt={it.caption} loading="lazy" decoding="async" />
+            <figcaption>{it.caption}</figcaption>
+          </figure>
+        ),
+      )
     }
   </div>
 
   <div class="wrap ms-nav">
-    <span class="ms-hint">Scroll &rarr; or drag</span>
+    <span class="ms-hint">Tap a clip to play &middot; scroll or drag</span>
     <div class="ms-arrows">
       <button type="button" class="ms-arrow" data-dir="-1" aria-label="Previous">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
@@ -169,9 +201,45 @@ const items: Item[] = [
     border-radius: 3px;
     background: color-mix(in srgb, var(--ground) 12%, var(--ink));
     display: block;
-    -webkit-user-drag: none;
-    user-select: none;
   }
+  .ms-play {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .ms-play-badge {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--ground);
+    transition: background 0.18s;
+    background: color-mix(in srgb, var(--ink) 14%, transparent);
+  }
+  .ms-play-badge svg {
+    width: 52px;
+    height: 52px;
+    padding: 15px 13px 15px 17px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ink) 55%, transparent);
+    backdrop-filter: blur(2px);
+    transition: transform 0.18s, background 0.18s;
+  }
+  .ms-play:hover .ms-play-badge svg,
+  .ms-play:focus-visible .ms-play-badge svg {
+    transform: scale(1.08);
+    background: color-mix(in srgb, var(--oxide) 85%, transparent);
+  }
+  .ms-card video.ms-media {
+    aspect-ratio: 3 / 4;
+  }
+
   .ms-card figcaption {
     font-size: 0.82rem;
     line-height: 1.5;
@@ -252,13 +320,13 @@ const items: Item[] = [
     });
     updateArrows();
 
-    // drag-to-scroll (pointer)
+    // drag-to-scroll
     let down = false;
     let startX = 0;
     let startScroll = 0;
     let moved = false;
     track.addEventListener("pointerdown", (e) => {
-      if ((e.target as HTMLElement).closest("button, a")) return;
+      if ((e.target as HTMLElement).closest("button")) return;
       down = true;
       moved = false;
       startX = e.clientX;
@@ -280,25 +348,33 @@ const items: Item[] = [
     };
     track.addEventListener("pointerup", endDrag);
     track.addEventListener("pointercancel", endDrag);
-    track.addEventListener("click", (e) => {
-      if (moved) e.preventDefault();
-    });
 
-    // lazy-load + play videos only while visible
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const v = entry.target as HTMLVideoElement;
-          if (entry.isIntersecting) {
-            if (!v.src && v.dataset.src) v.src = v.dataset.src;
-            v.play().catch(() => {});
-          } else {
-            v.pause();
-          }
-        });
-      },
-      { root: track, threshold: 0.5 },
-    );
-    track.querySelectorAll("video").forEach((v) => io.observe(v));
+    // click-to-load: build the <video> only when asked, one at a time
+    let active: HTMLVideoElement | null = null;
+    track.querySelectorAll<HTMLButtonElement>(".ms-play").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (moved) return;
+        const src = btn.dataset.src!;
+        const v = document.createElement("video");
+        v.className = "ms-media";
+        v.src = src;
+        v.muted = true;
+        v.loop = true;
+        v.playsInline = true;
+        v.controls = true;
+        v.autoplay = true;
+        v.preload = "auto";
+        if (active && active !== v) {
+          active.pause();
+          active.removeAttribute("src");
+          active.load();
+          const holder = active.closest(".ms-card");
+          // leave the other card as-is; it will just show a black frame if reopened
+        }
+        active = v;
+        btn.replaceWith(v);
+        v.play().catch(() => {});
+      });
+    });
   }
 </script>

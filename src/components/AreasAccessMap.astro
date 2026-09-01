@@ -1,0 +1,208 @@
+---
+/**
+ * Schematic of the south / south-west coast, showing roughly where the areas
+ * other than the Dragon's Horns sit and which village or landing they're
+ * reached from. Positions are relative, not to scale.
+ */
+
+const villages = [
+  { x: 95, label: "Nipah" },
+  { x: 300, label: "Tunamaya" },
+  { x: 470, label: "Minang Cove" },
+  { x: 630, label: "Kampung Mukut" },
+];
+
+const crags = [
+  { x: 120, label: "Puncak Nipah", status: "part" },
+  { x: 195, label: "Nipah Slabs", status: "none" },
+  { x: 260, label: "Unclimbed Buttress", status: "none" },
+  { x: 360, label: "Mumbar Cliff", status: "ok" },
+  { x: 445, label: "Bagus Tower", status: "part" },
+  { x: 545, label: "Batu Sirau", status: "part" },
+  { x: 628, label: "Dragon's Horns", status: "ok", strong: true },
+  { x: 688, label: "Puncak Anak", status: "ok" },
+];
+---
+
+<figure class="accessmap">
+  <svg viewBox="0 0 900 260" role="img"
+    aria-label="Schematic map of the south-west coast of Tioman from Nipah to Kampung Mukut, then round to Juara on the east coast, showing where the climbing areas sit and which village each is reached from. Not to scale.">
+    <rect class="am-sea" x="0" y="150" width="900" height="110"></rect>
+    <rect class="am-land" x="0" y="0" width="900" height="150"></rect>
+    <path class="am-coast" d="M0 150 C 120 148 180 158 300 152 C 420 146 470 160 560 154
+      C 640 149 690 160 760 150 L790 150"></path>
+
+    <!-- east-coast break -->
+    <line class="am-break" x1="812" y1="8" x2="812" y2="150" stroke-dasharray="3 5"></line>
+    <text class="am-region" x="836" y="24">EAST COAST</text>
+
+    {
+      villages.map((v) => (
+        <g class="am-village">
+          <circle cx={v.x} cy="150" r="4.5" />
+          <text x={v.x} y="170" text-anchor="middle">{v.label}</text>
+        </g>
+      ))
+    }
+
+    {
+      crags.map((c, i) => {
+        const y = 40 + (i % 2) * 34;
+        return (
+          <g class={`am-crag am-${c.status}`}>
+            <line x1={c.x} y1="150" x2={c.x} y2={y + 10} />
+            <path class="am-peak" d={`M${c.x - 7} ${y + 10} L${c.x} ${y - 4} L${c.x + 7} ${y + 10} Z`} />
+            <text x={c.x} y={y - 10} text-anchor="middle" class={c.strong ? "am-strong" : ""}>
+              {c.label}
+            </text>
+          </g>
+        );
+      })
+    }
+
+    <!-- Juara, east coast -->
+    <g class="am-crag am-none">
+      <path class="am-peak" d="M853 92 L860 78 L867 92 Z"></path>
+      <text x="860" y="70" text-anchor="middle">Juara Beach</text>
+    </g>
+  </svg>
+
+  <div class="am-legend">
+    <span><i class="am-key am-key-ok"></i> access established</span>
+    <span><i class="am-key am-key-part"></i> access partial / unclear</span>
+    <span><i class="am-key am-key-none"></i> no access path yet</span>
+  </div>
+  <figcaption>The other areas, west to east along the coast. Relative positions, not to scale.</figcaption>
+</figure>
+
+<style>
+  .accessmap {
+    margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .accessmap svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .am-sea {
+    fill: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  }
+  .am-land {
+    fill: var(--surface-2);
+  }
+  .am-coast {
+    fill: none;
+    stroke: var(--faint);
+    stroke-width: 1.5;
+  }
+  .am-break {
+    stroke: var(--faint);
+    stroke-width: 1;
+  }
+  .am-region {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    fill: var(--mid);
+    text-anchor: middle;
+  }
+
+  .am-village circle {
+    fill: var(--ink);
+  }
+  .am-village text {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.03em;
+    fill: var(--ink-2);
+  }
+
+  .am-crag line {
+    stroke: var(--faint);
+    stroke-width: 1;
+  }
+  .am-crag text {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    fill: var(--ink-2);
+    paint-order: stroke;
+    stroke: var(--surface-2);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+  .am-crag text.am-strong {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  .am-peak {
+    stroke-linejoin: round;
+  }
+  .am-ok .am-peak {
+    fill: var(--oxide);
+  }
+  .am-part .am-peak {
+    fill: color-mix(in srgb, var(--oxide) 45%, var(--surface-2));
+    stroke: var(--oxide);
+    stroke-width: 1;
+  }
+  .am-none .am-peak {
+    fill: none;
+    stroke: var(--mid);
+    stroke-width: 1.4;
+    stroke-dasharray: 2 2;
+  }
+  .am-none text {
+    fill: var(--mid);
+  }
+
+  .am-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.76rem;
+    color: var(--ink-2);
+  }
+  .am-key {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 10px solid var(--oxide);
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+  .am-key-part {
+    border-bottom-color: color-mix(in srgb, var(--oxide) 45%, var(--faint));
+  }
+  .am-key-none {
+    border-bottom-color: transparent;
+    border-bottom: 10px solid transparent;
+    position: relative;
+  }
+  .am-key-none::after {
+    content: "△";
+    color: var(--mid);
+    font-size: 0.8rem;
+  }
+  .accessmap figcaption {
+    padding: 0.7rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--mid);
+    background: var(--ground);
+    border-top: 1px solid var(--rule);
+  }
+  @media (max-width: 620px) {
+    .am-crag text,
+    .am-village text {
+      font-size: 12px;
+    }
+  }
+</style>

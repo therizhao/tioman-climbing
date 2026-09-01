@@ -1,6 +1,51 @@
 ---
 import Base from "../layouts/Base.astro";
 import JourneyMap from "../components/JourneyMap.astro";
+import AreasAccessMap from "../components/AreasAccessMap.astro";
+
+const otherAreas = [
+  {
+    slug: "puncak-nipah",
+    name: "Puncak Nipah",
+    text: `From <strong>Nipah</strong> beach. The single-pitch sport wall is reached on a
+      levelled path along its base; the approach to the summit tower (the Green Line Route) is
+      not well described in the source.`,
+    unclear: true,
+  },
+  {
+    slug: "mumbar-cliff",
+    name: "Mumbar Cliff",
+    text: `From the <strong>Nipah</strong> side: the Nipah–Tunamaya coastal concrete path, down
+      to the beach, then up the dry riverbed following cairns ~20–30 min to yellow blazes on the
+      trees, then a cut jungle trail 30–40 min to the wall. About 2 h 20 on foot, or a boat to
+      Tunamaya / the beach + ~1 h 20. The <strong>west side of the cliff needs a new approach
+      path</strong>.`,
+    unclear: false,
+  },
+  {
+    slug: "bagus-tower",
+    name: "Bagus Tower",
+    text: `Follow the road to <strong>Bagus Place</strong> to its end, then up into the jungle,
+      about 1 h. The trail was cut in October 2015 — <strong>expect heavy regrowth</strong>; bring
+      a machete.`,
+    unclear: true,
+  },
+  {
+    slug: "batu-sirau",
+    name: "Batu Sirau (Mystery Pinnacle)",
+    text: `Behind Gunung Nenek Semukut, on a summit access path from the Nenek Semukut side. A
+      possible newer approach "from the river landslide" is noted in the source but
+      <strong>unexplored</strong>.`,
+    unclear: true,
+  },
+  {
+    slug: "juara-beach",
+    name: "Juara Beach",
+    text: `East coast — reached by the cross-island road/trail from Tekek, or by boat. The
+      climbing here is <strong>undocumented</strong> beyond a single field sketch.`,
+    unclear: true,
+  },
+];
 
 const steps = [
   {
@@ -45,8 +90,8 @@ const steps = [
     body: `The walk-in from Mukut to the walls is steep primary jungle: <strong>1 to 2+ hours</strong>,
       and finding the exact start of a route is often the real crux. Several logbook parties
       <strong>carry their gear up and stash it near the base the day before</strong>, so their
-      summit-day packs are light. Go with a local guide the first time. Tell Tam (or your lodge)
-      your route and expected return time every time you go up.`,
+      summit-day packs are light. Tell Tam (or your lodge) your route and expected return time
+      every time you go up.`,
   },
   {
     title: "Follow the checkpoints to your route",
@@ -111,6 +156,35 @@ const steps = [
     </ol>
 
     <section style="padding-top:clamp(2rem,4vw,3rem)">
+      <div class="sec-head">
+        <h2 style="font-size:var(--step-2)">Getting to the other areas</h2>
+        <p>
+          The steps above are for the Dragon's Horns. The rest of the island's rock is scattered
+          along the south-west coast and reached separately — mostly from the Nipah side.
+        </p>
+      </div>
+
+      <AreasAccessMap />
+
+      <div class="otherlist">
+        {
+          otherAreas.map((a) => (
+            <div class="otheritem">
+              <a href={`/areas/${a.slug}`}>{a.name}</a>
+              <p set:html={a.text} />
+              {a.unclear && (
+                <p class="otherflag">
+                  Access details here are thin or unverified — <strong>contributions welcome</strong>.
+                  <a href="/contribute"> Add what you know →</a>
+                </p>
+              )}
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section style="padding-top:0">
       <div class="sec-head"><h2 style="font-size:var(--step-2)">Good to know</h2></div>
       <div class="two-col">
         <div style="display:grid;gap:1.25rem">
@@ -200,5 +274,42 @@ const steps = [
     font-size: 0.96rem;
     line-height: 1.7;
     max-width: var(--read);
+  }
+
+  .otherlist {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  .otheritem {
+    border-top: 1px solid var(--rule);
+    padding-top: 1.25rem;
+  }
+  .otheritem > a {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+  .otheritem > a:hover {
+    text-decoration: underline;
+  }
+  .otheritem p {
+    color: var(--ink-2);
+    font-size: 0.94rem;
+    line-height: 1.7;
+    max-width: var(--read);
+    margin-top: 0.5rem;
+  }
+  .otherflag {
+    font-size: 0.85rem !important;
+    color: var(--mid) !important;
+    border-left: 2px solid var(--faint);
+    padding-left: 0.85rem;
+  }
+  .otherflag strong {
+    color: var(--oxide);
+  }
+  .otherflag a {
+    white-space: nowrap;
   }
 </style>
