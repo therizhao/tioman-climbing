@@ -37,7 +37,7 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
   section="/"
 >
   <div class="wrap">
-    <nav class="crumb" aria-label="Breadcrumb">
+    <nav class="crumb" aria-label="Breadcrumb" id="au-crumb">
       <a href="/#areas">Guidebook</a><span>/</span><span>Contribute</span>
     </nav>
 
@@ -215,6 +215,36 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
   .au-req {
     color: var(--oxide);
   }
+
+  /* ---- report-type toggle ---- */
+  .au-toggle {
+    display: inline-flex;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .au-toggle button {
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    padding: 0.5rem 0.9rem;
+    border: 0;
+    border-left: 1px solid var(--rule);
+    background: var(--surface);
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .au-toggle button:first-child {
+    border-left: 0;
+  }
+  .au-toggle button.is-on {
+    background: var(--accent);
+    color: var(--ground);
+  }
+  .au-toggle-hint {
+    margin-top: 0.5rem;
+  }
+
   /* ---- pitch editor ---- */
   .au-pitches {
     display: grid;
@@ -587,6 +617,19 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     ],
   };
 
+  // Fields for the "just link to it" flow — one entry in src/data/external-logs.ts.
+  const EXTERNAL_FIELDS: Field[] = [
+    { key: "linkType", label: "Kind", type: "select", options: ["article", "video"], default: "article", help: "“video” for a film or clip, “article” for anything written." },
+    { key: "title", label: "Title", type: "text", required: true, help: "The piece's own title." },
+    { key: "url", label: "Link", type: "text", required: true, help: "Full https:// address of the report, article or video." },
+    { key: "source", label: "Source", type: "text", required: true, help: "Where it lives — “NUS Mountaineering (nus-mir.com)”, “YouTube”." },
+    { key: "author", label: "Author", type: "text", help: "Person or party, if credited." },
+    { key: "year", label: "Year", type: "text", help: "Year of the trip or of publication." },
+    { key: "route", label: "Route", type: "route", help: "The route it's mainly about. Leave on “—” for an area-wide piece." },
+    { key: "area", label: "Area", type: "area", help: "Fills in from the route; set it yourself for an area-wide piece." },
+    { key: "note", label: "Note", type: "textarea", help: "One line of context, shown under the title in the logbook." },
+  ];
+
   const MANAGED: Record<string, Set<string>> = {
     logbook: new Set(FIELDS.logbook.map((f) => f.key)),
     routes: new Set(FIELDS.routes.map((f) => f.key)),
@@ -662,6 +705,10 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
   let orderedKeys: string[] = [];
   let newFilename = "";
   let pitchRows: Pitch[] = [];
+  let reportKind: "site" | "link" = "site"; // new trip report only: write here vs. link out
+
+  const isLinkMode = () => mode === "new" && collection === "logbook" && reportKind === "link";
+  const activeFields = (): Field[] => (isLinkMode() ? EXTERNAL_FIELDS : FIELDS[collection]);
 
   const state: Record<string, string> = {};
 
@@ -784,10 +831,51 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     host.appendChild(add);
   }
 
+  function buildToggle() {
+    const holder = document.createElement("div");
+    holder.className = "au-field";
+    const span = document.createElement("span");
+    span.className = "label";
+    span.textContent = "Trip report type";
+    holder.appendChild(span);
+
+    const box = document.createElement("div");
+    box.className = "au-toggle";
+    box.setAttribute("role", "radiogroup");
+    box.setAttribute("aria-label", "Trip report type");
+    ([["site", "Write it here"], ["link", "Just link to it"]] as const).forEach(([v, label]) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = label;
+      b.setAttribute("role", "radio");
+      b.setAttribute("aria-checked", String(reportKind === v));
+      if (reportKind === v) b.className = "is-on";
+      b.addEventListener("click", () => {
+        if (reportKind === v) return;
+        reportKind = v;
+        buildForm();
+        applyNewChrome();
+        render();
+      });
+      box.appendChild(b);
+    });
+    holder.appendChild(box);
+
+    const hint = document.createElement("p");
+    hint.className = "au-toggle-hint note";
+    hint.textContent =
+      reportKind === "link"
+        ? "Adds a logbook row that points to a report, article or film hosted on another site."
+        : "A trip report written here and transcribed into the guidebook's own logbook.";
+    holder.appendChild(hint);
+    return holder;
+  }
+
   function buildForm() {
     const wrap = $("au-fields");
     wrap.innerHTML = "";
-    for (const f of FIELDS[collection]) {
+    if (mode === "new" && collection === "logbook") wrap.appendChild(buildToggle());
+    for (const f of activeFields()) {
       const l = document.createElement(f.type === "pitches" ? "div" : "label");
       l.className = "au-field" + (f.hidden ? " is-hidden" : "");
       l.dataset.key = f.key;
@@ -865,7 +953,46 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     if (ar) ar.value = r.area;
   }
 
+  function applyNewChrome() {
+    // Show/hide the free-text body + advanced pane depending on the report type.
+    const link = isLinkMode();
+    const bodyField = $("au-body").closest(".au-field") as HTMLElement | null;
+    if (bodyField) bodyField.classList.toggle("is-hidden", link);
+    if (link) $("au-adv").hidden = true;
+    if (mode === "new" && collection === "logbook") {
+      const rn = state.routeName || "";
+      $("au-title").textContent = link
+        ? rn
+          ? `Link a trip report — ${rn}`
+          : "Link a trip report"
+        : rn
+          ? `Add a trip report — ${rn}`
+          : "Add a trip report";
+      $("au-lede").textContent = link
+        ? "Point the logbook at a report, article or film that lives on someone else's site. Fill in the details, then paste one entry into GitHub."
+        : "Approach beta, conditions, how the pitches felt, gear that helped, anything loose or run-out, and thanks. Fill it in, preview, then copy it onto GitHub.";
+    }
+  }
+
+  function buildExternalSnippet() {
+    const q = (v: string) => JSON.stringify(v);
+    const t = (k: string) => (state[k] ?? "").trim();
+    const lines = ["  {"];
+    lines.push(`    type: ${q(state.linkType || "article")},`);
+    lines.push(`    title: ${q(t("title") || "Untitled")},`);
+    lines.push(`    source: ${q(t("source"))},`);
+    if (t("author")) lines.push(`    author: ${q(t("author"))},`);
+    if (t("year")) lines.push(`    year: ${q(t("year"))},`);
+    lines.push(`    url: ${q(t("url"))},`);
+    lines.push(`    route: ${t("route") ? q(t("route")) : "null"},`);
+    lines.push(`    area: ${t("area") ? q(t("area")) : "null"},`);
+    if (t("note")) lines.push(`    note: ${q(t("note"))},`);
+    lines.push("  },");
+    return lines.join("\n");
+  }
+
   function buildFile() {
+    if (isLinkMode()) return buildExternalSnippet();
     const managed = MANAGED[collection];
     const lines: string[] = [];
     const emitted = new Set<string>();
@@ -908,6 +1035,20 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     const box = $("au-preview");
     const body = ($("au-body") as HTMLTextAreaElement).value;
     const parts: string[] = [];
+    if (isLinkMode()) {
+      parts.push(`<div class="au-pv-title">${esc(state.title || "Untitled")}</div>`);
+      const sub = [state.author, state.source, state.year].filter(Boolean).map(esc).join(" · ");
+      if (sub) parts.push(`<div class="au-pv-sub">${sub}</div>`);
+      parts.push(
+        `<div class="au-pv-badges"><span class="au-pv-badge">${state.linkType === "video" ? "Film" : "Article"} · external ↗</span></div>`,
+      );
+      const lr = data.routes.find((x) => x.id === state.route);
+      if (lr) parts.push(`<div class="au-pv-sub">on ${esc(lr.name)}</div>`);
+      if (state.note) parts.push(`<div class="au-pv-body"><p>${esc(state.note)}</p></div>`);
+      if (state.url) parts.push(`<div class="au-pv-sub" style="word-break:break-all">${esc(state.url)}</div>`);
+      box.innerHTML = parts.join("");
+      return;
+    }
     if (collection === "logbook") {
       parts.push(`<div class="au-pv-title">${esc(state.title || "Untitled report")}</div>`);
       parts.push(`<div class="au-pv-sub">${esc(state.party || "party")} · ${esc(state.date || "date")}</div>`);
@@ -955,17 +1096,36 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     $("au-out").textContent = file;
     ($("au-copy") as HTMLButtonElement).dataset.text = file;
 
-    // GitHub link
+    // GitHub link + surrounding copy
     const gh = $("au-gh") as HTMLAnchorElement;
+    const outLabel = document.querySelector("#au-output .label") as HTMLElement | null;
+    const copyBtn = $("au-copy") as HTMLButtonElement;
+    if (isLinkMode()) {
+      $("au-file").textContent = "src/data/external-logs.ts";
+      if (outLabel) outLabel.textContent = "The entry";
+      copyBtn.textContent = "Copy the entry";
+      gh.href = `${data.repo}/edit/main/src/data/external-logs.ts`;
+      gh.textContent = "Open GitHub to add the link ↗";
+      $("au-steps").innerHTML =
+        "<b>1.</b> Copy the entry above. &nbsp; <b>2.</b> Open <code>external-logs.ts</code> on GitHub. &nbsp; <b>3.</b> Paste it just after <code>externalLogs = [</code>, then click <b>Propose changes</b> to open a pull request.";
+      return;
+    }
+    if (outLabel) outLabel.textContent = "The file";
+    copyBtn.textContent = "Copy file contents";
     if (mode === "edit" && rec) {
       gh.href = `${data.repo}/edit/main/${rec.path}`;
       gh.textContent = "Open GitHub to replace the file ↗";
+      $("au-steps").innerHTML =
+        "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — it shows the current file. &nbsp; <b>3.</b> Select all, paste, and click <b>Propose changes</b>. GitHub makes your own copy and opens a pull request.";
     } else {
+      $("au-file").textContent = `src/content/${collection}/${newFilename}`;
       const u = new URL(`${data.repo}/new/main/src/content/${collection}`);
       u.searchParams.set("filename", newFilename);
       if (file.length < 6000) u.searchParams.set("value", file);
       gh.href = u.toString();
       gh.textContent = "Open GitHub to create the file ↗";
+      $("au-steps").innerHTML =
+        "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — a new file opens, often pre-filled. &nbsp; <b>3.</b> Make sure the contents match, then click <b>Propose new file</b> to open a pull request.";
     }
   }
 
@@ -1006,32 +1166,52 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     const route = params.get("route") || "";
     const routeName = params.get("routeName") || "";
     const area = params.get("area") || "";
+    if (params.get("kind") === "link") reportKind = "link";
     state.route = route;
     state.routeName = routeName;
     state.area = area;
     state.order = "5";
-    state.title = routeName ? `${routeName} — ` : "";
+    state.linkType = "article";
+    state.title = routeName && reportKind === "site" ? `${routeName} — ` : "";
     newFilename = (route || "trip") + "-report.md";
     orderedKeys = FIELDS.logbook.map((f) => f.key);
-    $("au-title").textContent = routeName ? `Add a trip report — ${routeName}` : "Add a trip report";
     $("au-kicker").textContent = "New · trip report";
     document.title = "Add a trip report — Tioman Climbing Guidebook";
-    $("au-lede").textContent =
-      "Approach beta, conditions, how the pitches felt, gear that helped, anything loose or run-out, and thanks. Fill it in, preview, then copy it onto GitHub.";
+    // au-title / au-lede are set by applyNewChrome() once the report type is known.
     ($("au-body") as HTMLTextAreaElement).value =
       "## The climb\n\nHow the approach went, the conditions, how the pitches felt.\n\n## Beta for the next party\n\nGear that helped, loose or run-out sections, anchor state, timing.\n";
     finishInit();
   }
 
+  function renderCrumb() {
+    const nav = $("au-crumb");
+    if (!nav) return;
+    const parts = ['<a href="/#areas">Guidebook</a>'];
+    const areaId = state.area || "";
+    const areaShort = data.areas.find((a) => a.id === areaId)?.short || "";
+    const last = mode === "edit" ? "Edit" : "Add";
+
+    if (collection === "areas" && rec) {
+      parts.push(`<a href="/areas/${rec.id}">${esc(state.short || state.name || rec.id)}</a>`);
+    } else if (collection === "routes" && rec) {
+      if (areaShort) parts.push(`<a href="/areas/${areaId}">${esc(areaShort)}</a>`);
+      parts.push(`<a href="/areas/${areaId}/${rec.id}">${esc(state.name || rec.id)}</a>`);
+    } else if (collection === "logbook") {
+      if (areaShort) parts.push(`<a href="/areas/${areaId}">${esc(areaShort)}</a>`);
+      if (state.route && state.routeName)
+        parts.push(`<a href="/areas/${areaId}/${state.route}">${esc(state.routeName)}</a>`);
+      parts.push(mode === "edit" && rec ? `<a href="/logbook/${rec.id}">Logbook</a>` : `<a href="/logbook/">Logbook</a>`);
+    }
+    parts.push(`<span>${last}</span>`);
+    nav.innerHTML = parts.join("<span>/</span>");
+  }
+
   function finishInit() {
     buildForm();
     if (mode === "new" && state.route) syncRoute(state.route);
+    renderCrumb();
     $("au-body-label").textContent = collection === "logbook" ? "Your report" : "Description";
-    const steps =
-      mode === "edit"
-        ? "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — it shows the current file. &nbsp; <b>3.</b> Select all, paste, and click <b>Propose changes</b>. GitHub makes your own copy and opens a pull request."
-        : "<b>1.</b> Copy the file contents above. &nbsp; <b>2.</b> Open GitHub — a new file opens, often pre-filled. &nbsp; <b>3.</b> Make sure the contents match, then click <b>Propose new file</b> to open a pull request.";
-    $("au-steps").innerHTML = steps;
+    applyNewChrome();
     $("au-adv-text").addEventListener("input", () => {
       advEntries = parseFm(($("au-adv-text") as HTMLTextAreaElement).value);
       render();
