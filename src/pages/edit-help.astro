@@ -218,10 +218,21 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
 
   /* ---- report-type toggle ---- */
   .au-toggle {
-    display: inline-flex;
+    display: flex;
+    width: fit-content;
+    max-width: 100%;
+    justify-self: start;
     border: 1px solid var(--rule);
     border-radius: 2px;
     overflow: hidden;
+  }
+  @media (max-width: 420px) {
+    .au-toggle {
+      width: 100%;
+    }
+    .au-toggle button {
+      flex: 1;
+    }
   }
   .au-toggle button {
     font: inherit;
