@@ -215,6 +215,154 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
   .au-req {
     color: var(--oxide);
   }
+  /* ---- pitch editor ---- */
+  .au-pitches {
+    display: grid;
+    gap: 0.3rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 0.6rem;
+    background: var(--ground);
+  }
+  .au-pitch {
+    display: grid;
+    grid-template-columns: 1.7rem 3rem 3.2rem 3.6rem minmax(0, 1fr) auto auto;
+    gap: 0.35rem;
+    align-items: center;
+  }
+  .au-pitch-head {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+  .au-pitch input[type="text"] {
+    width: 100%;
+    padding: 0.35rem 0.45rem;
+    font-size: 0.82rem;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink);
+  }
+  .au-pitch input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .au-pitch-move {
+    display: grid;
+    gap: 1px;
+  }
+  .au-pitch-move button {
+    font-size: 0.55rem;
+    line-height: 1;
+    padding: 0.15rem 0;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .au-pitch-move button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .au-pitch-crux {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .au-pitch-crux input {
+    margin: 0;
+  }
+  .au-pitch-del {
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--mid);
+    cursor: pointer;
+    padding: 0.3rem 0.45rem;
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+  .au-pitch-del:hover {
+    color: var(--oxide);
+    border-color: var(--oxide);
+  }
+  .au-pitch-add {
+    justify-self: start;
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    padding: 0.4rem 0.7rem;
+    border: 1px dashed var(--rule);
+    border-radius: 2px;
+    background: var(--surface);
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .au-pitch-add:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  @media (max-width: 620px) {
+    .au-pitch-head {
+      display: none;
+    }
+    .au-pitch {
+      grid-template-columns: 1.7rem 1fr 1fr auto auto;
+      row-gap: 0.3rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px dashed var(--rule);
+    }
+    .au-pitch .p-note {
+      grid-column: 2 / -1;
+    }
+  }
+
+  /* ---- pitch ladder in the preview ---- */
+  .au-pv-ladder {
+    list-style: none;
+    margin: 0.4rem 0 0.8rem;
+    padding: 0;
+    display: grid;
+    gap: 0.15rem;
+  }
+  .au-pv-ladder li {
+    display: grid;
+    grid-template-columns: 2.4rem 3rem 3rem 1fr;
+    gap: 0.5rem;
+    padding: 0.35rem 0.4rem;
+    font-size: 0.82rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .au-pv-ladder li.is-crux {
+    background: color-mix(in srgb, var(--oxide) 8%, transparent);
+  }
+  .au-pv-ladder .pv-pn {
+    font-family: var(--font-mono);
+    color: var(--mid);
+  }
+  .au-pv-ladder .pv-pg {
+    font-family: var(--font-mono);
+    color: var(--ink);
+  }
+  .au-pv-ladder .pv-pl {
+    font-family: var(--font-mono);
+    color: var(--mid);
+  }
+  .au-pv-ladder .pv-pnote {
+    color: var(--ink-2);
+  }
+  .au-pv-ladder .pv-pnote em {
+    color: var(--oxide);
+    font-style: normal;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
   .au-adv {
     border: 1px solid var(--rule);
     border-radius: 2px;
@@ -383,13 +531,15 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
   type Field = {
     key: string;
     label: string;
-    type: "text" | "textarea" | "number" | "area" | "route" | "select" | "stars";
+    type: "text" | "textarea" | "number" | "area" | "route" | "select" | "stars" | "pitches";
     help?: string;
     required?: boolean;
     hidden?: boolean;
     options?: string[];
     default?: string;
   };
+
+  type Pitch = { n: string; grade: string; length: string; note: string; crux: boolean };
 
   const FIELDS: Record<string, Field[]> = {
     logbook: [
@@ -419,6 +569,12 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
       { key: "descent", label: "Descent", type: "textarea" },
       { key: "gear", label: "Gear", type: "textarea" },
       { key: "warn", label: "Hazard note", type: "textarea", help: "Shown as a warning box. Short HTML ok." },
+      {
+        key: "pitchList",
+        label: "Pitch by pitch",
+        type: "pitches",
+        help: "One row per pitch, top of the route first (as the guidebook lists them). Leave empty if there's no per-pitch record.",
+      },
     ],
     areas: [
       { key: "name", label: "Area name", type: "text", required: true },
@@ -505,20 +661,156 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
   let advEntries: { key: string; raw: string }[] = [];
   let orderedKeys: string[] = [];
   let newFilename = "";
+  let pitchRows: Pitch[] = [];
 
   const state: Record<string, string> = {};
+
+  /* ---------- pitch list (structured) ---------- */
+  const emptyPitch = (): Pitch => ({ n: "", grade: "", length: "", note: "", crux: false });
+
+  const parsePitchList = (raw: string): Pitch[] => {
+    try {
+      const arr = JSON.parse(raw.trim());
+      if (!Array.isArray(arr)) return [];
+      return arr.map((p) => ({
+        n: String(p.n ?? ""),
+        grade: String(p.grade ?? ""),
+        length: String(p.length ?? ""),
+        note: String(p.note ?? ""),
+        crux: p.crux === true,
+      }));
+    } catch {
+      return [];
+    }
+  };
+
+  const pitchListLine = () => {
+    const rows = pitchRows.filter((p) => p.n.trim() || p.grade.trim() || p.length.trim() || p.note.trim());
+    if (!rows.length) return null;
+    const json = rows
+      .map((p) => {
+        const o: Record<string, unknown> = { n: p.n.trim(), grade: p.grade.trim(), length: p.length.trim() || "—" };
+        if (p.note.trim()) o.note = p.note.trim();
+        if (p.crux) o.crux = true;
+        return JSON.stringify(o);
+      })
+      .join(",");
+    return `pitchList: [${json}]`;
+  };
+
+  function renderPitchEditor(host: HTMLElement) {
+    host.innerHTML = "";
+    const head = document.createElement("div");
+    head.className = "au-pitch au-pitch-head";
+    head.innerHTML =
+      '<span></span><span>Pitch</span><span>Grade</span><span>Length</span><span>Note</span><span>Crux</span><span></span>';
+    host.appendChild(head);
+
+    pitchRows.forEach((p, i) => {
+      const row = document.createElement("div");
+      row.className = "au-pitch";
+      const mk = (cls: string, val: string, ph: string) => {
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.className = cls;
+        inp.value = val;
+        inp.placeholder = ph;
+        inp.addEventListener("input", () => {
+          (p as any)[cls.slice(2)] = inp.value;
+          render();
+        });
+        return inp;
+      };
+      const move = document.createElement("div");
+      move.className = "au-pitch-move";
+      move.innerHTML =
+        `<button type="button" data-mv="-1" aria-label="Move pitch up"${i === 0 ? " disabled" : ""}>▲</button>` +
+        `<button type="button" data-mv="1" aria-label="Move pitch down"${i === pitchRows.length - 1 ? " disabled" : ""}>▼</button>`;
+      move.querySelectorAll("button").forEach((b) =>
+        b.addEventListener("click", () => {
+          const d = Number((b as HTMLButtonElement).dataset.mv);
+          const j = i + d;
+          if (j < 0 || j >= pitchRows.length) return;
+          [pitchRows[i], pitchRows[j]] = [pitchRows[j], pitchRows[i]];
+          renderPitchEditor(host);
+          render();
+        }),
+      );
+
+      const crux = document.createElement("label");
+      crux.className = "au-pitch-crux";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = p.crux;
+      cb.addEventListener("change", () => {
+        p.crux = cb.checked;
+        render();
+      });
+      crux.appendChild(cb);
+
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "au-pitch-del";
+      del.setAttribute("aria-label", "Remove pitch");
+      del.textContent = "✕";
+      del.addEventListener("click", () => {
+        pitchRows.splice(i, 1);
+        renderPitchEditor(host);
+        render();
+      });
+
+      row.append(
+        move,
+        mk("p-n", p.n, "P1"),
+        mk("p-grade", p.grade, "6c"),
+        mk("p-length", p.length, "30 m"),
+        mk("p-note", p.note, "optional — belays, loose rock, run-outs…"),
+        crux,
+        del,
+      );
+      host.appendChild(row);
+    });
+
+    const add = document.createElement("button");
+    add.type = "button";
+    add.className = "au-pitch-add";
+    add.textContent = "+ Add pitch";
+    add.addEventListener("click", () => {
+      pitchRows.push(emptyPitch());
+      renderPitchEditor(host);
+      render();
+      (host.querySelector(".au-pitch:last-of-type .p-n") as HTMLInputElement | null)?.focus();
+    });
+    host.appendChild(add);
+  }
 
   function buildForm() {
     const wrap = $("au-fields");
     wrap.innerHTML = "";
     for (const f of FIELDS[collection]) {
-      const l = document.createElement("label");
+      const l = document.createElement(f.type === "pitches" ? "div" : "label");
       l.className = "au-field" + (f.hidden ? " is-hidden" : "");
       l.dataset.key = f.key;
       const span = document.createElement("span");
       span.className = "label";
       span.innerHTML = f.label + (f.required ? ' <span class="au-req">*</span>' : "");
       l.appendChild(span);
+
+      if (f.type === "pitches") {
+        if (f.help) {
+          const h = document.createElement("span");
+          h.className = "au-help";
+          h.textContent = f.help;
+          l.appendChild(h);
+        }
+        const host = document.createElement("div");
+        host.className = "au-pitches";
+        host.id = "au-pitch-host";
+        l.appendChild(host);
+        renderPitchEditor(host);
+        wrap.appendChild(l);
+        continue;
+      }
 
       let input: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
       if (f.type === "textarea") {
@@ -581,19 +873,26 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     const keyOrder = orderedKeys.length
       ? orderedKeys
       : FIELDS[collection].filter((f) => !f.hidden || state[f.key]).map((f) => f.key);
+    const emitKey = (key: string) => {
+      if (key === "pitchList") return pitchListLine();
+      if (managed.has(key)) return emitScalar(key, state[key] ?? "");
+      const adv = advEntries.find((e) => e.key === key);
+      return adv ? `${key}: ${adv.raw}` : null;
+    };
     for (const key of keyOrder) {
       if (emitted.has(key)) continue;
       emitted.add(key);
-      if (managed.has(key)) {
-        const line = emitScalar(key, state[key] ?? "");
-        if (line) lines.push(line);
-      } else {
-        const adv = advEntries.find((e) => e.key === key);
-        if (adv) lines.push(`${key}: ${adv.raw}`);
-      }
+      const line = emitKey(key);
+      if (line) lines.push(line);
     }
     for (const f of FIELDS[collection]) {
-      if (!emitted.has(f.key) && (state[f.key] ?? "").trim() !== "") {
+      if (emitted.has(f.key)) continue;
+      if (f.key === "pitchList") {
+        const line = pitchListLine();
+        if (line) lines.push(line), emitted.add(f.key);
+        continue;
+      }
+      if ((state[f.key] ?? "").trim() !== "") {
         const line = emitScalar(f.key, state[f.key]);
         if (line) lines.push(line), emitted.add(f.key);
       }
@@ -623,6 +922,25 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
         .join("");
       if (badges) parts.push(`<div class="au-pv-badges">${badges}</div>`);
       if (state.approach) parts.push(`<h2>Approach</h2><p>${state.approach}</p>`);
+      const prows = pitchRows.filter((p) => p.n.trim() || p.grade.trim() || p.note.trim());
+      if (prows.length) {
+        parts.push("<h2>Pitch by pitch</h2>");
+        parts.push(
+          '<ol class="au-pv-ladder">' +
+            prows
+              .map(
+                (p) =>
+                  `<li${p.crux ? ' class="is-crux"' : ""}>` +
+                  `<span class="pv-pn">${esc(p.n || "–")}</span>` +
+                  `<span class="pv-pg">${esc(p.grade || "–")}</span>` +
+                  `<span class="pv-pl">${esc(p.length || "–")}</span>` +
+                  `<span class="pv-pnote">${esc(p.note)}${p.crux ? ' <em>crux</em>' : ""}</span>` +
+                  `</li>`,
+              )
+              .join("") +
+            "</ol>",
+        );
+      }
     } else {
       parts.push(`<div class="au-pv-title">${esc(state.name || "Unnamed area")}</div>`);
       if (state.desc) parts.push(`<div class="au-pv-sub">${esc(state.desc)}</div>`);
@@ -664,9 +982,10 @@ const payload = JSON.stringify({ catalog, areas, routes, repo: REPO }).replace(/
     collection = rec.collection;
     const entries = parseFm(rec.fmText);
     orderedKeys = entries.map((e) => e.key);
-    advEntries = entries.filter((e) => !MANAGED[collection].has(e.key));
+    advEntries = entries.filter((e) => !MANAGED[collection].has(e.key) && e.key !== "pitchList");
     for (const e of entries) {
-      if (MANAGED[collection].has(e.key)) state[e.key] = unquote(e.raw);
+      if (e.key === "pitchList") pitchRows = parsePitchList(e.raw);
+      else if (MANAGED[collection].has(e.key)) state[e.key] = unquote(e.raw);
     }
     const label = params.get("label") || state.name || state.title || rec.id;
     $("au-title").textContent = `Edit “${label}”`;
